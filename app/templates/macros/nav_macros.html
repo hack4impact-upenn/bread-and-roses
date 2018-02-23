@@ -37,6 +37,7 @@
 {% macro account_items(current_user) %}
     {% if current_user.is_authenticated %}
       {% set endpoints = [
+        ('participant.index', 'Donor Management', 'dashboard'),
         ('account.manage', 'Your Account', 'settings'),
         ('account.logout', 'Log out', 'sign out')
       ] %}

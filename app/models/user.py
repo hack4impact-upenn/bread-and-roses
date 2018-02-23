@@ -57,6 +57,8 @@ class User(UserMixin, db.Model):
     candidate_id = db.Column(db.Integer, db.ForeignKey('candidates.id'))
     candidate = db.relationship('Candidate', back_populates='user_account')
 
+    donors = db.relationship("Donor", back_populates="user")
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
