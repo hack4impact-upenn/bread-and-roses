@@ -5,4 +5,5 @@ module (as opposed to just their python files)
 
 from .user import *  # noqa
 from .candidate import *  # noqa
+from .demographic import *  # noqa
 from .miscellaneous import *  # noqa
