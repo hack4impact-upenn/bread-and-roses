@@ -29,7 +29,7 @@ def new_donor():
             user=current_user,
             first_name=form.first_name.data,
             last_name=form.last_name.data,
-            contact_date=form.contact_data.data,
+            contact_date=form.contact_date.data,
             address=form.address.data,
             phone_number=form.phone_number.data,
             email=form.email.data,
