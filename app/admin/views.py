@@ -3,12 +3,12 @@ from flask_login import current_user, login_required
 from flask_rq import get_queue
 
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
-                    NewUserForm)
+                    NewUserForm, NewCandidateForm, DemographicForm)
 from . import admin
 from .. import db
 from ..decorators import admin_required
 from ..email import send_email
-from ..models import Role, User, EditableHTML
+from ..models import Role, User, Candidate, Demographic, EditableHTML
 
 
 @admin.route('/')
@@ -44,19 +44,34 @@ def new_user():
 @admin_required
 def new_candidate():
     """Create a new candiate."""
-    form = NewUserForm()
+    form = NewCandidateForm()
+    print(str(form.demographic.race.choices))
+    print('race: ' + str(form.demographic.data))
     if form.validate_on_submit():
-        user = User(
-            role=form.role.data,
+        demographic = Demographic(
+            race=form.demographic.data.race.data,
+            gender=form.demographic.data.gender.data,
+            age=form.demographic.data.age.data,
+            sexual_orientation=form.demographic.data.sexual_orientation.data,
+            soc_class=form.demographic.data.soc_class.data
+        )
+        candidate = Candidate(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
-            password=form.password.data)
-        db.session.add(user)
+            phone_number=form.phone_number.data,
+            source=form.source.data,
+            staff_contact=form.staff_contact.data,
+            notes=form.notes.data,
+            demographic=demographic,
+            demographic_id=demographic.id
+            )
+        db.session.add(demographic)
+        db.session.add(candidate)
         db.session.commit()
-        flash('User {} successfully created'.format(user.full_name()),
+        flash('Candidate {} successfully created'.format(candidate.first_name),
               'form-success')
-    return render_template('admin/new_user.html', form=form)
+    return render_template('admin/new_candidate.html', form=form)
 
 
 @admin.route('/invite-user', methods=['GET', 'POST'])
