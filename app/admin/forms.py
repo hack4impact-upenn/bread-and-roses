@@ -56,3 +56,18 @@ class NewUserForm(InviteUserForm):
     password2 = PasswordField('Confirm password', validators=[InputRequired()])
 
     submit = SubmitField('Create')
+
+
+class NewCandidateForm(Form):
+    password = PasswordField(
+        'Password',
+        validators=[
+            InputRequired(), EqualTo('password2', 'Passwords must match.')
+        ])
+    password2 = PasswordField('Confirm password', validators=[InputRequired()])
+
+    first_name = StringField(
+        'First name', validators=[InputRequired(), Length(1, 64)])
+    last_name = StringField(
+        'Last name', validators=[InputRequired(), Length(1, 64)])
+    submit = SubmitField('Create')
