@@ -30,7 +30,23 @@
                     {{ f.render_form_field(form.last_name) }}
                 </div>
 
-                {{ f.render_form_field(form.email) }}
+                <div class="two fields">
+                    {{ f.render_form_field(form.email) }}
+                    {{ f.render_form_field(form.phone_number) }}
+                </div>
+
+                {{ f.render_form_field(form.address) }}
+
+                <div class="two fields">
+                    {{ f.render_form_field(form.contact_date) }}
+                    {{ f.render_form_field(form.amount_asking_for) }}
+                </div>
+
+                <div class="three fields">
+                    {{ f.render_form_field(form.interested_in_future_gp) }}
+                    {{ f.render_form_field(form.want_to_learn_about_brf_guarantees) }}
+                    {{ f.render_form_field(form.interested_in_volunteering) }}
+                </div>
 
 
                 {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
