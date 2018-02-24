@@ -9,27 +9,35 @@ from .. import db, login_manager
 
 
 class Race(enum.Enum):
-    BLACK = 0
-    WHITE = 1
-    ASIAN = 2
-    LATINX = 3
-    NATIVE_AMERICAN = 4
+    # @classmethod
+    # def choices(c)
+    #     return [(choice, choice.value) for choice in c]
+    NOT_SPECIFIED = 0
+    BLACK = 1
+    WHITE = 2
+    ASIAN = 3
+    LATINX = 4
+    NATIVE_AMERICAN = 5
+
+
+class Class(enum.Enum):
+    NOT_SPECIFIED = 0
+    LOW = 1
+    MIDDLE = 2
+    UPPER = 3
 
 
 class Gender(enum.Enum):
-    WOMAN = 0
-    MAN = 1
-    NON_BINARY = 2
+    NOT_SPECIFIED = 0
+    WOMAN = 1
+    MAN = 2
+    NON_BINARY = 3
 
 
-class SexualOriention(enum.Enum):
-    LGBTQ = 0
-    STRAIGHT = 1
-
-class Class(enum.Enum):
-    LOW = 0
-    MIDDLE = 1
-    UPPER = 2
+class SexualOrientation(enum.Enum):
+    NOT_SPECIFIED = 0
+    LGBTQ = 1
+    STRAIGHT = 2
 
 
 class Demographic(db.Model):
@@ -38,7 +46,7 @@ class Demographic(db.Model):
     race = db.Column(db.Enum(Race))
     gender = db.Column(db.Enum(Gender))
     age = db.Column(db.Integer)
-    sexual_orientation = db.Column(db.Enum(SexualOriention))
+    sexual_orientation = db.Column(db.Enum(SexualOrientation))
     soc_class = db.Column(db.Enum(Class))
 
     candidate = db.relationship('Candidate', uselist=False, back_populates='demographic')
