@@ -49,11 +49,11 @@ def new_candidate():
     print('race: ' + str(form.demographic.data))
     if form.validate_on_submit():
         demographic = Demographic(
-            race=form.demographic.data.race.data,
-            gender=form.demographic.data.gender.data,
-            age=form.demographic.data.age.data,
-            sexual_orientation=form.demographic.data.sexual_orientation.data,
-            soc_class=form.demographic.data.soc_class.data
+            race=form.demographic.race.data,
+            gender=form.demographic.gender.data,
+            age=form.demographic.age.data,
+            sexual_orientation=form.demographic.sexual_orientation.data,
+            soc_class=form.demographic.soc_class.data
         )
         candidate = Candidate(
             first_name=form.first_name.data,

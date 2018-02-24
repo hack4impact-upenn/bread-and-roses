@@ -52,6 +52,11 @@
                 </div>
 
                 <br/>
+                {% for field in form.demographic %}
+                    {% if field.type == 'SelectField' or field.type=='IntegerField' %}
+                        {{ f.render_form_field(field) }}
+                    {% endif %}
+                {% endfor %}
 
                 {{ f.render_form_field(form.interested_in_future_gp) }}
                 {{ f.render_form_field(form.want_to_learn_about_brf_guarantees) }}

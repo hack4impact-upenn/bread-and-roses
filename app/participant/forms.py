@@ -1,10 +1,12 @@
 from flask_wtf import Form
 from wtforms import ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import (PasswordField, StringField, SubmitField, DateField,
-                            IntegerField, BooleanField)
-from wtforms.fields.html5 import EmailField, TelField
+from wtforms.fields import (PasswordField, StringField, SubmitField,
+                            IntegerField, BooleanField, FormField)
+from wtforms.fields.html5 import EmailField, TelField, DateField
 from wtforms.validators import Email, EqualTo, InputRequired, Length, NumberRange
+
+from ..admin.forms import DemographicForm
 
 
 class NewDonorForm(Form):
@@ -46,5 +48,7 @@ class NewDonorForm(Form):
 
     interested_in_volunteering = BooleanField(
         'Interested in volunteering with BRF')
+
+    demographic = FormField(DemographicForm)
 
     submit = SubmitField('Create')

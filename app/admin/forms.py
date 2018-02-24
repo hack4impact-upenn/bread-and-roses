@@ -61,26 +61,28 @@ class NewUserForm(InviteUserForm):
 class DemographicForm(Form):
     race = SelectField(
         'Race',
-        choices=[(i, choice.name) for (i, choice) in enumerate(Race)],
-        default=0
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Race],
+        # default=0,
         # coerce=int,
         # validators=[InputRequired()]
     )
     soc_class = SelectField(
         'Class',
-        choices=[(choice, choice.name) for choice in Class],
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Class],
+        default=0,
         # coerce=int,
         # validators=[InputRequired()]
     )
     gender = SelectField(
         'Gender',
-        choices=[(choice, choice.name) for choice in Gender],
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Gender],
         # coerce=int,
         # validators=[InputRequired()]
     )
     sexual_orientation = SelectField(
         'Sexual Orientation',
-        choices=[(choice, choice.name) for choice in SexualOrientation],
+        choices=[(choice.name, choice.name.replace('_', ' ').title()
+                  if choice.name != 'LGBTQ' else 'LGBTQ') for choice in SexualOrientation],
         # coerce=int,
         # validators=[InputRequired()]
     )

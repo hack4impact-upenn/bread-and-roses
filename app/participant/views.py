@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from .forms import NewDonorForm
 from . import participant
 from .. import db
-from ..models import Donor, Status, Demographic
+from ..models import Donor, Demographic, DonorStatus
 
 
 @participant.route('/')
@@ -20,9 +20,14 @@ def index():
 def new_donor():
     """Create a new donor."""
     form = NewDonorForm()
+    #raise
     if form.validate_on_submit():
         demographic = Demographic(
-
+            race=form.demographic.race.data,
+            gender=form.demographic.gender.data,
+            age=form.demographic.age.data,
+            sexual_orientation=form.demographic.sexual_orientation.data,
+            soc_class=form.demographic.soc_class.data
         )
 
         donor = Donor(
@@ -41,7 +46,7 @@ def new_donor():
             want_to_learn_about_brf_guarantees=form.want_to_learn_about_brf_guarantees.data,
             interested_in_volunteering=form.interested_in_volunteering.data,
 
-            status=Status.ASKING,
+            status=DonorStatus.ASKING,
             amount_pledged=0,
             amount_received=0,
 
