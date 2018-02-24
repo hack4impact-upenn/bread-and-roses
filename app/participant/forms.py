@@ -22,8 +22,17 @@ class NewDonorForm(Form):
     contact_date = DateField(
         'Date of Contact', validators=[InputRequired()])
 
-    address = StringField(
-        'Address', validators=[InputRequired()])
+    street_address = StringField(
+        'Street Address', validators=[InputRequired()])
+
+    city = StringField(
+        'City', validators=[InputRequired()])
+
+    state = StringField(
+        'State', validators=[InputRequired()])
+
+    zipcode = StringField(
+        'Zipcode', validators=[InputRequired()])
 
     amount_asking_for = IntegerField(
         'Amount asking for ($)',

@@ -35,18 +35,27 @@
                     {{ f.render_form_field(form.phone_number) }}
                 </div>
 
-                {{ f.render_form_field(form.address) }}
+                <br/>
+
+                {{ f.render_form_field(form.street_address) }}
+                <div class="three fields">
+                  {{ f.render_form_field(form.city) }}
+                  {{ f.render_form_field(form.state) }}
+                  {{ f.render_form_field(form.zipcode) }}
+                </div>
+
+                <br/>
 
                 <div class="two fields">
                     {{ f.render_form_field(form.contact_date) }}
                     {{ f.render_form_field(form.amount_asking_for) }}
                 </div>
 
-                <div class="three fields">
-                    {{ f.render_form_field(form.interested_in_future_gp) }}
-                    {{ f.render_form_field(form.want_to_learn_about_brf_guarantees) }}
-                    {{ f.render_form_field(form.interested_in_volunteering) }}
-                </div>
+                <br/>
+
+                {{ f.render_form_field(form.interested_in_future_gp) }}
+                {{ f.render_form_field(form.want_to_learn_about_brf_guarantees) }}
+                {{ f.render_form_field(form.interested_in_volunteering) }}
 
 
                 {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
