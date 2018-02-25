@@ -61,30 +61,21 @@ class NewUserForm(InviteUserForm):
 class DemographicForm(Form):
     race = SelectField(
         'Race',
-        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Race],
-        # default=0,
-        # coerce=int,
-        # validators=[InputRequired()]
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Race]
     )
     soc_class = SelectField(
         'Class',
         choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Class],
-        default=0,
-        # coerce=int,
-        # validators=[InputRequired()]
+        default=0
     )
     gender = SelectField(
         'Gender',
-        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Gender],
-        # coerce=int,
-        # validators=[InputRequired()]
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Gender]
     )
     sexual_orientation = SelectField(
         'Sexual Orientation',
         choices=[(choice.name, choice.name.replace('_', ' ').title()
                   if choice.name != 'LGBTQ' else 'LGBTQ') for choice in SexualOrientation],
-        # coerce=int,
-        # validators=[InputRequired()]
     )
     age = IntegerField(
         'Age', validators=[InputRequired()])
@@ -96,7 +87,7 @@ class NewCandidateForm(Form):
     last_name = StringField(
         'Last name', validators=[InputRequired(), Length(1, 64)])
     email = EmailField(
-        'New email', validators=[InputRequired(), Length(1, 64), Email()])
+        'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
         'Phone Number', validators=[InputRequired(), Length(1, 64)])
     source = StringField(
@@ -104,8 +95,6 @@ class NewCandidateForm(Form):
     staff_contact = StringField(
         'Staff Contact', validators=[InputRequired(), Length(1, 64)])
     notes = TextAreaField(
-        'Notes', validators=[Length(1, 1024)])
+        'Notes', validators=[Length(0, 1024)])
     demographic = FormField(DemographicForm)
     submit = SubmitField('Create')
-
-

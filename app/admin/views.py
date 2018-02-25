@@ -45,8 +45,6 @@ def new_user():
 def new_candidate():
     """Create a new candiate."""
     form = NewCandidateForm()
-    print(str(form.demographic.race.choices))
-    print('race: ' + str(form.demographic.data))
     if form.validate_on_submit():
         demographic = Demographic(
             race=form.demographic.race.data,
