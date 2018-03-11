@@ -9,15 +9,13 @@ from .. import db, login_manager
 
 
 class Race(enum.Enum):
-    # @classmethod
-    # def choices(c)
-    #     return [(choice, choice.value) for choice in c]
     NOT_SPECIFIED = 0
     BLACK = 1
     WHITE = 2
     ASIAN = 3
     LATINX = 4
     NATIVE_AMERICAN = 5
+    MULTI_RACIAL = 6
 
 
 class Class(enum.Enum):

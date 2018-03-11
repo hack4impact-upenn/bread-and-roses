@@ -66,10 +66,11 @@ class DemographicForm(Form):
         # coerce=int,
         # validators=[InputRequired()]
     )
+
     soc_class = SelectField(
         'Class',
         choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Class],
-        default=0,
+        # default=0,
         # coerce=int,
         # validators=[InputRequired()]
     )
@@ -78,6 +79,7 @@ class DemographicForm(Form):
         choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Gender],
         # coerce=int,
         # validators=[InputRequired()]
+        # default=0
     )
     sexual_orientation = SelectField(
         'Sexual Orientation',
@@ -96,7 +98,7 @@ class NewCandidateForm(Form):
     last_name = StringField(
         'Last name', validators=[InputRequired(), Length(1, 64)])
     email = EmailField(
-        'New email', validators=[InputRequired(), Length(1, 64), Email()])
+        'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
         'Phone Number', validators=[InputRequired(), Length(1, 64)])
     source = StringField(
@@ -104,8 +106,6 @@ class NewCandidateForm(Form):
     staff_contact = StringField(
         'Staff Contact', validators=[InputRequired(), Length(1, 64)])
     notes = TextAreaField(
-        'Notes', validators=[Length(1, 1024)])
+        'Notes', validators=[Length(0, 1024)])
     demographic = FormField(DemographicForm)
     submit = SubmitField('Create')
-
-
