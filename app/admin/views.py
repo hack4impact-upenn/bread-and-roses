@@ -8,7 +8,7 @@ from . import admin
 from .. import db
 from ..decorators import admin_required
 from ..email import send_email
-from ..models import Role, User, Candidate, Demographic, EditableHTML
+from ..models import Role, User, Candidate, Demographic, EditableHTML, Status
 
 
 @admin.route('/')
@@ -37,6 +37,15 @@ def new_user():
         flash('User {} successfully created'.format(user.full_name()),
               'form-success')
     return render_template('admin/new_user.html', form=form)
+
+
+@admin.route('/participants')
+@login_required
+@admin_required
+def participants():
+    """Manage participants"""
+    participants = Candidate.query.all()
+    return render_template('admin/participant_management.html', Status=Status, participants=participants)
 
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])
