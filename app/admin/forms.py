@@ -98,3 +98,22 @@ class NewCandidateForm(Form):
         'Notes', validators=[Length(0, 1024)])
     demographic = FormField(DemographicForm)
     submit = SubmitField('Create')
+
+
+class EditParticipantForm(Form):
+    first_name = StringField(
+        'First name', validators=[InputRequired(), Length(1, 64)])
+    last_name = StringField(
+        'Last name', validators=[InputRequired(), Length(1, 64)])
+    email = EmailField(
+        'Email', validators=[InputRequired(), Length(1, 64), Email()])
+    phone_number = StringField(
+        'Phone Number', validators=[InputRequired(), Length(1, 64)])
+    source = StringField(
+        'Source', validators=[InputRequired(), Length(1, 256)])
+    staff_contact = StringField(
+        'Staff Contact', validators=[InputRequired(), Length(1, 64)])
+    notes = TextAreaField(
+        'Notes', validators=[Length(0, 1024)])
+    demographic = FormField(DemographicForm)
+    submit = SubmitField('Save')

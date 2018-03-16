@@ -72,6 +72,42 @@ def new_candidate():
     return render_template('admin/new_candidate.html', form=form)
 
 
+@admin.route('/edit-participant/<int:part_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_participant(part_id):
+    """Create a edit participant."""
+    part = Candidate.query.filter_by(id=part_id).first();
+    if part is None:
+        abort(404)
+    form = EditParticipantForm()
+    if form.validate_on_submit():
+        form.populate_obj(part_id)
+        part.first_name = form.first_name.data
+        part.last_name = form.last_name.data
+        part.email = form.email.data
+        part.phone_number = form.phone_number.data
+        part.source = form.source.data
+        part.staff_contact = form.staff_contact.data
+        part.notes = form.notes.data
+        part.status = form.status.data
+        part.assigned_term = form.assigned_term.data
+        
+        demographic = part.demographic
+        demographic.race = form.demographic.race.data
+        demographic.gender = form.demographic.gender.data
+        demographic.age = form.demographic.age.data
+        demographic.sexual_orientation = form.demographic.sexual_orientation.data
+        demographic.soc_class = form.demographic.soc_class
+        
+        db.session.add(demographic)
+        db.session.add(part)
+        db.session.commit()
+        flash('Particpant {} successfully saved'.format(part.first_name),
+              'form-success')
+    return render_template('admin/edit_participant.html', form=form)
+
+
 @admin.route('/invite-user', methods=['GET', 'POST'])
 @login_required
 @admin_required
