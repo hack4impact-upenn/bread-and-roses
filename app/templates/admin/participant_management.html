@@ -1,0 +1,149 @@
+
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="pushable">
+    <div class="ui visible sidebar vertical menu participant-menu">
+        <div class="ui search item" style="background-color: #67A7FD;">
+            <div class="ui left icon input">
+                <i class="search icon"></i>
+                <input id="search-users" type="text" placeholder="Search">
+            </div>
+        </div>
+    </div>
+
+        <div class="ui main menu participant-header" style="margin-top:6px">
+            <div class="right menu">
+                <a class="item" style="color: #67A7FD">
+                    Demographics
+                </a>
+            </div>
+        </div>
+        <div class="participant-content" style="margin-right: 20px; margin-left: 320px;">
+            {% for p in participants | sort(attribute='last_name') %}
+                <div class="ui small modal" id="modal-{{ p.id }}">
+                    <i class="close icon"></i>
+                    <div class="header">
+                        {{ p.first_name }} {{ p.last_name }}
+                    </div>
+                    <div class="content">
+                        <div><span class="bold">Email:</span> {{ p.email }}</div>
+                        <div><span class="bold">Phone:</span> {{ p.phone_number }}</div>
+
+                        <br />
+
+                        <div><span class="bold">Source:</span> {{ p.source }}</div>
+                        <div><span class="bold">Staff contact:</span> {{ p.staff_contact }}</div>
+                        <div><span class="bold">Application:</span> {{ 'Y' if p.applied else 'N' }}</div>
+
+                        <br />
+
+                        <div><span class="bold">Race:</span> 
+                            {{ p.demographic.race.name.replace('_', ' ').title() }}
+                        </div>
+                        <div><span class="bold">Gender:</span> 
+                            {{ p.demographic.gender.name.replace('_', ' ').title() }}
+                        </div>
+                        <div><span class="bold">Age:</span> 
+                            {{ p.demographic.age }}
+                        </div>
+                        <div><span class="bold">Gender:</span> 
+                            {{ 'LGBTQ' if p.demographic.sexual_orientation.name == 'LGBTQ' else p.demographic.sexual_orientation.name.replace('_', ' ').title() }}
+                        </div>
+                        <div><span class="bold">Class (low, middle, upper, NA):</span>
+                            {{ p.demographic.soc_class.name.replace('_', ' ').title() }}
+                        </div>
+
+                        <br />
+
+                        <div><span class="bold">Amount donated:</span> <span style="color: green;">${{ p.amount_donated }}</span></div>
+
+                        <br />
+
+                        <div><span class="bold">Notes:</span><br/>
+                            {{ p.notes }}
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <div class="ui blue edit button">
+                            <i class="edit icon"></i>
+                            Edit
+                        </div>
+                        <div class="ui red button">
+                            <i class="remove icon"></i>
+                            Delete
+                        </div>
+                    </div>
+                </div>
+                <script>$('#modal-{{ p.id }}').modal()</script>
+                <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
+                    <div class="participant">
+                        <div class="partseg1">
+                            {% if not p.status or p.status == Status.PENDING %}
+                                <i class="dot circle outline icon" style="color: #FAC334;"></i>
+                            {% elif p.status == Status.ASSIGNED %}
+                                <i class="check circle outline icon" style="color: #68FF4F;"></i>
+                            {% elif p.status == Status.REJECTED %}
+                                <i class="times circle outline icon" style="color: #FA3434;"></i>
+                            {% endif %}
+                        </div>
+                        <div class="partseg2">
+                            <div class="partname">{{ p.first_name }} {{ p.last_name }}</div>
+                            <div class="partterm">{{ p.assigned_term }}</div>
+                        </div>
+                        <div class="partseg">
+                            <div class="partinfo">
+                                {{ p.demographic.race.name.replace('_', ' ') }}
+                            </div>
+                        </div>
+                        <div class="partseg">
+                            <div class="partinfo">
+                                {{ p.demographic.soc_class.name.replace('_', ' ') }}
+                            </div>
+                        </div>
+                        <div class="partseg">
+                            <div class="partinfo">
+                                {{ p.demographic.age }} yr old
+                            </div>
+                        </div>
+                        <div class="partseg">
+                            <div class="partinfo">
+                                {{ p.demographic.gender.name.replace('_', ' ') }}
+                            </div>
+                        </div>
+                        <div class="partseg">
+                            <div class="partinfo">
+                                {{ p.demographic.sexual_orientation.name.replace('_', ' ') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#search-users').keyup(function () {
+                var searchText = $(this).val();
+                if (searchText.length > 0) {
+                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
+                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
+                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
+                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+                } else {
+                    $('td.positive').removeClass('positive');
+                    $('tr.hidden').removeClass('hidden').show();
+                }
+            });
+
+            $('#select-role').dropdown({
+                onChange: function (value, text, $selectedItem) {
+                    $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
+                    $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

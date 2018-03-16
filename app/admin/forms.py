@@ -61,21 +61,32 @@ class NewUserForm(InviteUserForm):
 class DemographicForm(Form):
     race = SelectField(
         'Race',
-        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Race]
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Race],
+        # default=0,
+        # coerce=int,
+        # validators=[InputRequired()]
     )
+
     soc_class = SelectField(
         'Class',
         choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Class],
-        default=0
+        # default=0,
+        # coerce=int,
+        # validators=[InputRequired()]
     )
     gender = SelectField(
         'Gender',
-        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Gender]
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Gender],
+        # coerce=int,
+        # validators=[InputRequired()]
+        # default=0
     )
     sexual_orientation = SelectField(
         'Sexual Orientation',
         choices=[(choice.name, choice.name.replace('_', ' ').title()
                   if choice.name != 'LGBTQ' else 'LGBTQ') for choice in SexualOrientation],
+        # coerce=int,
+        # validators=[InputRequired()]
     )
     age = IntegerField(
         'Age', validators=[InputRequired()])

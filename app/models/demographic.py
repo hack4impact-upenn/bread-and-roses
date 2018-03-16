@@ -46,4 +46,6 @@ class Demographic(db.Model):
     age = db.Column(db.Integer)
     sexual_orientation = db.Column(db.Enum(SexualOrientation))
     soc_class = db.Column(db.Enum(Class))
+
     candidate = db.relationship('Candidate', uselist=False, back_populates='demographic')
+    donor = db.relationship('Donor', uselist=False, back_populates='demographic')
