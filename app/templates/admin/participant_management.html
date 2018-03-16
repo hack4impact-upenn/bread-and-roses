@@ -21,7 +21,25 @@
         </div>
         <div class="participant-content" style="margin-right: 20px; margin-left: 320px;">
             {% for p in participants | sort(attribute='last_name') %}
-                <div class="ui horizontal segments" onclick="">
+                <div class="ui modal" id="modal-{{ p.id }}">
+                    
+                    <div class="content">
+                        <h2>{{ p.first_name }} {{ p.last_name }}</h1>
+                    </div>
+                    <div class="actions">
+                        <div class="ui blue edit button">
+                            <i class="edit icon"></i>
+                            Edit
+                        </div>
+                        <div class="ui red cancel button">
+                            <i class="remove icon"></i>
+                            Delete
+                        </div>
+                    </div>
+
+                </div>
+                <script>$('#modal-{{ p.id }}').modal()</script>
+                <div class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
                     <div class="participant">
                         <div class="partseg1">
                             {% if not p.status or p.status == Status.PENDING %}
