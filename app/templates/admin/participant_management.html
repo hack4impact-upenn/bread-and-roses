@@ -10,6 +10,10 @@
                 <input id="search-users" type="text" placeholder="Search">
             </div>
         </div>
+
+        <a href="{{ url_for('admin.new_candidate') }}" class="item" style="text-align: center; font-weight: bold; color: #2681FC;">
+            New Participant +
+        </a>
     </div>
 
         <div class="ui main menu participant-header" style="margin-top:6px">
@@ -21,6 +25,26 @@
         </div>
         <div class="participant-content" style="margin-right: 20px; margin-left: 320px;">
             {% for p in participants | sort(attribute='last_name') %}
+                <div class="ui mini modal" id="delete-{{ p.id }}">
+                    <div class="ui header">
+                        Warning!
+                    </div>
+                    <div class="content">
+                        <p>This action is irreversible! Are you sure you want to delete {{ p.first_name }} {{ p.last_name }}?</p>
+                    </div>
+                    <div class="actions">
+                        <div class="ui blue cancel button">
+                            <i class="arrow alternate circle left outline icon"></i>
+                            No, cancel!
+                        </div>
+                        <a href="{{ url_for('admin.delete_participant', participant_id=p.id) }}">
+                            <div class="ui red ok button">
+                                <i class="trash alternate icon"></i>
+                                Yes, delete {{ p.first_name }}
+                            </div>
+                        </a>
+                    </div>
+                </div>
                 <div class="ui small modal" id="modal-{{ p.id }}">
                     <i class="close icon"></i>
                     <div class="header">
@@ -65,17 +89,20 @@
                         </div>
                     </div>
                     <div class="actions">
-                        <div class="ui blue edit button">
-                            <i class="edit icon"></i>
-                            Edit
-                        </div>
-                        <div class="ui red button">
+                        <a href="{{ url_for('admin.edit_participant', part_id=p.id) }}">
+                            <div class="ui blue edit button">
+                                <i class="edit icon"></i>
+                                Edit
+                            </div>
+                        </a>
+                        <div class="ui red button" onclick="$('#delete-{{ p.id }}').modal('show')">
                             <i class="remove icon"></i>
                             Delete
                         </div>
                     </div>
                 </div>
-                <script>$('#modal-{{ p.id }}').modal()</script>
+                <script>$('#modal-{{ p.id }}').modal({ allowMultiple: true })</script>
+                <script>$('#delete-{{ p.id }}').modal({ allowMultiple: true })</script>
                 <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
                     <div class="participant">
                         <div class="partseg1">
