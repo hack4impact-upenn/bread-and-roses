@@ -104,3 +104,7 @@ body {
   font-size: 10px;
   color: #828282;
 }
+
+.bold {
+  font-weight: 900
+}
