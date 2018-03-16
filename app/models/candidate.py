@@ -27,6 +27,7 @@ class Candidate(db.Model):
     status = db.Column(db.Integer)
     assigned_term = db.Column(db.String(64))
     amount_donated = db.Column(db.Integer)
+    applied = db.Column(db.Boolean)
     demographic_id = db.Column(db.Integer, db.ForeignKey('demographics.id'))
     demographic = db.relationship('Demographic', back_populates='candidate')
     user_account = db.relationship('User', uselist = False, back_populates='candidate')

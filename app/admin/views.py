@@ -205,6 +205,18 @@ def delete_user(user_id):
     return redirect(url_for('admin.registered_users'))
 
 
+@admin.route('/participant/<int:participant_id>/_delete')
+@login_required
+@admin_required
+def delete_participant(participant_id):
+    """Delete a participant."""
+    p = Candidate.query.filter_by(id=participant_id).first()
+    db.session.delete(p)
+    db.session.commit()
+    flash('Successfully deleted participant %s.' % p.first_name, 'success')
+    return redirect(url_for('admin.participants'))
+
+
 @admin.route('/_update_editor_contents', methods=['POST'])
 @login_required
 @admin_required
