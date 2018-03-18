@@ -7,7 +7,7 @@
         <div class="ui search item" style="background-color: #67A7FD;">
             <div class="ui left icon input">
                 <i class="search icon"></i>
-                <input id="search-users" type="text" placeholder="Search">
+                <input id="search-participants" type="text" placeholder="Search participants">
             </div>
         </div>
 
@@ -62,16 +62,16 @@
 
                         <br />
 
-                        <div><span class="bold">Race:</span> 
+                        <div><span class="bold">Race:</span>
                             {{ p.demographic.race.name.replace('_', ' ').title() }}
                         </div>
-                        <div><span class="bold">Gender:</span> 
+                        <div><span class="bold">Gender:</span>
                             {{ p.demographic.gender.name.replace('_', ' ').title() }}
                         </div>
-                        <div><span class="bold">Age:</span> 
+                        <div><span class="bold">Age:</span>
                             {{ p.demographic.age }}
                         </div>
-                        <div><span class="bold">Gender:</span> 
+                        <div><span class="bold">Gender:</span>
                             {{ 'LGBTQ' if p.demographic.sexual_orientation.name == 'LGBTQ' else p.demographic.sexual_orientation.name.replace('_', ' ').title() }}
                         </div>
                         <div><span class="bold">Class (low, middle, upper, NA):</span>
@@ -151,25 +151,25 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#search-users').keyup(function () {
-                var searchText = $(this).val();
-                if (searchText.length > 0) {
-                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
-                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
-                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
-                } else {
-                    $('td.positive').removeClass('positive');
-                    $('tr.hidden').removeClass('hidden').show();
-                }
+          $('#search-participants').keyup(function () {
+              var searchText = $(this).val();
+              if (searchText.length > 0) {
+                  $('.participant:icontains(' + searchText + ')').addClass('positive');
+                  $('.participant.positive').not(':icontains(' + searchText + ')').removeClass('positive');
+                  $('.participant').not(':icontains(' + searchText + ')').closest('div').addClass('hidden').hide();
+                  $('div.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+              } else {
+                  $('.participant.positive').removeClass('positive');
+                  $('div.hidden').removeClass('hidden').show();
+              }
             });
 
-            $('#select-role').dropdown({
-                onChange: function (value, text, $selectedItem) {
-                    $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-                    $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
-                }
-            });
+            // $('#select-role').dropdown({
+            //     onChange: function (value, text, $selectedItem) {
+            //         $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
+            //         $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
+            //     }
+            // });
         });
 
     </script>

@@ -7,11 +7,9 @@
         <div class="ui search item" style="background-color: #67A7FD;">
             <div class="ui left icon input">
                 <i class="search icon"></i>
-                <input id="search-users" type="text" placeholder="Search">
+                <input id="search-donors" type="text" placeholder="Search donors">
             </div>
         </div>
-
-
     </div>
 
         <div class="ui main menu donor-header" style="margin-top:6px">
@@ -132,25 +130,25 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#search-users').keyup(function () {
+            $('#search-donors').keyup(function () {
                 var searchText = $(this).val();
                 if (searchText.length > 0) {
-                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
-                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
-                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+                    $('.donor:icontains(' + searchText + ')').addClass('positive');
+                    $('.donor.positive').not(':icontains(' + searchText + ')').removeClass('positive');
+                    $('.donor').not(':icontains(' + searchText + ')').closest('div').addClass('hidden').hide();
+                    $('div.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
                 } else {
-                    $('td.positive').removeClass('positive');
-                    $('tr.hidden').removeClass('hidden').show();
+                    $('.donor.positive').removeClass('positive');
+                    $('div.hidden').removeClass('hidden').show();
                 }
             });
 
-            $('#select-role').dropdown({
-                onChange: function (value, text, $selectedItem) {
-                    $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-                    $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
-                }
-            });
+            // $('#select-role').dropdown({
+            //     onChange: function (value, text, $selectedItem) {
+            //         $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
+            //         $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
+            //     }
+            // });
         });
 
     </script>
