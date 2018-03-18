@@ -6,7 +6,7 @@ from wtforms.fields.html5 import EmailField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 
 from .. import db
-from ..models import Role, User, Race, Class, Gender, SexualOrientation
+from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation
 
 
 class ChangeUserEmailForm(Form):
@@ -103,10 +103,8 @@ class NewCandidateForm(Form):
         'Phone Number', validators=[InputRequired(), Length(1, 64)])
     assigned_term = SelectField(
         'Term',
-        # need to call some sort of function from the Participant model to determine string replace
         # increment the semester each time -> up to 10
-
-        choices=[(i, ) for i in range(10)],
+        choices=[(i, Candidate.getTermString(i)) for i in range(10)],
         # default=0,
         coerce=int, # we only care about the int part
         # validators=[InputRequired()]

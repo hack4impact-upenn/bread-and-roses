@@ -66,7 +66,7 @@ class Candidate(db.Model):
         else:
             result = "Fall "
 
-        return result + (now.year + sems/2)
+        return result + str(now.year + sems/2);
 
 
     def filter(**kwargs):
