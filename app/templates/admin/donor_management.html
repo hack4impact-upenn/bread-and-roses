@@ -1,0 +1,157 @@
+
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="pushable">
+    <div class="ui visible sidebar vertical menu donor-menu">
+        <div class="ui search item" style="background-color: #67A7FD;">
+            <div class="ui left icon input">
+                <i class="search icon"></i>
+                <input id="search-users" type="text" placeholder="Search">
+            </div>
+        </div>
+
+
+    </div>
+
+        <div class="ui main menu donor-header" style="margin-top:6px">
+            <div class="right menu">
+                <a class="item" style="color: #67A7FD">
+                    Demographics
+                </a>
+            </div>
+        </div>
+        <div class="donor-content" style="margin-right: 20px; margin-left: 320px;">
+            {% for d in donors | sort(attribute='last_name') %}
+                <div class="ui small modal" id="modal-{{ d.id }}">
+                    <i class="close icon"></i>
+                    <div class="header">
+                        {{ d.first_name }} {{ d.last_name }}
+                    </div>
+                    <div class="content">
+                        <div><span class="bold">GP Participant Contact:</span> {{ d.user.full_name() }}</div>
+                        <div><span class="bold">Status:</span> {{ d.status_name() }}</div>
+                        {% if not d.status or d.status == DonorStatus.ASKING %}
+                          <div><span class="bold">Amount asking for:</span> {{ d.amount_asking_for }}</div>
+                        {% elif d.status == DonorStatus.PLEDGED %}
+                          <div><span class="bold">Amount pledged:</span> {{ d.amount_pledged }}</div>
+                        {% elif d.status == DonorStatus.RECEIVED %}
+                          <div><span class="bold">Amount received:</span> {{ d.amount_received }}</div>
+                          <div><span class="bold">Date received:</span> {{ d.date_received }}</div>
+                        {% endif %}
+
+                        <br/>
+
+                        <div><span class="bold">Email:</span> {{ d.email }}</div>
+                        <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
+
+                        <br />
+
+                        <div><span class="bold">Race:</span>
+                            {{ d.demographic.race.name.replace('_', ' ').title() }}
+                        </div>
+                        <div><span class="bold">Gender:</span>
+                            {{ d.demographic.gender.name.replace('_', ' ').title() }}
+                        </div>
+                        <div><span class="bold">Age:</span>
+                            {{ d.demographic.age }}
+                        </div>
+                        <div><span class="bold">Gender:</span>
+                            {{ 'LGBTQ' if d.demographic.sexual_orientation.name == 'LGBTQ' else d.demographic.sexual_orientation.name.replace('_', ' ').title() }}
+                        </div>
+                        <div><span class="bold">Class (low, middle, upper, NA):</span>
+                            {{ d.demographic.soc_class.name.replace('_', ' ').title() }}
+                        </div>
+
+                        <br />
+
+                        <div><span class="bold">Interested in future Giving Project:</span>
+                          {{ 'Yes' if d.interested_in_future_gp else 'No' }}
+                        </div>
+                        <div><span class="bold">Wants to learn about Bread and Roses Fund Guarantees:</span>
+                          {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
+                        </div>
+                        <div><span class="bold">Interested in volunteering:</span>
+                          {{ 'Yes' if d.interested_in_volunteering else 'No' }}
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <a href="{{ url_for('admin.received_donation', donor_id=d.id) }}">
+                            <div class="ui green edit button">
+                                <i class="check icon"></i>
+                                Mark A Donation As Received
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
+                <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ d.id }}').modal('show')">
+                    <div class="donor">
+                        <div class="partseg1">
+                            {% if not d.status or d.status == DonorStatus.ASKING %}
+                                <i class="question circle outline icon" style="color: #FAC334;"></i>
+                            {% elif d.status == DonorStatus.PLEDGED %}
+                                <i class="dot circle outline icon" style="color: #FAC334;"></i>
+                            {% elif d.status == DonorStatus.RECEIVED %}
+                                <i class="check circle outline icon" style="color: #FAC334;"></i>
+                            {% endif %}
+                        </div>
+                        <div class="partseg2">
+                            <div class="partname">{{ d.first_name }} {{ d.last_name }}</div>
+                        </div>
+                        <div class="partseg">
+                            <div class="demographic-info">
+                                {{ d.demographic.race.name.replace('_', ' ') }}
+                            </div>
+                        </div>
+                        <div class="partseg">
+                            <div class="demographic-info">
+                                {{ d.demographic.soc_class.name.replace('_', ' ') }}
+                            </div>
+                        </div>
+                        <div class="partseg">
+                            <div class="demographic-info">
+                                {{ d.demographic.age }} yr old
+                            </div>
+                        </div>
+                        <div class="partseg">
+                            <div class="demographic-info">
+                                {{ d.demographic.gender.name.replace('_', ' ') }}
+                            </div>
+                        </div>
+                        <div class="partseg">
+                            <div class="demographic-info">
+                                {{ d.demographic.sexual_orientation.name.replace('_', ' ') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#search-users').keyup(function () {
+                var searchText = $(this).val();
+                if (searchText.length > 0) {
+                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
+                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
+                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
+                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+                } else {
+                    $('td.positive').removeClass('positive');
+                    $('tr.hidden').removeClass('hidden').show();
+                }
+            });
+
+            $('#select-role').dropdown({
+                onChange: function (value, text, $selectedItem) {
+                    $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
+                    $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

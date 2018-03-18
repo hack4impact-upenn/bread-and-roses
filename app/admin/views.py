@@ -8,7 +8,7 @@ from . import admin
 from .. import db
 from ..decorators import admin_required
 from ..email import send_email
-from ..models import Role, User, Candidate, Demographic, EditableHTML, Status
+from ..models import Role, User, Candidate, Demographic, Donor, EditableHTML, Status, DonorStatus
 
 
 @admin.route('/')
@@ -101,20 +101,37 @@ def edit_participant(part_id):
         part.notes = form.notes.data
         part.status = form.status.data
         part.assigned_term = form.assigned_term.data
-        
+
         demographic = part.demographic
         demographic.race = form.demographic.race.data
         demographic.gender = form.demographic.gender.data
         demographic.age = form.demographic.age.data
         demographic.sexual_orientation = form.demographic.sexual_orientation.data
         demographic.soc_class = form.demographic.soc_class
-        
+
         db.session.add(demographic)
         db.session.add(part)
         db.session.commit()
         flash('Particpant {} successfully saved'.format(part.first_name),
               'form-success')
     return render_template('admin/edit_participant.html', form=form)
+
+@admin.route('/all-donors')
+@login_required
+@admin_required
+def all_donors():
+    """View and manage all donors"""
+    donors = Donor.query.all()
+    return render_template('admin/donor_management.html', DonorStatus=DonorStatus, donors=donors)
+
+@admin.route('/received-donation/<int:donor_id>')
+@login_required
+@admin_required
+def received_donation(donor_id):
+    """ Mark a donation as received for this donor. """
+    donor = Donor.query.filter_by(id=donor_id).first()
+    # TODO: receive a donation
+    return redirect(url_for('admin.all_donors'))
 
 
 @admin.route('/invite-user', methods=['GET', 'POST'])

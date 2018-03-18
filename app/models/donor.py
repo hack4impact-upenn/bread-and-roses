@@ -38,7 +38,10 @@ class Donor(db.Model):
     user = db.relationship("User", back_populates="donors")
 
     def __repr__(self):
-        return '<Donor \'%s\'>' % self.first_name % self.last_name
+        return '<Donor \'{} {}\'>'.format(self.first_name, self.last_name)
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
+
+    def status_name(self):
+        return str(self.status).split('.')[1].title()
