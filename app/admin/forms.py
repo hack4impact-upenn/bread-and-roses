@@ -101,6 +101,17 @@ class NewCandidateForm(Form):
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
         'Phone Number', validators=[InputRequired(), Length(1, 64)])
+    assigned_term = SelectField(
+        'Term',
+        # need to call some sort of function from the Participant model to determine string replace
+        # increment the semester each time -> up to 10
+
+        choices=[(i, ) for i in range(10)],
+        # default=0,
+        coerce=int, # we only care about the int part
+        # validators=[InputRequired()]
+        # number, string associated with it
+    )
     source = StringField(
         'Source', validators=[InputRequired(), Length(1, 256)])
     staff_contact = StringField(

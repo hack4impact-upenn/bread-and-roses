@@ -35,7 +35,8 @@
                 {{ f.render_form_field(form.source) }}
                 {{ f.render_form_field(form.staff_contact) }}
                 {{ f.render_form_field(form.notes) }}
-                
+                <!-- {{ f.render_form_field(form.assigned_term) }} -->
+
                 {% for field in form.demographic %}
                     {% if field.type == 'SelectField' or field.type=='IntegerField' %}
                         {{ f.render_form_field(field) }}
@@ -46,7 +47,7 @@
                 {{ f.form_message(flashes['warning'], header='Check your email.', class='warning') }}
                 {{ f.form_message(flashes['info'], header='Information', class='info') }}
                 {{ f.form_message(flashes['success'], header='Success!', class='success') }}
-                
+
                 {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
                     {{ f.render_form_field(field) }}
                 {% endfor %}
