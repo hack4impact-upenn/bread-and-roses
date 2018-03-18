@@ -122,7 +122,7 @@ def edit_participant(part_id):
 def all_donors():
     """View and manage all donors"""
     donors = Donor.query.all()
-    return render_template('admin/donor_management.html', DonorStatus=DonorStatus, donors=donors)
+    return render_template('admin/donor_management.html', DonorStatus=DonorStatus, donors=donors, demographics=Demographic.demographics_dict())
 
 @admin.route('/received-donation/<int:donor_id>')
 @login_required

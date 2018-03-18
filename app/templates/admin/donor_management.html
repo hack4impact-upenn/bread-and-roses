@@ -3,13 +3,45 @@
 
 {% block content %}
     <div class="pushable">
-    <div class="ui visible sidebar vertical menu donor-menu">
+    <div class="ui borderless visible sidebar vertical menu donor-menu">
         <div class="ui search item" style="background-color: #67A7FD;">
             <div class="ui left icon input">
                 <i class="search icon"></i>
                 <input id="search-donors" type="text" placeholder="Search donors">
             </div>
         </div>
+        <div class="item">
+          <div class="ui selection dropdown select-filter">
+            <input type="hidden" name="Donor Status">
+            <i class="dropdown icon"></i>
+            <div class="default text">Donor Status</div>
+            <div class="menu">
+              <div class="item" data-value="">All donors</div>
+              <div class="item" data-value="Asking">Asking</div>
+              <div class="item" data-value="Pledged">Pledged</div>
+              <div class="item" data-value="Received">Received</div>
+            </div>
+          </div>
+
+          <br><br><br>
+
+          <div><strong>Demographics:</strong></div> <br>
+          {% for name, list in demographics.items() %}
+            <div class="ui selection dropdown select-filter">
+              <input type="hidden" name="Donor Status">
+              <i class="dropdown icon"></i>
+              <div class="default text">{{ name }}</div>
+              <div class="menu">
+                <div class="item" data-value="">All</div>
+                {% for d in list %}
+                  <div class="item" data-value="{{ d }}">{{ d }}</div>
+                {% endfor %}
+              </div>
+            </div>
+            <br><br>
+          {% endfor %}
+        </div>
+
     </div>
 
         <div class="ui main menu donor-header" style="margin-top:6px">
@@ -28,7 +60,10 @@
                     </div>
                     <div class="content">
                         <div><span class="bold">GP Participant Contact:</span> {{ d.user.full_name() }}</div>
-                        <div><span class="bold">Status:</span> {{ d.status_name() }}</div>
+                        <div class="status">
+                          <span class="bold">Status:</span>
+                          {{ d.status_name() }}
+                        </div>
                         {% if not d.status or d.status == DonorStatus.ASKING %}
                           <div><span class="bold">Amount asking for:</span> {{ d.amount_asking_for }}</div>
                         {% elif d.status == DonorStatus.PLEDGED %}
@@ -85,6 +120,7 @@
                 <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
                 <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ d.id }}').modal('show')">
                     <div class="donor">
+                        <div class="status" hidden>{{d.status_name()}}</div>
                         <div class="partseg1">
                             {% if not d.status or d.status == DonorStatus.ASKING %}
                                 <i class="question circle outline icon" style="color: #FAC334;"></i>
@@ -135,20 +171,22 @@
                 if (searchText.length > 0) {
                     $('.donor:icontains(' + searchText + ')').addClass('positive');
                     $('.donor.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('.donor').not(':icontains(' + searchText + ')').closest('div').addClass('hidden').hide();
-                    $('div.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+                    $('.donor').not(':icontains(' + searchText + ')').closest('.segments').addClass('hidden').hide();
+                    $('.segments.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
                 } else {
                     $('.donor.positive').removeClass('positive');
-                    $('div.hidden').removeClass('hidden').show();
+                    $('.segments.hidden').removeClass('hidden').show();
                 }
             });
 
-            // $('#select-role').dropdown({
-            //     onChange: function (value, text, $selectedItem) {
-            //         $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-            //         $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
-            //     }
-            // });
+            // TODO: edit so its ANDS and ORs correctly
+            $('.select-filter').dropdown({
+                onChange: function (value, text, $selectedItem) {
+                  console.log(value)
+                    $('.donor:contains(' + value + ')').closest('.segments').removeClass('hidden').show();
+                    $('.donor').not(':contains(' + value + ')').closest('.segments').addClass('hidden').hide();
+                }
+            });
         });
 
     </script>

@@ -39,6 +39,7 @@ table.selectable tr:hover {
 .participant-menu, .donor-menu {
   width: 300px !important;
   padding-top: 5px !important;
+
 }
 
 .participant-header, .donor-header {
