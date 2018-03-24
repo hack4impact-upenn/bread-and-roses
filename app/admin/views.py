@@ -132,7 +132,7 @@ def edit_participant(part_id):
         demographic.age = form.demographic.age.data
         demographic.sexual_orientation = form.demographic.sexual_orientation.data
         demographic.soc_class = form.demographic.soc_class.data
-        
+
         db.session.add(demographic)
         db.session.add(part)
         db.session.commit()
@@ -146,7 +146,7 @@ def edit_participant(part_id):
 def all_donors():
     """View and manage all donors"""
     donors = Donor.query.all()
-    return render_template('admin/donor_management.html', DonorStatus=DonorStatus, donors=donors, demographics=Demographic.demographics_dict())
+    return render_template('admin/all_donors.html', DonorStatus=DonorStatus, donors=donors, demographics=Demographic.demographics_dict())
 
 @admin.route('/received-donation/<int:donor_id>')
 @login_required
