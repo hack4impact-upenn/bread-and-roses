@@ -33,3 +33,13 @@ class Candidate(db.Model):
     user_account = db.relationship('User', uselist = False, back_populates='candidate')
     def __repr__(self):
         return '<Candidate \'%s\'>' % self.first_name % self.last_name
+
+    def status_name(self):
+        if Status.PENDING == self.status:
+            return 'Pending'
+        elif Status.ASSIGNED == self.status:
+            return 'Assigned'
+        elif Status.REJECTED == self.status:
+            return 'Rejected'
+        else:
+            return 'None'

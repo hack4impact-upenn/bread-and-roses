@@ -166,7 +166,6 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-          
           // Hides anything with a hidden-? class and shows everything else
           const refilter = function() {
             $('.donor').closest('.segments').each(function() {
@@ -178,7 +177,7 @@
             })
           };
 
-          // Search bar filtering
+          // Search bar filtering (searches all info)
           $('#search-donors').keyup(function () {
               var searchText = $(this).val();
               if (searchText.length > 0) {

@@ -14,6 +14,37 @@
         <a href="{{ url_for('admin.new_candidate') }}" class="item" style="text-align: center; font-weight: bold; color: #2681FC;">
             New Participant +
         </a>
+        <div class="item">
+          <div class="ui selection dropdown select-filter" id="select-status">
+            <input type="hidden" name="Participant Status">
+            <i class="dropdown icon"></i>
+            <div class="default text">Participant Status</div>
+            <div class="menu">
+              <div class="item" data-value="">All participants</div>
+              <div class="item" data-value="Pending">Pending</div>
+              <div class="item" data-value="Assigned">Assigned</div>
+              <div class="item" data-value="Rejected">Rejected</div>
+            </div>
+          </div>
+
+          <br><br><br>
+
+          <div><strong>Demographics:</strong></div> <br>
+          {% for name, list in demographics.items() %}
+            <div class="ui selection dropdown select-filter" id="select-{{name}}">
+              <input type="hidden" name="Donor {{name}}">
+              <i class="dropdown icon"></i>
+              <div class="default text">{{ name }}</div>
+              <div class="menu">
+                <div class="item" data-value="">All</div>
+                {% for d in list %}
+                  <div class="item" data-value="{{ d }}">{{ d }}</div>
+                {% endfor %}
+              </div>
+            </div>
+            <br><br>
+          {% endfor %}
+        </div>
     </div>
 
         <div class="ui main menu participant-header" style="margin-top:6px">
@@ -105,6 +136,7 @@
                 <script>$('#delete-{{ p.id }}').modal({ allowMultiple: true })</script>
                 <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
                     <div class="participant">
+                        <div class="status" hidden>{{p.status_name()}}</div>
                         <div class="partseg1">
                             {% if not p.status or p.status == Status.PENDING %}
                                 <i class="dot circle outline icon" style="color: #FAC334;"></i>
@@ -119,27 +151,27 @@
                             <div class="partterm">{{ p.assigned_term }}</div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo race">
                                 {{ p.demographic.race.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo class">
                                 {{ p.demographic.soc_class.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo age">
                                 {{ p.demographic.age }} yr old
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo gender">
                                 {{ p.demographic.gender.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo sexual-orientation">
                                 {{ p.demographic.sexual_orientation.name.replace('_', ' ') }}
                             </div>
                         </div>
@@ -151,26 +183,48 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+          // Hides anything with a hidden-? class and shows everything else
+          const refilter = function() {
+            $('.participant').closest('.segments').each(function() {
+              if ($(this).is('[class*="hidden"]')) {
+                  $(this).hide()
+              } else {
+                $(this).show()
+              }
+            })
+          };
+
+          // Search bar filtering (searches all info)
           $('#search-participants').keyup(function () {
               var searchText = $(this).val();
               if (searchText.length > 0) {
-                  $('.participant:icontains(' + searchText + ')').addClass('positive');
-                  $('.participant.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                  $('.participant').not(':icontains(' + searchText + ')').closest('div').addClass('hidden').hide();
-                  $('div.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+                $('.participant:icontains(' + searchText + ')').closest('.segments').removeClass('hidden-search')
+                $('.participant').not(':icontains(' + searchText + ')').closest('.segments').addClass('hidden-search')
               } else {
-                  $('.participant.positive').removeClass('positive');
-                  $('div.hidden').removeClass('hidden').show();
+                $('.participant').closest('.segments').removeClass('hidden-search')
               }
-            });
+              refilter();
+          });
 
-            // $('#select-role').dropdown({
-            //     onChange: function (value, text, $selectedItem) {
-            //         $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-            //         $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
-            //     }
-            // });
-        });
+          // Dropdown filtering
+          const filters ={'status':'#select-status', 'race':'#select-Race', 'gender':'#select-Gender', 'class':'#select-Class', 'sexual-orientation':'[id="select-Sexual Orientation"]'}
+          $.each(filters,function(name, filter) {
+            $(filter).dropdown({
+                onChange: function (value, text, $selectedItem) {
+                  $('.participant').closest('.segments').find('.'+name).each(function(){
+                      let text = $.trim($(this).text())
+                      if (text.toLowerCase() === value.toLowerCase() || value.length === 0) {
+                        $(this).closest('.segments').removeClass('hidden-'+name)
+                      } else {
+                        $(this).closest('.segments').addClass('hidden-'+name)
+                      }
+                    })
+                  refilter();
+                }
+              });
+            });
+          });
+
 
     </script>
 {% endblock %}

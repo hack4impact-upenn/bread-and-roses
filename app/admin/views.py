@@ -45,7 +45,7 @@ def new_user():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
-    return render_template('admin/participant_management.html', Status=Status, participants=participants)
+    return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict())
 
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])
@@ -71,7 +71,9 @@ def new_candidate():
             staff_contact=form.staff_contact.data,
             notes=form.notes.data,
             demographic=demographic,
-            demographic_id=demographic.id
+            demographic_id=demographic.id,
+            status=0,
+            amount_donated=0
             )
         db.session.add(demographic)
         db.session.add(candidate)
