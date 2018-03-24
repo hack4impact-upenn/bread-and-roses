@@ -1,12 +1,54 @@
 {% extends 'layouts/base.html' %}
 
 {% block content %}
+    <div class="ui container donor-header">
+      <div class="ui grid">
+        <div class="eight wide centered column donor-header-search">
+          <a href="{{ url_for('participant.new_donor') }}" class="ui left labeled icon button">
+            New Donor
+            <i class="plus icon"></i>
+          </a>
+          <div class="ui fluid left icon input" >
+            <input type="text" placeholder="Search">
+            <i class="search icon"></i>
+          </div>
+        </div>
+      </div>
+
+      {% set todo = donors_by_status[Status.TODO.name] %}
+      {% set asking = donors_by_status[Status.ASKING.name] %}
+      {% set pledged = donors_by_status[Status.PLEDGED.name] %}
+      {% set completed = donors_by_status[Status.COMPLETED.name] %}
+      <div class="ui four column grid">
+        <div class="column custom-center">
+          TODO: {{ todo | length }} <i class="chevron down icon"></i>
+        </div>
+        <div class="column custom-center">
+          ASKING: {{ asking | length }} <i class="chevron down icon"></i>
+        </div>
+        <div class="column custom-center">
+          PLEDGED: {{ pledged | length }} <i class="chevron down icon"></i>
+        </div>
+        <div class="column custom-center">
+          COMPLETED: {{ completed | length }} <i class="chevron down icon"></i>
+        </div>
+      </div>
+    </div>
+    <div class="ui four column grid container">
+      <div class="column">
+      </div>
+
+      <div class="column">
+      </div>
+
+      <div class="column">
+      </div>
+
+      <div class="column">
+      </div>
+    </div>
     <div class="ui stackable grid container">
         <div class="sixteen wide tablet twelve wide computer centered column">
-            <a class="ui basic compact button" href="{{ url_for('participant.new_donor') }}">
-                New Donor
-                <i class="plus icon"></i>
-            </a>
             <h2 class="ui header">
                 Donor Management
                 <div class="sub header">
@@ -51,6 +93,7 @@
                             <td>{{ d.first_name }}</td>
                             <td>{{ d.last_name }}</td>
                             <td>{{ d.email }}</td>
+                            <td>{{ d.status.name }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

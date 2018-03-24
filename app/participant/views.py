@@ -11,8 +11,15 @@ from ..models import Donor, Demographic, DonorStatus
 @login_required
 def index():
     """Participant dashboard page."""
-    donors = Donor.query.filter_by(user_id=current_user.id).all()
-    return render_template('participant/index.html', donors=donors)
+    donors_by_status = {
+        status.name: Donor.query.filter_by(
+            user_id=current_user.id, status=status).all()
+        for status in DonorStatus
+    }
+
+    return render_template('participant/index.html',
+                           donors_by_status=donors_by_status,
+                           Status=DonorStatus)
 
 
 @participant.route('/new-donor', methods=['GET', 'POST'])
@@ -46,7 +53,7 @@ def new_donor():
             want_to_learn_about_brf_guarantees=form.want_to_learn_about_brf_guarantees.data,
             interested_in_volunteering=form.interested_in_volunteering.data,
 
-            status=DonorStatus.ASKING,
+            status=DonorStatus.TODO,
             amount_pledged=0,
             amount_received=0,
 

@@ -3,9 +3,10 @@ from .. import db
 
 
 class DonorStatus(enum.Enum):
-    ASKING = 0
-    PLEDGED = 1
-    RECEIVED = 2
+    TODO = 0
+    ASKING = 1
+    PLEDGED = 2
+    COMPLETED = 3
 
 
 class Donor(db.Model):
