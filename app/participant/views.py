@@ -1,3 +1,4 @@
+import datetime
 from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 
@@ -17,9 +18,36 @@ def index():
         for status in DonorStatus
     }
 
+    def datestring(s):
+        return s.strftime('%b %d')
+
+    def datestring_alt(s):
+        return s.strftime('%b %d, %Y')
+
     return render_template('participant/index.html',
                            donors_by_status=donors_by_status,
-                           Status=DonorStatus)
+                           Status=DonorStatus,
+                           datestring=datestring,
+                           datestring_alt=datestring_alt)
+
+
+@participant.route('/donor/<int:donor_id>/_delete')
+@login_required
+def delete_donor(donor_id):
+    """Delete a participant."""
+    d = Donor.query.filter_by(id=donor_id).first()
+    db.session.delete(d)
+    db.session.commit()
+    flash('Successfully deleted donor %s.' % d.first_name, 'success')
+    return redirect(url_for('participant.index'))
+
+
+@participant.route('/donor/<int:donor_id>/edit')
+@login_required
+def edit_donor(donor_id):
+    """Edits a donor."""
+    d = Donor.query.filter_by(id=donor_id).first()
+    return redirect(url_for('participant.index'))
 
 
 @participant.route('/new-donor', methods=['GET', 'POST'])

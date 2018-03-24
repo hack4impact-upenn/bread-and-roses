@@ -38,6 +38,8 @@ class Donor(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship("User", back_populates="donors")
 
+    # notes = db.Column(db.String(3000))
+
     def __repr__(self):
         return '<Donor \'%s\'>' % self.first_name % self.last_name
 
