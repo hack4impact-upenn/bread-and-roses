@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="item">
-          <div class="ui selection dropdown select-filter">
+          <div class="ui selection dropdown select-filter" id="select-status">
             <input type="hidden" name="Donor Status">
             <i class="dropdown icon"></i>
             <div class="default text">Donor Status</div>
@@ -27,8 +27,8 @@
 
           <div><strong>Demographics:</strong></div> <br>
           {% for name, list in demographics.items() %}
-            <div class="ui selection dropdown select-filter">
-              <input type="hidden" name="Donor Status">
+            <div class="ui selection dropdown select-filter" id="select-{{name}}">
+              <input type="hidden" name="Donor {{name}}">
               <i class="dropdown icon"></i>
               <div class="default text">{{ name }}</div>
               <div class="menu">
@@ -134,27 +134,27 @@
                             <div class="partname">{{ d.first_name }} {{ d.last_name }}</div>
                         </div>
                         <div class="partseg">
-                            <div class="demographic-info">
+                            <div class="demographic-info race" >
                                 {{ d.demographic.race.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="demographic-info">
+                            <div class="demographic-info class">
                                 {{ d.demographic.soc_class.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="demographic-info">
+                            <div class="demographic-info age">
                                 {{ d.demographic.age }} yr old
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="demographic-info">
+                            <div class="demographic-info gender">
                                 {{ d.demographic.gender.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="demographic-info">
+                            <div class="demographic-info sexual-orientation">
                                 {{ d.demographic.sexual_orientation.name.replace('_', ' ') }}
                             </div>
                         </div>
@@ -166,28 +166,48 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#search-donors').keyup(function () {
-                var searchText = $(this).val();
-                if (searchText.length > 0) {
-                    $('.donor:icontains(' + searchText + ')').addClass('positive');
-                    $('.donor.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('.donor').not(':icontains(' + searchText + ')').closest('.segments').addClass('hidden').hide();
-                    $('.segments.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
-                } else {
-                    $('.donor.positive').removeClass('positive');
-                    $('.segments.hidden').removeClass('hidden').show();
-                }
-            });
+          
+          // Hides anything with a hidden-? class and shows everything else
+          const refilter = function() {
+            $('.donor').closest('.segments').each(function() {
+              if ($(this).is('[class*="hidden"]')) {
+                  $(this).hide()
+              } else {
+                $(this).show()
+              }
+            })
+          };
 
-            // TODO: edit so its ANDS and ORs correctly
-            $('.select-filter').dropdown({
+          // Search bar filtering
+          $('#search-donors').keyup(function () {
+              var searchText = $(this).val();
+              if (searchText.length > 0) {
+                $('.donor:icontains(' + searchText + ')').closest('.segments').removeClass('hidden-search')
+                $('.donor').not(':icontains(' + searchText + ')').closest('.segments').addClass('hidden-search')
+              } else {
+                $('.donor').closest('.segments').removeClass('hidden-search')
+              }
+              refilter();
+          });
+
+          // Dropdown filtering
+          const filters ={'status':'#select-status', 'race':'#select-Race', 'gender':'#select-Gender', 'class':'#select-Class', 'sexual-orientation':'[id="select-Sexual Orientation"]'}
+          $.each(filters,function(name, filter) {
+            $(filter).dropdown({
                 onChange: function (value, text, $selectedItem) {
-                  console.log(value)
-                    $('.donor:contains(' + value + ')').closest('.segments').removeClass('hidden').show();
-                    $('.donor').not(':contains(' + value + ')').closest('.segments').addClass('hidden').hide();
+                  $('.donor').closest('.segments').find('.'+name).each(function(){
+                      let text = $.trim($(this).text())
+                      if (text.toLowerCase() === value.toLowerCase() || value.length === 0) {
+                        $(this).closest('.segments').removeClass('hidden-'+name)
+                      } else {
+                        $(this).closest('.segments').addClass('hidden-'+name)
+                      }
+                    })
+                  refilter();
                 }
+              });
             });
-        });
+          });
 
     </script>
 {% endblock %}
