@@ -76,7 +76,7 @@ def new_donor():
             zipcode=form.zipcode.data,
             phone_number=form.phone_number.data,
             email=form.email.data,
-            amount_asking_for=form.amount_asking_for.data,
+            notes=form.notes.data,
             interested_in_future_gp=form.interested_in_future_gp.data,
             want_to_learn_about_brf_guarantees=form.want_to_learn_about_brf_guarantees.data,
             interested_in_volunteering=form.interested_in_volunteering.data,
@@ -84,6 +84,7 @@ def new_donor():
             status=DonorStatus.TODO,
             amount_pledged=0,
             amount_received=0,
+            amount_asking_for=0,
 
             demographic=demographic
         )
