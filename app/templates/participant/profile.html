@@ -6,6 +6,7 @@
     ('account.manage', 'Profile information'),
     ('account.change_email_request', 'Change email address'),
     ('account.change_password', 'Change password'),
+    ('account.phone_number', 'Change phone number'),
     ('account.logout', 'Log out')
 ] %}
 
@@ -20,11 +21,13 @@
     </div>
 {% endmacro %}
 
-{% macro user_info(user) %}
+{% macro candidate_info(part) %}
     <table class="ui compact definition table">
-        <tr><td>Full name</td><td>{{ '%s %s' % (user.first_name, user.last_name) }}</td></tr>
-        <tr><td>Email address</td><td>{{ user.email }}</td></tr>
-        <tr><td>Account type</td><td>{{ user.role.name }}</td></tr>
+        <tr><td>Full name</td><td>{{ '%s %s' % (part.first_name, part.last_name) }}</td></tr>
+        <tr><td>Email address</td><td>{{ part.email }}</td></tr>
+        <tr><td>Phone number</td><td>{{ part.phone_number }}</td></tr>
+        <tr><td>Term</td><td>{{ part.assigned_term }}</td></tr>
+        <tr><td>Amount Donated</td><td>{{ part.amount_donated }}</td></tr>
     </table>
 {% endmacro %}
 

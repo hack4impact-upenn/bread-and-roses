@@ -6,7 +6,7 @@ from flask_rq import get_queue
 from . import account
 from .. import db
 from ..email import send_email
-from ..models import User
+from ..models import User, Candidate
 from .forms import (ChangeEmailForm, ChangePasswordForm, CreatePasswordForm,
                     LoginForm, RegistrationForm, RequestResetPasswordForm,
                     ResetPasswordForm)
@@ -162,6 +162,22 @@ def change_email_request():
             flash('Invalid email or password.', 'form-error')
     return render_template('account/manage.html', form=form)
 
+
+@account.route('/manage/change-phone-number', methods=['GET', 'POST'])
+@login_required
+def change_phone_number():
+    """Change an existing participants' phone number."""
+    form = ChangePhoneNumberForm()
+    if form.validate_on_submit():
+        if current_part.verify_password(form.old_phone_number.data):
+            current_part.phone_number = form.new_phone_number.data
+            db.session.add(current_part)
+            db.session.commit()
+            flash('Your phone number has been updated.', 'form-success')
+            return redirect(url_for('main.index'))
+        else:
+            flash('Original password is invalid.', 'form-error')
+    return render_template('account/manage.html', form=form)
 
 @account.route('/manage/change-email/<token>', methods=['GET', 'POST'])
 @login_required
