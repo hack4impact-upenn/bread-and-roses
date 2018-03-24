@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField
+from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 
@@ -126,5 +126,13 @@ class EditParticipantForm(Form):
         'Staff Contact', validators=[InputRequired(), Length(1, 64)])
     notes = TextAreaField(
         'Notes', validators=[Length(0, 1024)])
+    status = IntegerField(
+        'Status', validators=[InputRequired()])
+    assigned_term = StringField(
+        'Assigned Term', validators=[InputRequired(), Length(1, 64)])
+    amount_donated = IntegerField(
+        'Amount Donated', validators=[InputRequired()])
+    applied = BooleanField(
+        'Applied', validators=[InputRequired()])
     demographic = FormField(DemographicForm)
     submit = SubmitField('Save')

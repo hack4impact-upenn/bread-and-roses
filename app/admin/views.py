@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 from flask_rq import get_queue
 
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
-                    NewUserForm, NewCandidateForm, DemographicForm)
+                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm)
 from . import admin
 from .. import db
 from ..decorators import admin_required
@@ -85,13 +85,33 @@ def new_candidate():
 @login_required
 @admin_required
 def edit_participant(part_id):
-    """Create a edit participant."""
+    """Edit a participant."""
     part = Candidate.query.filter_by(id=part_id).first();
     if part is None:
         abort(404)
-    form = EditParticipantForm()
+    form = EditParticipantForm(obj=part_id)
+    demographic = part.demographic
+
+    if request.method == 'GET':
+        form.first_name.data = part.first_name
+        form.last_name.data = part.last_name
+        form.email.data = part.email
+        form.phone_number.data = part.phone_number
+        form.source.data = part.source
+        form.staff_contact.data = part.staff_contact
+        form.notes.data = part.notes
+        form.status.data = part.status
+        form.assigned_term.data = part.assigned_term
+        form.amount_donated.data = part.amount_donated
+        form.applied.data = part.applied
+
+        form.demographic.race.data = part.demographic.race
+        form.demographic.gender.data = part.demographic.gender
+        form.demographic.age.data = part.demographic.age
+        form.demographic.sexual_orientation.data = part.demographic.sexual_orientation
+        form.demographic.soc_class.data = part.demographic.soc_class
+
     if form.validate_on_submit():
-        form.populate_obj(part_id)
         part.first_name = form.first_name.data
         part.last_name = form.last_name.data
         part.email = form.email.data
@@ -101,18 +121,20 @@ def edit_participant(part_id):
         part.notes = form.notes.data
         part.status = form.status.data
         part.assigned_term = form.assigned_term.data
-        
+        part.amount_donated = form.amount_donated.data
+        part.applied = form.applied
+
         demographic = part.demographic
         demographic.race = form.demographic.race.data
         demographic.gender = form.demographic.gender.data
         demographic.age = form.demographic.age.data
         demographic.sexual_orientation = form.demographic.sexual_orientation.data
-        demographic.soc_class = form.demographic.soc_class
+        demographic.soc_class = form.demographic.soc_class.data
         
         db.session.add(demographic)
         db.session.add(part)
         db.session.commit()
-        flash('Particpant {} successfully saved'.format(part.first_name),
+        flash('Participant {} successfully saved'.format(part.first_name),
               'form-success')
     return render_template('admin/edit_participant.html', form=form)
 
