@@ -112,13 +112,11 @@ class NewCandidateForm(Form):
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
         'Phone Number', validators=[InputRequired(), Length(1, 64)])
-    term = SelectField(
+    term = QuerySelectField(
         'Term',
-        choices=[choice.name for choice in Term.query.all()],
-        # coerce=int,
-        # validators=[InputRequired()]
-        # default=0
-    )
+        validators=[InputRequired()],
+        get_label='name',
+        query_factory=lambda: db.session.query(Term).order_by('start_date'))
     source = StringField(
         'Source', validators=[InputRequired(), Length(1, 256)])
     staff_contact = StringField(
