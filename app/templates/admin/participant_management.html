@@ -22,7 +22,7 @@
         <div class="participant-content" style="margin-right: 20px; margin-left: 320px;">
             {% for p in participants | sort(attribute='last_name') %}
                 <div class="ui modal" id="modal-{{ p.id }}">
-                    
+
                     <div class="content">
                         <h2>{{ p.first_name }} {{ p.last_name }}</h1>
                     </div>
@@ -52,7 +52,7 @@
                         </div>
                         <div class="partseg2">
                             <div class="partname">{{ p.first_name }} {{ p.last_name }}</div>
-                            <div class="partterm">{{ p.assigned_term }}</div>
+                            <div class="partterm">{{ p.term }}</div>
                         </div>
                         <div class="partseg">
                             <div class="partinfo">

@@ -27,7 +27,8 @@ class Candidate(db.Model):
     staff_contact = db.Column(db.String(64))
     notes = db.Column(db.String(5024))
     status = db.Column(db.Integer)
-    assigned_term = db.Column(db.Integer)
+    term_id = db.Column(db.Integer, db.ForeignKey('terms.id'))
+    term = db.relationship('Term', back_populates='candidates')
     amount_donated = db.Column(db.Integer)
     demographic_id = db.Column(db.Integer, db.ForeignKey('demographics.id'))
     demographic = db.relationship('Demographic', back_populates='candidate')
@@ -36,38 +37,5 @@ class Candidate(db.Model):
     def __repr__(self):
         return '<Candidate \'%s\'>' % self.first_name % self.last_name
 
-    @staticmethod
-    def calculateTermNumber(year, month, day):
-        """Determine term from number of days from today"""
-        providedDate = date(year, month, day)
-        return datetime.datetime.now() - providedDate
-
-    @staticmethod
-    def calculateTermString(term):
-        """Determine frontend representation of term (Semester, Year)"""
-        now = datetime.datetime.now()
-        termDate = datetime.now() + term
-        if termDate.month < 7:
-            return 'Spring' + termDate.year
-        else:
-            return 'Fall' + termDate.year
-
-    @staticmethod
-    def getTermString(num):
-        """Determine (Semester, Year) from provided semester offset from today"""
-        result = ""
-        now = datetime.datetime.now()
-        sems = num
-        if now.month >= 7:
-            sems = semester + 1
-
-        if sems%2 == 0:
-            result = "Spring "
-        else:
-            result = "Fall "
-
-        return result + str(now.year + sems/2);
-
-
     def filter(**kwargs):
-        return Docket.query.filter_by(**kwargs)
+        return Candidate.query.filter_by(**kwargs)

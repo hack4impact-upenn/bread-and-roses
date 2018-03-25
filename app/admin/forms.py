@@ -2,11 +2,11 @@ from flask_wtf import Form
 from wtforms import ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField
-from wtforms.fields.html5 import EmailField
+from wtforms.fields.html5 import EmailField, DateField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 
 from .. import db
-from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation
+from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation, Term
 
 
 class ChangeUserEmailForm(Form):
@@ -58,6 +58,17 @@ class NewUserForm(InviteUserForm):
     submit = SubmitField('Create')
 
 
+class NewTermForm(Form):
+    name = StringField(
+        'Name', validators=[InputRequired()])
+    start_date = DateField(
+        'Start Date', validators=[InputRequired()])
+    end_date = DateField(
+        'End Date', validators=[InputRequired()])
+    submit = SubmitField('Create')
+# TODO check if end date is larger than start date
+
+
 class DemographicForm(Form):
     race = SelectField(
         'Race',
@@ -101,14 +112,12 @@ class NewCandidateForm(Form):
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
         'Phone Number', validators=[InputRequired(), Length(1, 64)])
-    assigned_term = SelectField(
+    term = SelectField(
         'Term',
-        # increment the semester each time -> up to 10
-        choices=[(i, Candidate.getTermString(i)) for i in range(10)],
-        # default=0,
-        coerce=int, # we only care about the int part
+        choices=[choice.name for choice in Term.query.all()],
+        # coerce=int,
         # validators=[InputRequired()]
-        # number, string associated with it
+        # default=0
     )
     source = StringField(
         'Source', validators=[InputRequired(), Length(1, 256)])

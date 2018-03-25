@@ -35,7 +35,7 @@
                 {{ f.render_form_field(form.source) }}
                 {{ f.render_form_field(form.staff_contact) }}
                 {{ f.render_form_field(form.notes) }}
-                <!-- {{ f.render_form_field(form.assigned_term) }} -->
+                {{ f.render_form_field(form.term) }}
 
                 {% for field in form.demographic %}
                     {% if field.type == 'SelectField' or field.type=='IntegerField' %}
