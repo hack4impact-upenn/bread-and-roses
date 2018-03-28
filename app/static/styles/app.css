@@ -36,16 +36,17 @@ table.selectable tr:hover {
   margin-top: 46px;
 }
 
-.participant-menu {
+.participant-menu, .donor-menu {
   width: 300px !important;
   padding-top: 5px !important;
+
 }
 
-.participant-header {
+.participant-header, .donor-header {
   border-radius: 0 !important;
 }
 
-.participant-content {
+.participant-content, .donor-content {
   margin-left: 300px;
 }
 
@@ -54,7 +55,7 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
-.partinfo {
+.partinfo, .demographic-info {
   border: 1px solid #DFDFDF;
   box-shadow: inset 0px 0.5px 4px rgba(0, 0, 0, 0.15);
   border-radius: 10px;
@@ -67,7 +68,7 @@ body {
   align-items: center;
 }
 
-.participant {
+.participant, .donor {
   display: flex;
   height: 60px;
   justify-content: space-between;
@@ -103,4 +104,8 @@ body {
 .partterm {
   font-size: 10px;
   color: #828282;
+}
+
+.bold {
+  font-weight: 900
 }

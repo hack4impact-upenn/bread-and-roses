@@ -20,7 +20,6 @@ def index():
 def new_donor():
     """Create a new donor."""
     form = NewDonorForm()
-    #raise
     if form.validate_on_submit():
         demographic = Demographic(
             race=form.demographic.race.data,

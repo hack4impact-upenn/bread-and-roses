@@ -30,6 +30,7 @@ class Candidate(db.Model):
     term_id = db.Column(db.Integer, db.ForeignKey('terms.id'))
     term = db.relationship('Term', back_populates='candidates')
     amount_donated = db.Column(db.Integer)
+    applied = db.Column(db.Boolean)
     demographic_id = db.Column(db.Integer, db.ForeignKey('demographics.id'))
     demographic = db.relationship('Demographic', back_populates='candidate')
     user_account = db.relationship('User', uselist = False, back_populates='candidate')
@@ -39,3 +40,13 @@ class Candidate(db.Model):
 
     def filter(**kwargs):
         return Candidate.query.filter_by(**kwargs)
+
+    def status_name(self):
+        if Status.PENDING == self.status:
+            return 'Pending'
+        elif Status.ASSIGNED == self.status:
+            return 'Assigned'
+        elif Status.REJECTED == self.status:
+            return 'Rejected'
+        else:
+            return 'None'
