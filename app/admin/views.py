@@ -97,6 +97,7 @@ def new_candidate():
             last_name=form.last_name.data,
             email=form.email.data,
             phone_number=form.phone_number.data,
+            term=form.term.data,
             source=form.source.data,
             staff_contact=form.staff_contact.data,
             notes=form.notes.data,
