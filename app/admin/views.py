@@ -3,12 +3,12 @@ from flask_login import current_user, login_required
 from flask_rq import get_queue
 
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
-                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm)
+                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm, NewTermForm)
 from . import admin
 from .. import db
 from ..decorators import admin_required
 from ..email import send_email
-from ..models import Role, User, Candidate, Demographic, Donor, EditableHTML, Status, DonorStatus
+from ..models import Role, User, Candidate, Demographic, Donor, EditableHTML, Status, DonorStatus, Term
 
 
 @admin.route('/')
@@ -37,6 +37,36 @@ def new_user():
         flash('User {} successfully created'.format(user.full_name()),
               'form-success')
     return render_template('admin/new_user.html', form=form)
+
+@admin.route('/term-management', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def term_management():
+    """Manage terms"""
+    form = NewCandidateForm()
+    terms = Term.query.all()
+    return render_template('admin/term_management.html', Status=Status, terms=terms, form=form)
+
+
+@admin.route('/new-term', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def new_term():
+    """Create a new term."""
+    form = NewTermForm()
+    if form.validate_on_submit():
+        term = Term(
+            name=form.name.data,
+            in_progress=True,
+            start_date=form.start_date.data,
+            end_date=form.end_date.data,
+            candidates= [],
+            )
+        db.session.add(term)
+        db.session.commit()
+        flash('Term {} successfully created'.format(term.name),
+              'form-success')
+    return render_template('admin/new_term.html', form=form)
 
 
 @admin.route('/participants')
@@ -67,6 +97,7 @@ def new_candidate():
             last_name=form.last_name.data,
             email=form.email.data,
             phone_number=form.phone_number.data,
+            term=form.term.data,
             source=form.source.data,
             staff_contact=form.staff_contact.data,
             notes=form.notes.data,
