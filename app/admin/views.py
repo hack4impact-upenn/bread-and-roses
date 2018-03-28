@@ -45,7 +45,8 @@ def new_user():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
-    return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict())
+    return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict(),
+    terms=Term.query.order_by(Term.start_date.desc()).all())
 
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])

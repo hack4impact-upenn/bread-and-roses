@@ -27,6 +27,20 @@
             </div>
           </div>
 
+          <br><br>
+
+          <div class="ui selection dropdown select-filter" id="select-term">
+            <input type="hidden" name="Participant Term">
+            <i class="dropdown icon"></i>
+            <div class="default text">Participant Term</div>
+            <div class="menu">
+              <div class="item" data-value="">All terms</div>
+              {% for t in terms %}
+                <div class="item" data-value="{{ t.name }}">{{ t.name }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
           <br><br><br>
 
           <div><strong>Demographics:</strong></div> <br>
@@ -148,7 +162,11 @@
                         </div>
                         <div class="partseg2">
                             <div class="partname">{{ p.first_name }} {{ p.last_name }}</div>
+<<<<<<< Updated upstream
                             <div class="partterm">{{ p.assigned_term }}</div>
+=======
+                            <div class="partterm term">{{ p.term.name }}</div>
+>>>>>>> Stashed changes
                         </div>
                         <div class="partseg">
                             <div class="partinfo race">
@@ -207,7 +225,7 @@
           });
 
           // Dropdown filtering
-          const filters ={'status':'#select-status', 'race':'#select-Race', 'gender':'#select-Gender', 'class':'#select-Class', 'sexual-orientation':'[id="select-Sexual Orientation"]'}
+          const filters ={'status':'#select-status', 'term':'#select-term', 'race':'#select-Race', 'gender':'#select-Gender', 'class':'#select-Class', 'sexual-orientation':'[id="select-Sexual Orientation"]'}
           $.each(filters,function(name, filter) {
             $(filter).dropdown({
                 onChange: function (value, text, $selectedItem) {
