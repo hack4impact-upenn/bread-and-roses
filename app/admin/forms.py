@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField
+from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField, SelectMultipleField
 from wtforms.fields.html5 import EmailField, DateField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 
@@ -88,8 +88,7 @@ class DemographicForm(Form):
         choices=[(choice.name, choice.name.replace('_', ' ').title()
                   if choice.name != 'LGBTQ' else 'LGBTQ') for choice in SexualOrientation]
     )
-    age = IntegerField(
-        'Age', validators=[InputRequired()])
+    age = IntegerField('Age', default=0)
 
 
 class NewCandidateForm(Form):
@@ -100,18 +99,18 @@ class NewCandidateForm(Form):
     email = EmailField(
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
-        'Phone Number', validators=[InputRequired(), Length(1, 64)])
+        'Phone Number', default="Not Specified")
     term = QuerySelectField(
         'Term',
         validators=[InputRequired()],
         get_label='name',
         query_factory=lambda: db.session.query(Term).order_by('start_date'))
     source = StringField(
-        'Source', validators=[InputRequired(), Length(1, 256)])
+        'Source', default="Not Specified")
     staff_contact = StringField(
-        'Staff Contact', validators=[InputRequired(), Length(1, 64)])
+        'Staff Contact', default="Not Specified")
     notes = TextAreaField(
-        'Notes', validators=[Length(0, 1024)])
+        'Notes', default="None")
     demographic = FormField(DemographicForm)
     submit = SubmitField('Create')
 
@@ -124,20 +123,22 @@ class EditParticipantForm(Form):
     email = EmailField(
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
-        'Phone Number', validators=[InputRequired(), Length(1, 64)])
+        'Phone Number', default="")
     source = StringField(
-        'Source', validators=[InputRequired(), Length(1, 256)])
+        'Source', validators=[Length(1, 256)])
     staff_contact = StringField(
-        'Staff Contact', validators=[InputRequired(), Length(1, 64)])
+        'Staff Contact', validators=[Length(1, 64)])
     notes = TextAreaField(
         'Notes', validators=[Length(0, 1024)])
     status = IntegerField(
         'Status', validators=[InputRequired()])
     assigned_term = StringField(
-        'Assigned Term', validators=[InputRequired(), Length(1, 64)])
+        'Assigned Term', validators=[Length(1, 64)])
     amount_donated = IntegerField(
-        'Amount Donated', validators=[InputRequired()])
+        'Amount Donated', validators=[])
     applied = BooleanField(
-        'Applied', validators=[InputRequired()])
+        'Applied', default=False)
     demographic = FormField(DemographicForm)
     submit = SubmitField('Save')
+
+#class SelectStatus(SelectMultipleField):

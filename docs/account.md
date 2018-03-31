@@ -66,4 +66,3 @@ def logout():
 The Flask-login Manager has a built in logout_user function that
 removes the SESSION variables from the user's browser and logs out
 the user completely
-
