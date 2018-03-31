@@ -1,17 +1,16 @@
-
 {% extends 'layouts/base.html' %}
 
 {% block content %}
     <div class="pushable">
-    <div class="ui borderless visible sidebar vertical menu donor-menu">
-        <div class="ui search item" style="background-color: #67A7FD;">
+    <div class="ui visible sidebar vertical menu donor-menu">
+        <div class="ui search item" style="background-color: #FFFFFF;">
             <div class="ui left icon input">
                 <i class="search icon"></i>
                 <input id="search-donors" type="text" placeholder="Search donors">
             </div>
         </div>
         <div class="item">
-          <div class="ui selection dropdown select-filter" id="select-status">
+          <div class="ui selection dropdown select-filter" id="select-status" style="width: 250px;">
             <input type="hidden" name="Donor Status">
             <i class="dropdown icon"></i>
             <div class="default text">Donor Status</div>
@@ -25,9 +24,9 @@
 
           <br><br><br>
 
-          <div><strong>Demographics:</strong></div> <br>
+          <div align="left" style="margin-left: 8px;"><strong>Demographics:</strong></div> <br>
           {% for name, list in demographics.items() %}
-            <div class="ui selection dropdown select-filter" id="select-{{name}}">
+            <div class="ui selection dropdown select-filter" id="select-{{name}}" style="width: 250px;">
               <input type="hidden" name="Donor {{name}}">
               <i class="dropdown icon"></i>
               <div class="default text">{{ name }}</div>
@@ -44,14 +43,12 @@
 
     </div>
 
-        <div class="ui main menu donor-header" style="margin-top:6px">
-            <div class="right menu">
-                <a class="item" style="color: #67A7FD">
+        <div class="donor-content" style="margin-right: 20px; margin-left: 320px;">
+            <div align="right">
+                <a class="ui button" style="color: #cf0a2c">
                     Demographics
                 </a>
             </div>
-        </div>
-        <div class="donor-content" style="margin-right: 20px; margin-left: 320px;">
             {% for d in donors | sort(attribute='last_name') %}
                 <div class="ui small modal" id="modal-{{ d.id }}">
                     <i class="close icon"></i>
