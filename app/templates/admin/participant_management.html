@@ -41,7 +41,7 @@
 
             <br><br><br>
 
-            <div align="left" style="margin-left: 8px;"><strong>Demographics:</strong></div> <br>
+            <div align="left" style="margin-left: 8px; font-family: Open Sans"><strong>Demographics:</strong></div> <br>
             {% for name, list in demographics.items() %}
                 <div class="ui selection dropdown select-filter" id="select-{{name}}" style="width: 250px;">
                 <input type="hidden" name="Donor {{name}}">
@@ -64,11 +64,11 @@
 
         <div class="participant-content" style="margin-right: 20px; margin-left: 320px;">
             <div align="right">
-            <a class="ui button" style="color: #cf0a2c">
+            <a class="ui button" style="color: #cf0a2c; font-family: Open Sans">
                 Demographics
             </a>
             <a href="{{ url_for('admin.new_candidate') }}" class="ui button" style="background-color: #cf0a2c;">
-                <div style="text-align: center; font-weight: bold; color: #FFFFFF;">
+                <div style="text-align: center; font-weight: bold; color: #FFFFFF; font-family: Open Sans">
                     New Participant +
                 </div>
             </a>
