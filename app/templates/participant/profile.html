@@ -2,14 +2,6 @@
 {% import 'macros/form_macros.html' as f %}
 {% import 'macros/check_password.html' as check %}
 
-{% set endpoints = [
-    ('account.manage', 'Profile information'),
-    ('account.change_email_request', 'Change email address'),
-    ('account.change_password', 'Change password'),
-    ('account.phone_number', 'Change phone number'),
-    ('account.logout', 'Log out')
-] %}
-
 {% macro navigation(items) %}
     <div class="ui vertical fluid secondary menu">
         {% for route, name in items %}
@@ -21,13 +13,11 @@
     </div>
 {% endmacro %}
 
-{% macro candidate_info(part) %}
-    <table class="ui compact definition table">
-        <tr><td>Full name</td><td>{{ '%s %s' % (part.first_name, part.last_name) }}</td></tr>
-        <tr><td>Email address</td><td>{{ part.email }}</td></tr>
-        <tr><td>Phone number</td><td>{{ part.phone_number }}</td></tr>
-        <tr><td>Term</td><td>{{ part.assigned_term }}</td></tr>
-        <tr><td>Amount Donated</td><td>{{ part.amount_donated }}</td></tr>
+{% macro user_info(user) %}
+    <table class="ui very basic table">
+        <tr><td><center>{{ '%s %s' % (user.first_name, user.last_name) }}</center></td></tr>
+        <tr><td><center>{{ user.email }}</center></td></tr>
+        <tr><td><center>{{ user.role.name }}</center></td></tr>
     </table>
 {% endmacro %}
 
@@ -40,15 +30,19 @@
             </h2>
         </div>
         <div class="stretched divided very relaxed row">
-            <div class="four wide column">
-                {{ navigation(endpoints) }}
-            </div>
             <div class="eight wide column">
                 {% if form %}
                     {{ f.render_form(form, extra_classes='fluid') }}
                 {% else %}
                     {{ user_info(user) }}
                 {% endif %}
+            </div>
+        </div>
+        <div class="stretched divided very relaxed row">
+            <div class="eight wide column">
+                <a href="{{ url_for('participant.edit_profile') }}">
+                    edit
+                </a>
             </div>
         </div>
     </div>
