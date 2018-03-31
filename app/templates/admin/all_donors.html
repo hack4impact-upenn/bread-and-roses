@@ -9,7 +9,7 @@
                 <input id="search-donors" type="text" placeholder="Search donors">
             </div>
         </div>
-        <div class="item">
+        <div class="borderless item">
           <div class="ui selection dropdown select-filter" id="select-status" style="width: 250px;">
             <input type="hidden" name="Donor Status">
             <i class="dropdown icon"></i>
@@ -24,7 +24,7 @@
 
           <br><br><br>
 
-          <div align="left" style="margin-left: 8px;"><strong>Demographics:</strong></div> <br>
+          <div align="left" style="margin-left: 8px"><strong>Demographics:</strong></div> <br>
           {% for name, list in demographics.items() %}
             <div class="ui selection dropdown select-filter" id="select-{{name}}" style="width: 250px;">
               <input type="hidden" name="Donor {{name}}">
@@ -43,7 +43,9 @@
 
     </div>
 
-        <div class="donor-content" style="margin-right: 20px; margin-left: 320px;">
+    <br>
+
+        <div class="donor-content" style="margin-right: 20px; margin-left: 320px">
             <div align="right">
                 <a class="ui button" style="color: #cf0a2c">
                     Demographics

@@ -1,3 +1,8 @@
+@font-face {
+  font-family: Open Sans;
+  src: url(OpenSans-Regular.ttf);
+}
+
 @media -sass-debug-info{filename{}line{font-family:\000037}}
 nav {
   margin-bottom: 40px !important;
@@ -33,6 +38,8 @@ table.selectable tr:hover {
 }
 
 .main.menu {
+  font-family: Open Sans;
+  font-size: 14px;
   height: 60px;
 }
 
@@ -43,7 +50,6 @@ table.selectable tr:hover {
 .participant-menu, .donor-menu {
   width: 300px !important;
   padding-top: 5px !important;
-
 }
 
 .participant-header, .donor-header {
