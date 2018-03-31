@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 from flask_rq import get_queue
 
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
-                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm, NewTermForm)
+                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm, NewTermForm, InviteAcceptedCandidatesForm)
 from . import admin
 from .. import db
 from ..decorators import admin_required
@@ -220,6 +220,42 @@ def invite_user():
         flash('User {} successfully invited'.format(user.full_name()),
               'form-success')
     return render_template('admin/new_user.html', form=form)
+
+@admin.route('/invite-accepted-candidates', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def invite_accepted_candidates():
+    """Invites accepted candidates to create an account and set their own password."""
+    form = InviteAcceptedCandidatesForm()
+    if form.validate_on_submit():
+        selected = []
+        user_role = Role.query.filter_by(name='User').first()
+        # for each selected candidate create a new user account
+        for candidate in selected:
+            user = User(
+                role=user_role,
+                first_name=candidate.first_name,
+                last_name=candidate.last_name,
+                email=candidate.email,
+                candidate=candidate)
+            db.session.add(user)
+            db.session.commit()
+            token = user.generate_confirmation_token()
+            invite_link = url_for(
+                'account.join_from_invite',
+                user_id=user.id,
+                token=token,
+                _external=True)
+            get_queue().enqueue(
+                send_email,
+                recipient=user.email,
+                subject='You Are Invited To Join',
+                template='account/email/invite',
+                user=user,
+                invite_link=invite_link, )
+        flash('Candidates successfully invited',
+              'form-success')
+    return render_template('admin/invite_accepted_candidates.html', form=form, all_terms=Term.query.order_by(Term.end_date.desc()).all(), accepted_candidates=Candidate.query.filter_by(status=Status.ASSIGNED).all())
 
 
 @admin.route('/users')
