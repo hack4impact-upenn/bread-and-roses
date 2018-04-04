@@ -102,7 +102,6 @@ class NewCandidateForm(Form):
         'Phone Number', default="Not Specified")
     term = QuerySelectField(
         'Term',
-        validators=[InputRequired()],
         get_label='name',
         query_factory=lambda: db.session.query(Term).order_by('start_date'))
     source = StringField(
