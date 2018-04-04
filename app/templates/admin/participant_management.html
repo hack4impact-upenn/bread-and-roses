@@ -4,71 +4,76 @@
 {% block content %}
     <div class="pushable">
     <div class="ui visible sidebar vertical menu participant-menu">
-        <div class="ui search item" style="background-color: #67A7FD;">
+        <div class="ui search item" style="background-color: #FFFFFF;">
             <div class="ui left icon input">
                 <i class="search icon"></i>
                 <input id="search-participants" type="text" placeholder="Search participants">
             </div>
         </div>
 
-        <a href="{{ url_for('admin.new_candidate') }}" class="item" style="text-align: center; font-weight: bold; color: #2681FC;">
-            New Participant +
-        </a>
-        <div class="item">
-          <div class="ui selection dropdown select-filter" id="select-status">
-            <input type="hidden" name="Participant Status">
-            <i class="dropdown icon"></i>
-            <div class="default text">Participant Status</div>
-            <div class="menu">
-              <div class="item" data-value="">All participants</div>
-              <div class="item" data-value="Pending">Pending</div>
-              <div class="item" data-value="Assigned">Assigned</div>
-              <div class="item" data-value="Rejected">Rejected</div>
+        <div class="borderless item">
+          <div align="center">
+            <div class="ui selection dropdown select-filter" id="select-status" style="width: 250px;">
+                <input type="hidden" name="Participant Status">
+                <i class="dropdown icon"></i>
+                <div class="default text">Participant Status</div>
+                <div class="menu">
+                <div class="item" data-value="">All participants</div>
+                <div class="item" data-value="Pending">Pending</div>
+                <div class="item" data-value="Assigned">Assigned</div>
+                <div class="item" data-value="Rejected">Rejected</div>
+                </div>
             </div>
-          </div>
 
-          <br><br>
-
-          <div class="ui selection dropdown select-filter" id="select-term">
-            <input type="hidden" name="Participant Term">
-            <i class="dropdown icon"></i>
-            <div class="default text">Participant Term</div>
-            <div class="menu">
-              <div class="item" data-value="">All terms</div>
-              {% for t in terms %}
-                <div class="item" data-value="{{ t.name }}">{{ t.name }}</div>
-              {% endfor %}
-            </div>
-          </div>
-
-          <br><br><br>
-
-          <div><strong>Demographics:</strong></div> <br>
-          {% for name, list in demographics.items() %}
-            <div class="ui selection dropdown select-filter" id="select-{{name}}">
-              <input type="hidden" name="Donor {{name}}">
-              <i class="dropdown icon"></i>
-              <div class="default text">{{ name }}</div>
-              <div class="menu">
-                <div class="item" data-value="">All</div>
-                {% for d in list %}
-                  <div class="item" data-value="{{ d }}">{{ d }}</div>
-                {% endfor %}
-              </div>
-            </div>
             <br><br>
-          {% endfor %}
+
+            <div class="ui selection dropdown select-filter" id="select-term" style="width: 250px;">
+                <input type="hidden" name="Participant Term">
+                <i class="dropdown icon"></i>
+                <div class="default text">Participant Term</div>
+                <div class="menu">
+                <div class="item" data-value="">All terms</div>
+                {% for t in terms %}
+                    <div class="item" data-value="{{ t.name }}">{{ t.name }}</div>
+                {% endfor %}
+                </div>
+            </div>
+
+            <br><br><br>
+
+            <div align="left" style="margin-left: 8px; font-family: Open Sans"><strong>Demographics:</strong></div> <br>
+            {% for name, list in demographics.items() %}
+                <div class="ui selection dropdown select-filter" id="select-{{name}}" style="width: 250px;">
+                <input type="hidden" name="Donor {{name}}">
+                <i class="dropdown icon"></i>
+                <div class="default text">{{ name }}</div>
+                <div class="menu">
+                    <div class="item" data-value="">All</div>
+                    {% for d in list %}
+                    <div class="item" data-value="{{ d }}">{{ d }}</div>
+                    {% endfor %}
+                </div>
+                </div>
+                <br><br>
+            {% endfor %}
+            </div>
         </div>
     </div>
 
-        <div class="ui main menu participant-header" style="margin-top:6px">
-            <div class="right menu">
-                <a class="item" style="color: #67A7FD">
-                    Demographics
-                </a>
-            </div>
-        </div>
+    <br>
+
         <div class="participant-content" style="margin-right: 20px; margin-left: 320px;">
+            <div align="right">
+            <a class="ui button" style="color: #cf0a2c; font-family: Open Sans">
+                Demographics
+            </a>
+            <a href="{{ url_for('admin.new_candidate') }}" class="ui button" style="background-color: #cf0a2c;">
+                <div style="text-align: center; font-weight: bold; color: #FFFFFF; font-family: Open Sans">
+                    New Participant +
+                </div>
+            </a>
+            
+            </div>
             {% for p in participants | sort(attribute='last_name') %}
                 <div class="ui mini modal" id="delete-{{ p.id }}">
                     <div class="ui header">

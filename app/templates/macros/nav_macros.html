@@ -23,8 +23,8 @@
     {% set endpoints = [
 
     ]%}
-    {% set donor_management = [('participant.index', 'Donor Management', 'dashboard')] %}
-    {% set participant_management = [('admin.participants', 'Participant Management', 'users')] %}
+    {% set donor_management = [('participant.index', 'Donor Tracking', 'dashboard')] %}
+    {% set participant_management = [('admin.participants', 'Recruitment Management', 'users')] %}
     {% set user = [] %}
     {% if current_user.is_authenticated %}
       {% set user = ([(current_user.role.index + '.index', current_user.role.name + ' Dashboard', 'user')]) %}
