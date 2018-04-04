@@ -131,8 +131,10 @@ class EditParticipantForm(Form):
         'Notes', validators=[Length(0, 1024)])
     status = IntegerField(
         'Status', validators=[InputRequired()])
-    assigned_term = StringField(
-        'Assigned Term', validators=[Length(1, 64)])
+    assigned_term = QuerySelectField(
+        'Assigned Term',
+        get_label='name',
+        query_factory=lambda: db.session.query(Term).order_by('start_date'))
     amount_donated = IntegerField(
         'Amount Donated', validators=[])
     applied = BooleanField(
