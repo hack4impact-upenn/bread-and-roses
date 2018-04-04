@@ -3,7 +3,8 @@ from flask_login import current_user, login_required
 from flask_rq import get_queue
 
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
-                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm, NewTermForm)
+                    NewUserForm, NewCandidateForm, DemographicForm,
+                    EditParticipantForm, NewTermForm, EditStatusForm)
 from . import admin
 from .. import db
 from ..decorators import admin_required
@@ -69,14 +70,24 @@ def new_term():
     return render_template('admin/new_term.html', form=form)
 
 
-@admin.route('/participants')
+@admin.route('/participants', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
+    status_forms = { p.id: EditStatusForm(participant=p.id) for p in participants }
+    for f in status_forms:
+        form = status_forms[f]
+        if form.validate_on_submit():
+            user = Candidate.query.filter_by(id=form.participant.data).first()
+            user.status = form.status.data
+            db.session.add(user)
+            db.session.commit()
+            flash('Status for user {} successfully changed to {}.'
+                .format(user.first_name, user.status), 'form-success')
     return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict(),
-    terms=Term.query.order_by(Term.start_date.desc()).all())
+                           terms=Term.query.order_by(Term.start_date.desc()).all(), status_forms=status_forms)
 
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])
@@ -104,7 +115,7 @@ def new_candidate():
             notes=form.notes.data,
             demographic=demographic,
             demographic_id=demographic.id,
-            status=0,
+            status=Status.PENDING,
             amount_donated=0
             )
         db.session.add(demographic)

@@ -1,12 +1,12 @@
 from flask_wtf import Form
 from wtforms import ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField, SelectMultipleField
+from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField, SelectMultipleField, HiddenField
 from wtforms.fields.html5 import EmailField, DateField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 
 from .. import db
-from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation, Term
+from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation, Term, Status
 
 
 class ChangeUserEmailForm(Form):
@@ -89,6 +89,15 @@ class DemographicForm(Form):
                   if choice.name != 'LGBTQ' else 'LGBTQ') for choice in SexualOrientation]
     )
     age = IntegerField('Age', default=0)
+
+
+class EditStatusForm(Form):
+    participant = HiddenField('participant')
+    status = SelectField(
+        'Status',
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Status]
+    )
+    submit = SubmitField('Update Status')
 
 
 class NewCandidateForm(Form):
