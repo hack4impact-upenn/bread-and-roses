@@ -9,11 +9,11 @@
         <div class="twelve wide column">
             <a class="ui basic compact button" href="{{ url_for('admin.participants') }}">
                 <i class="caret left icon"></i>
-                Back
+                Back to participants
             </a>
             <h2 class="ui header">
-                Add New Candidate
-                <div class="sub header">Create a new candidate account</div>
+                Edit a Participant
+                <div class="sub header">Edit a participant's information</div>
             </h2>
 
             {% set flashes = {
@@ -27,7 +27,7 @@
 
                 <div class="two fields">
                     {{ f.render_form_field(form.first_name) }}
-                    {{ f.render_form_field(form.last_name) }}
+                    {{ f.render_form_field(form.last_name) }} 
                 </div>
 
                 {{ f.render_form_field(form.email) }}
@@ -35,10 +35,13 @@
                 {{ f.render_form_field(form.source) }}
                 {{ f.render_form_field(form.staff_contact) }}
                 {{ f.render_form_field(form.notes) }}
-                {{ f.render_form_field(form.term) }}
+                {{ f.render_form_field(form.status) }}
+                {{ f.render_form_field(form.assigned_term) }}
+                {{ f.render_form_field(form.amount_donated) }}
+                {{ f.render_form_field(form.applied) }}
 
                 {% for field in form.demographic %}
-                    {% if field.type == 'SelectField' or field.type=='IntegerField' %}
+                    {% if field.type == 'SelectField' or field.type == 'IntegerField' %}
                         {{ f.render_form_field(field) }}
                     {% endif %}
                 {% endfor %}
@@ -47,7 +50,7 @@
                 {{ f.form_message(flashes['warning'], header='Check your email.', class='warning') }}
                 {{ f.form_message(flashes['info'], header='Information', class='info') }}
                 {{ f.form_message(flashes['success'], header='Success!', class='success') }}
-
+                
                 {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
                     {{ f.render_form_field(field) }}
                 {% endfor %}

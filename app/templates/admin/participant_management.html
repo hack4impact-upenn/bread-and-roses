@@ -4,26 +4,76 @@
 {% block content %}
     <div class="pushable">
     <div class="ui visible sidebar vertical menu participant-menu">
-        <div class="ui search item" style="background-color: #67A7FD;">
+        <div class="ui search item" style="background-color: #FFFFFF;">
             <div class="ui left icon input">
                 <i class="search icon"></i>
-                <input id="search-users" type="text" placeholder="Search">
+                <input id="search-participants" type="text" placeholder="Search participants">
             </div>
         </div>
 
-        <a href="{{ url_for('admin.new_candidate') }}" class="item" style="text-align: center; font-weight: bold; color: #2681FC;">
-            New Participant +
-        </a>
+        <div class="borderless item">
+          <div align="center">
+            <div class="ui selection dropdown select-filter" id="select-status" style="width: 250px;">
+                <input type="hidden" name="Participant Status">
+                <i class="dropdown icon"></i>
+                <div class="default text">Participant Status</div>
+                <div class="menu">
+                <div class="item" data-value="">All participants</div>
+                <div class="item" data-value="Pending">Pending</div>
+                <div class="item" data-value="Assigned">Assigned</div>
+                <div class="item" data-value="Rejected">Rejected</div>
+                </div>
+            </div>
+
+            <br><br>
+
+            <div class="ui selection dropdown select-filter" id="select-term" style="width: 250px;">
+                <input type="hidden" name="Participant Term">
+                <i class="dropdown icon"></i>
+                <div class="default text">Participant Term</div>
+                <div class="menu">
+                <div class="item" data-value="">All terms</div>
+                {% for t in terms %}
+                    <div class="item" data-value="{{ t.name }}">{{ t.name }}</div>
+                {% endfor %}
+                </div>
+            </div>
+
+            <br><br><br>
+
+            <div align="left" style="margin-left: 8px; font-family: Open Sans"><strong>Demographics:</strong></div> <br>
+            {% for name, list in demographics.items() %}
+                <div class="ui selection dropdown select-filter" id="select-{{name}}" style="width: 250px;">
+                <input type="hidden" name="Donor {{name}}">
+                <i class="dropdown icon"></i>
+                <div class="default text">{{ name }}</div>
+                <div class="menu">
+                    <div class="item" data-value="">All</div>
+                    {% for d in list %}
+                    <div class="item" data-value="{{ d }}">{{ d }}</div>
+                    {% endfor %}
+                </div>
+                </div>
+                <br><br>
+            {% endfor %}
+            </div>
+        </div>
     </div>
 
-        <div class="ui main menu participant-header" style="margin-top:6px">
-            <div class="right menu">
-                <a class="item" style="color: #67A7FD">
-                    Demographics
-                </a>
-            </div>
-        </div>
+    <br>
+
         <div class="participant-content" style="margin-right: 20px; margin-left: 320px;">
+            <div align="right">
+            <a class="ui button" style="color: #cf0a2c; font-family: Open Sans">
+                Demographics
+            </a>
+            <a href="{{ url_for('admin.new_candidate') }}" class="ui button" style="background-color: #cf0a2c;">
+                <div style="text-align: center; font-weight: bold; color: #FFFFFF; font-family: Open Sans">
+                    New Participant +
+                </div>
+            </a>
+            
+            </div>
             {% for p in participants | sort(attribute='last_name') %}
                 <div class="ui mini modal" id="delete-{{ p.id }}">
                     <div class="ui header">
@@ -62,13 +112,13 @@
 
                         <br />
 
-                        <div><span class="bold">Race:</span> 
+                        <div><span class="bold">Race:</span>
                             {{ p.demographic.race.name.replace('_', ' ').title() }}
                         </div>
-                        <div><span class="bold">Gender:</span> 
+                        <div><span class="bold">Gender:</span>
                             {{ p.demographic.gender.name.replace('_', ' ').title() }}
                         </div>
-                        <div><span class="bold">Age:</span> 
+                        <div><span class="bold">Age:</span>
                             {{ p.demographic.age }}
                         </div>
                         <div><span class="bold">Sexual Orientation:</span> 
@@ -89,10 +139,12 @@
                         </div>
                     </div>
                     <div class="actions">
-                        <div class="ui blue edit button">
-                            <i class="edit icon"></i>
-                            Edit
-                        </div>
+                        <a href="{{ url_for('admin.edit_participant', part_id=p.id) }}">
+                            <div class="ui blue edit button">
+                                <i class="edit icon"></i>
+                                Edit
+                            </div>
+                        </a>
                         <div class="ui red button" onclick="$('#delete-{{ p.id }}').modal('show')">
                             <i class="remove icon"></i>
                             Delete
@@ -103,6 +155,7 @@
                 <script>$('#delete-{{ p.id }}').modal({ allowMultiple: true })</script>
                 <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
                     <div class="participant">
+                        <div class="status" hidden>{{p.status_name()}}</div>
                         <div class="partseg1">
                             {% if not p.status or p.status == Status.PENDING %}
                                 <i class="dot circle outline icon" style="color: #FAC334;"></i>
@@ -114,30 +167,30 @@
                         </div>
                         <div class="partseg2">
                             <div class="partname">{{ p.first_name }} {{ p.last_name }}</div>
-                            <div class="partterm">{{ p.assigned_term }}</div>
+                            <div class="partterm term">{{ p.term.name }}</div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo race">
                                 {{ p.demographic.race.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo class">
                                 {{ p.demographic.soc_class.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo age">
                                 {{ p.demographic.age }} yr old
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo gender">
                                 {{ p.demographic.gender.name.replace('_', ' ') }}
                             </div>
                         </div>
                         <div class="partseg">
-                            <div class="partinfo">
+                            <div class="partinfo sexual-orientation">
                                 {{ p.demographic.sexual_orientation.name.replace('_', ' ') }}
                             </div>
                         </div>
@@ -149,26 +202,48 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#search-users').keyup(function () {
-                var searchText = $(this).val();
-                if (searchText.length > 0) {
-                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
-                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
-                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
-                } else {
-                    $('td.positive').removeClass('positive');
-                    $('tr.hidden').removeClass('hidden').show();
-                }
-            });
+          // Hides anything with a hidden-? class and shows everything else
+          const refilter = function() {
+            $('.participant').closest('.segments').each(function() {
+              if ($(this).is('[class*="hidden"]')) {
+                  $(this).hide()
+              } else {
+                $(this).show()
+              }
+            })
+          };
 
-            $('#select-role').dropdown({
+          // Search bar filtering (searches all info)
+          $('#search-participants').keyup(function () {
+              var searchText = $(this).val();
+              if (searchText.length > 0) {
+                $('.participant:icontains(' + searchText + ')').closest('.segments').removeClass('hidden-search')
+                $('.participant').not(':icontains(' + searchText + ')').closest('.segments').addClass('hidden-search')
+              } else {
+                $('.participant').closest('.segments').removeClass('hidden-search')
+              }
+              refilter();
+          });
+
+          // Dropdown filtering
+          const filters ={'status':'#select-status', 'term':'#select-term', 'race':'#select-Race', 'gender':'#select-Gender', 'class':'#select-Class', 'sexual-orientation':'[id="select-Sexual Orientation"]'}
+          $.each(filters,function(name, filter) {
+            $(filter).dropdown({
                 onChange: function (value, text, $selectedItem) {
-                    $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-                    $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
+                  $('.participant').closest('.segments').find('.'+name).each(function(){
+                      let text = $.trim($(this).text())
+                      if (text.toLowerCase() === value.toLowerCase() || value.length === 0) {
+                        $(this).closest('.segments').removeClass('hidden-'+name)
+                      } else {
+                        $(this).closest('.segments').addClass('hidden-'+name)
+                      }
+                    })
+                  refilter();
                 }
+              });
             });
-        });
+          });
+
 
     </script>
 {% endblock %}

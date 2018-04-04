@@ -18,6 +18,7 @@ class Race(enum.Enum):
     MULTI_RACIAL = 6
 
 
+
 class Class(enum.Enum):
     NOT_SPECIFIED = 0
     LOW = 1
@@ -49,3 +50,14 @@ class Demographic(db.Model):
 
     candidate = db.relationship('Candidate', uselist=False, back_populates='demographic')
     donor = db.relationship('Donor', uselist=False, back_populates='demographic')
+
+    @staticmethod
+    def demographics_dict():
+        all_demo = {'Race': Race, 'Class': Class, 'Gender': Gender, 'Sexual Orientation': SexualOrientation}
+        demo_dict = {}
+
+        for key, val in all_demo.items():
+            demo_dict[key] = [choice.name.replace('_', ' ').title() for choice in val]
+            demo_dict[key].remove('Not Specified')
+
+        return demo_dict
