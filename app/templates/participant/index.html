@@ -1,62 +1,473 @@
 {% extends 'layouts/base.html' %}
 
 {% block content %}
-    <div class="ui stackable grid container">
-        <div class="sixteen wide tablet twelve wide computer centered column">
-            <a class="ui basic compact button" href="{{ url_for('participant.new_donor') }}">
-                New Donor
-                <i class="plus icon"></i>
-            </a>
-            <h2 class="ui header">
-                Donor Management
-                <div class="sub header">
-                    View and manage your donors.
-                </div>
-            </h2>
-
-            <div class="ui menu">
-                <div id="select-role" class="ui dropdown item">
-                    <div class="text">
-                        All account types
-                    </div>
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <div class="item" data-value="">All statuses</div>
-                    </div>
-                </div>
-                <div class="ui right search item">
-                    <div class="ui transparent icon input">
-                        <input id="search-donors" type="text" placeholder="Search donors…">
-                        <i class="search icon"></i>
-                    </div>
-                </div>
-            </div>
-
-            {# Use overflow-x: scroll so that mobile views don't freak out
-             # when the table is too wide #}
-            <div style="overflow-x: scroll;">
-                <table class="ui searchable sortable unstackable selectable celled table">
-                    <thead>
-                        <tr>
-                            <th>First name</th>
-                            <th class="sorted ascending">Last name</th>
-                            <th>Email address</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for d in donors | sort(attribute='last_name') %}
-                        <tr onclick="window.location.href = ''">
-
-                            <td>{{ d.first_name }}</td>
-                            <td>{{ d.last_name }}</td>
-                            <td>{{ d.email }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    <div class="ui container donor-header">
+      <div class="ui grid">
+        <div class="eight wide centered column donor-header-search">
+          <a href="{{ url_for('participant.new_donor') }}" class="ui left labeled icon button">
+            New Donor
+            <i class="plus icon"></i>
+          </a>
+          <div class="ui fluid left icon input" >
+            <input type="text" placeholder="Search">
+            <i class="search icon"></i>
+          </div>
         </div>
+      </div>
+
+      {% set todo = donors_by_status[Status.TODO.name] %}
+      {% set asking = donors_by_status[Status.ASKING.name] %}
+      {% set pledged = donors_by_status[Status.PLEDGED.name] %}
+      {% set completed = donors_by_status[Status.COMPLETED.name] %}
+      <div class="ui four column grid container">
+        <div class="column custom-center">
+          TODO: {{ todo | length }} <i class="chevron down icon"></i>
+        </div>
+        <div class="column custom-center">
+          ASKING: {{ asking | length }} <i class="chevron down icon"></i>
+        </div>
+        <div class="column custom-center">
+          PLEDGED: {{ pledged | length }} <i class="chevron down icon"></i>
+        </div>
+        <div class="column custom-center">
+          COMPLETED: {{ completed | length }} <i class="chevron down icon"></i>
+        </div>
+      </div>
+    </div>
+    <div class="ui four column grid container" style="padding-top: 20px">
+      <div class="column">
+
+        {% for d in todo | sort(attribute='last_name') %}
+                  <div class="ui mini modal" id="delete-{{ d.id }}">
+                      <div class="ui header">
+                          Warning!
+                      </div>
+                      <div class="content">
+                          <p>This action is irreversible! Are you sure you want to delete {{ d.first_name }} {{ d.last_name }}?</p>
+                      </div>
+                      <div class="actions">
+                          <div class="ui blue cancel button">
+                              <i class="arrow alternate circle left outline icon"></i>
+                              No, cancel!
+                          </div>
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                              <div class="ui red ok button">
+                                  <i class="trash alternate icon"></i>
+                                  Yes, delete {{ d.first_name }}
+                              </div>
+                          </a>
+                      </div>
+                  </div>
+                  <div class="ui small modal" id="modal-{{ d.id }}">
+                      <i class="close icon"></i>
+                      <div class="header">
+                          {{ d.first_name }} {{ d.last_name }}
+                      </div>
+                      <div class="content">
+                          <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
+                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
+                          <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
+                          <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
+
+                          <br/>
+                          <div><span class="bold">Date of contact:</span> {{ datestring_alt(d.contact_date) }}</div>
+                          <div><span class="bold">Date received:</span> N/A </div>
+
+                          <div class="ui divider"></div>
+                          
+                          <div><span class="bold">Email:</span> {{ d.email }}</div>
+                          <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
+                          <div><span class="bold">Street Address:</span> {{ d.street_address }}, {{ d.city }}, {{ d.state }} {{ d.zip_code}} </div>
+
+                          <div class="ui divider"></div>
+
+                          <div><span class="bold">Race:</span> 
+                              {{ d.demographic.race.name.replace('_', ' ').title() }}
+                          </div>
+                          <div><span class="bold">Gender:</span> 
+                              {{ d.demographic.gender.name.replace('_', ' ').title() }}
+                          </div>
+                          <div><span class="bold">Age:</span> 
+                              {{ d.demographic.age }}
+                          </div>
+                          <div><span class="bold">Class (low, middle, upper, NA):</span>
+                              {{ d.demographic.soc_class.name.replace('_', ' ').title() }}
+                          </div>
+
+                          <div class="ui divider"></div>
+
+                          <div><span class="bold">Interested in joining a future Giving Project:</span> 
+                              {{ 'Yes' if d.interested_in_future_gp else 'No' }}
+                          </div>
+
+                          <div><span class="bold">Want to learn about BRF guarantees:</span> 
+                              {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
+                          </div>
+
+                          <div><span class="bold">Interested in volunteering with BRF:</span> 
+                              {{ 'Yes' if d.interested_in_volunteering else 'No' }}
+                          </div>
+
+
+                          <br/>
+                          <div><span class="bold">Notes:</span><br/>
+                              {{ d.notes }}
+                          </div>
+                      </div>
+                      <div class="actions">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                              <i class="edit icon"></i>
+                              Edit
+                          </a>
+                          <div class="ui red button" onclick="$('#delete-{{ d.id }}').modal('show')">
+                              <i class="remove icon"></i>
+                              Delete
+                          </div>
+                      </div>
+                  </div>
+                  <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
+                  <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
+                  <div class="ui card" style="cursor: pointer;" onclick="$('#modal-{{ d.id }}').modal('show')" >
+          <div class="content">
+            <i class="right floated info circle icon"></i>
+            <div class="header">{{d.first_name}} {{d.last_name}}</div>
+            <div class="description">
+              <p></p>
+            </div>
+          </div>
+          <div class="extra content">
+            <span class="right floated content">
+              {{datestring(d.contact_date)}}
+            </span>
+          </div>
+        </div>   
+        {% endfor %}
+
+      </div>
+
+      <div class="column">
+        {% for d in asking | sort(attribute='last_name') %}
+                  <div class="ui mini modal" id="delete-{{ d.id }}">
+                      <div class="ui header">
+                          Warning!
+                      </div>
+                      <div class="content">
+                          <p>This action is irreversible! Are you sure you want to delete {{ d.first_name }} {{ d.last_name }}?</p>
+                      </div>
+                      <div class="actions">
+                          <div class="ui blue cancel button">
+                              <i class="arrow alternate circle left outline icon"></i>
+                              No, cancel!
+                          </div>
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                              <div class="ui red ok button">
+                                  <i class="trash alternate icon"></i>
+                                  Yes, delete {{ d.first_name }}
+                              </div>
+                          </a>
+                      </div>
+                  </div>
+                  <div class="ui small modal" id="modal-{{ d.id }}">
+                      <i class="close icon"></i>
+                      <div class="header">
+                          {{ d.first_name }} {{ d.last_name }}
+                      </div>
+                      <div class="content">
+                          <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
+                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
+                          <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
+                          <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
+
+                          <br/>
+                          <div><span class="bold">Date of contact:</span> {{ datestring_alt(d.contact_date) }}</div>
+                          <div><span class="bold">Date received:</span> N/A </div>
+
+                          <div class="ui divider"></div>
+                          
+                          <div><span class="bold">Email:</span> {{ d.email }}</div>
+                          <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
+                          <div><span class="bold">Street Address:</span> {{ d.street_address }}, {{ d.city }}, {{ d.state }} {{ d.zip_code}} </div>
+
+                          <div class="ui divider"></div>
+
+                          <div><span class="bold">Race:</span> 
+                              {{ d.demographic.race.name.replace('_', ' ').title() }}
+                          </div>
+                          <div><span class="bold">Gender:</span> 
+                              {{ d.demographic.gender.name.replace('_', ' ').title() }}
+                          </div>
+                          <div><span class="bold">Age:</span> 
+                              {{ d.demographic.age }}
+                          </div>
+                          <div><span class="bold">Class (low, middle, upper, NA):</span>
+                              {{ d.demographic.soc_class.name.replace('_', ' ').title() }}
+                          </div>
+
+                          <div class="ui divider"></div>
+
+                          <div><span class="bold">Interested in joining a future Giving Project:</span> 
+                              {{ 'Yes' if d.interested_in_future_gp else 'No' }}
+                          </div>
+
+                          <div><span class="bold">Want to learn about BRF guarantees:</span> 
+                              {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
+                          </div>
+
+                          <div><span class="bold">Interested in volunteering with BRF:</span> 
+                              {{ 'Yes' if d.interested_in_volunteering else 'No' }}
+                          </div>
+
+
+                          <br/>
+                          <div><span class="bold">Notes:</span><br/>
+                              {{ d.notes }}
+                          </div>
+                      </div>
+                      <div class="actions">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                              <i class="edit icon"></i>
+                              Edit
+                          </a>
+                          <div class="ui red button" onclick="$('#delete-{{ d.id }}').modal('show')">
+                              <i class="remove icon"></i>
+                              Delete
+                          </div>
+                      </div>
+                  </div>
+                  <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
+                  <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
+                  <div class="ui card" style="cursor: pointer;" onclick="$('#modal-{{ d.id }}').modal('show')" >
+          <div class="content">
+            <i class="right floated info circle icon"></i>
+            <div class="header">{{d.first_name}} {{d.last_name}}</div>
+            <div class="description">
+              <p>Asking for ${{d.amount_asking_for}}</p>
+            </div>
+          </div>
+          <div class="extra content">
+            <span class="right floated content">
+              {{datestring(d.contact_date)}}
+            </span>
+          </div>
+        </div>   
+        {% endfor %}
+      </div>
+
+      <div class="column">
+        {% for d in pledged | sort(attribute='last_name') %}
+                  <div class="ui mini modal" id="delete-{{ d.id }}">
+                      <div class="ui header">
+                          Warning!
+                      </div>
+                      <div class="content">
+                          <p>This action is irreversible! Are you sure you want to delete {{ d.first_name }} {{ d.last_name }}?</p>
+                      </div>
+                      <div class="actions">
+                          <div class="ui blue cancel button">
+                              <i class="arrow alternate circle left outline icon"></i>
+                              No, cancel!
+                          </div>
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                              <div class="ui red ok button">
+                                  <i class="trash alternate icon"></i>
+                                  Yes, delete {{ d.first_name }}
+                              </div>
+                          </a>
+                      </div>
+                  </div>
+                  <div class="ui small modal" id="modal-{{ d.id }}">
+                      <i class="close icon"></i>
+                      <div class="header">
+                          {{ d.first_name }} {{ d.last_name }}
+                      </div>
+                      <div class="content">
+                          <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
+                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
+                          <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
+                          <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
+
+                          <br/>
+                          <div><span class="bold">Date of contact:</span> {{ datestring_alt(d.contact_date) }}</div>
+                          <div><span class="bold">Date received:</span> N/A </div>
+
+                          <div class="ui divider"></div>
+                          
+                          <div><span class="bold">Email:</span> {{ d.email }}</div>
+                          <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
+                          <div><span class="bold">Street Address:</span> {{ d.street_address }}, {{ d.city }}, {{ d.state }} {{ d.zip_code}} </div>
+
+                          <div class="ui divider"></div>
+
+                          <div><span class="bold">Race:</span> 
+                              {{ d.demographic.race.name.replace('_', ' ').title() }}
+                          </div>
+                          <div><span class="bold">Gender:</span> 
+                              {{ d.demographic.gender.name.replace('_', ' ').title() }}
+                          </div>
+                          <div><span class="bold">Age:</span> 
+                              {{ d.demographic.age }}
+                          </div>
+                          <div><span class="bold">Class (low, middle, upper, NA):</span>
+                              {{ d.demographic.soc_class.name.replace('_', ' ').title() }}
+                          </div>
+
+                          <div class="ui divider"></div>
+
+                          <div><span class="bold">Interested in joining a future Giving Project:</span> 
+                              {{ 'Yes' if d.interested_in_future_gp else 'No' }}
+                          </div>
+
+                          <div><span class="bold">Want to learn about BRF guarantees:</span> 
+                              {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
+                          </div>
+
+                          <div><span class="bold">Interested in volunteering with BRF:</span> 
+                              {{ 'Yes' if d.interested_in_volunteering else 'No' }}
+                          </div>
+
+
+                          <br/>
+                          <div><span class="bold">Notes:</span><br/>
+                              {{ d.notes }}
+                          </div>
+                      </div>
+                      <div class="actions">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                              <i class="edit icon"></i>
+                              Edit
+                          </a>
+                          <div class="ui red button" onclick="$('#delete-{{ d.id }}').modal('show')">
+                              <i class="remove icon"></i>
+                              Delete
+                          </div>
+                      </div>
+                  </div>
+                  <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
+                  <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
+                  <div class="ui card" style="cursor: pointer;" onclick="$('#modal-{{ d.id }}').modal('show')" >
+          <div class="content">
+            <i class="right floated info circle icon"></i>
+            <div class="header">{{d.first_name}} {{d.last_name}}</div>
+            <div class="description">
+              <p>Pledged ${{d.amount_pledged}}</p>
+            </div>
+          </div>
+          <div class="extra content">
+            <span class="right floated content">
+              {{datestring(d.contact_date)}}
+            </span>
+          </div>
+        </div>   
+        {% endfor %}
+      </div>
+
+      <div class="column">
+        {% for d in completed | sort(attribute='last_name') %}
+                  <div class="ui mini modal" id="delete-{{ d.id }}">
+                      <div class="ui header">
+                          Warning!
+                      </div>
+                      <div class="content">
+                          <p>This action is irreversible! Are you sure you want to delete {{ d.first_name }} {{ d.last_name }}?</p>
+                      </div>
+                      <div class="actions">
+                          <div class="ui blue cancel button">
+                              <i class="arrow alternate circle left outline icon"></i>
+                              No, cancel!
+                          </div>
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                              <div class="ui red ok button">
+                                  <i class="trash alternate icon"></i>
+                                  Yes, delete {{ d.first_name }}
+                              </div>
+                          </a>
+                      </div>
+                  </div>
+                  <div class="ui small modal" id="modal-{{ d.id }}">
+                      <i class="close icon"></i>
+                      <div class="header">
+                          {{ d.first_name }} {{ d.last_name }}
+                      </div>
+                      <div class="content">
+                          <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
+                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
+                          <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
+                          <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
+
+                          <br/>
+                          <div><span class="bold">Date of contact:</span> {{ datestring_alt(d.contact_date) }}</div>
+                          <div><span class="bold">Date received:</span> N/A </div>
+
+                          <div class="ui divider"></div>
+                          
+                          <div><span class="bold">Email:</span> {{ d.email }}</div>
+                          <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
+                          <div><span class="bold">Street Address:</span> {{ d.street_address }}, {{ d.city }}, {{ d.state }} {{ d.zip_code}} </div>
+
+                          <div class="ui divider"></div>
+
+                          <div><span class="bold">Race:</span> 
+                              {{ d.demographic.race.name.replace('_', ' ').title() }}
+                          </div>
+                          <div><span class="bold">Gender:</span> 
+                              {{ d.demographic.gender.name.replace('_', ' ').title() }}
+                          </div>
+                          <div><span class="bold">Age:</span> 
+                              {{ d.demographic.age }}
+                          </div>
+                          <div><span class="bold">Class (low, middle, upper, NA):</span>
+                              {{ d.demographic.soc_class.name.replace('_', ' ').title() }}
+                          </div>
+
+                          <div class="ui divider"></div>
+
+                          <div><span class="bold">Interested in joining a future Giving Project:</span> 
+                              {{ 'Yes' if d.interested_in_future_gp else 'No' }}
+                          </div>
+
+                          <div><span class="bold">Want to learn about BRF guarantees:</span> 
+                              {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
+                          </div>
+
+                          <div><span class="bold">Interested in volunteering with BRF:</span> 
+                              {{ 'Yes' if d.interested_in_volunteering else 'No' }}
+                          </div>
+
+
+                          <br/>
+                          <div><span class="bold">Notes:</span><br/>
+                              {{ d.notes }}
+                          </div>
+                      </div>
+                      <div class="actions">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                              <i class="edit icon"></i>
+                              Edit
+                          </a>
+                          <div class="ui red button" onclick="$('#delete-{{ d.id }}').modal('show')">
+                              <i class="remove icon"></i>
+                              Delete
+                          </div>
+                      </div>
+                  </div>
+                  <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
+                  <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
+                  <div class="ui card" style="cursor: pointer;" onclick="$('#modal-{{ d.id }}').modal('show')" >
+          <div class="content">
+            <i class="right floated info circle icon"></i>
+            <div class="header">{{d.first_name}} {{d.last_name}}</div>
+            <div class="description">
+              <p>${{d.amount_received}} received by BNR</p>
+            </div>
+          </div>
+          <div class="extra content">
+            <span class="right floated content">
+              {{datestring(d.contact_date)}}
+            </span>
+          </div>
+        </div>   
+        {% endfor %}
+      </div>
     </div>
 
     <script type="text/javascript">
