@@ -38,7 +38,7 @@
 {% macro account_items(current_user) %}
     {% if current_user.is_authenticated %}
       {% set endpoints = [
-        ('account.manage', 'My Profile', 'settings'),
+        ('participant.new_donor', 'My Profile', 'settings'),
         ('account.logout', 'Log out', 'sign out')
       ] %}
       {{ render_menu_items(endpoints) }}

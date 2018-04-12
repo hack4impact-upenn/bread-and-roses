@@ -10,7 +10,7 @@
 ] %}
 
 {% macro navigation(items) %}
-    <div class="ui vertical fluid secondary menu">
+    <div class="ui vertical fluid secondary menu"> 
         {% for route, name in items %}
             {% set href = url_for(route) %}
             <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{ href }}">
