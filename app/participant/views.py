@@ -1,3 +1,4 @@
+import datetime
 from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 
@@ -11,8 +12,49 @@ from ..models import Donor, Demographic, DonorStatus
 @login_required
 def index():
     """Participant dashboard page."""
-    donors = Donor.query.filter_by(user_id=current_user.id).all()
-    return render_template('participant/index.html', donors=donors)
+    donors_by_status = {
+        status.name: Donor.query.filter_by(
+            user_id=current_user.id, status=status).all()
+        for status in DonorStatus
+    }
+
+    def datestring(s):
+        return s.strftime('%b %d')
+
+    def datestring_alt(s):
+        return s.strftime('%b %d, %Y')
+
+    return render_template('participant/index.html',
+                           donors_by_status=donors_by_status,
+                           Status=DonorStatus,
+                           datestring=datestring,
+                           datestring_alt=datestring_alt)
+
+
+@participant.route('/')
+@login_required
+def profile():
+    """Participant Profile page."""
+    return render_template('participant/profile.html')
+
+
+@participant.route('/donor/<int:donor_id>/_delete')
+@login_required
+def delete_donor(donor_id):
+    """Delete a participant."""
+    d = Donor.query.filter_by(id=donor_id).first()
+    db.session.delete(d)
+    db.session.commit()
+    flash('Successfully deleted donor %s.' % d.first_name, 'success')
+    return redirect(url_for('participant.index'))
+
+
+@participant.route('/donor/<int:donor_id>/edit')
+@login_required
+def edit_donor(donor_id):
+    """Edits a donor."""
+    d = Donor.query.filter_by(id=donor_id).first()
+    return redirect(url_for('participant.index'))
 
 
 @participant.route('/new-donor', methods=['GET', 'POST'])
@@ -20,7 +62,6 @@ def index():
 def new_donor():
     """Create a new donor."""
     form = NewDonorForm()
-    #raise
     if form.validate_on_submit():
         demographic = Demographic(
             race=form.demographic.race.data,
@@ -41,14 +82,15 @@ def new_donor():
             zipcode=form.zipcode.data,
             phone_number=form.phone_number.data,
             email=form.email.data,
-            amount_asking_for=form.amount_asking_for.data,
+            notes=form.notes.data,
             interested_in_future_gp=form.interested_in_future_gp.data,
             want_to_learn_about_brf_guarantees=form.want_to_learn_about_brf_guarantees.data,
             interested_in_volunteering=form.interested_in_volunteering.data,
 
-            status=DonorStatus.ASKING,
+            status=DonorStatus.TODO,
             amount_pledged=0,
             amount_received=0,
+            amount_asking_for=0,
 
             demographic=demographic
         )

@@ -2,16 +2,37 @@
 
 {% block content %}
     <div class="ui text container">
-      <h1>Hello {% if not (current_user.is_authenticated) %} world {% else %} {{ current_user.full_name() }} {% endif %},</h1>
-
-        <p>This is <a href="http://hack4impact.org">Hack4Impact</a>'s web application template. We'll use this as a
-        foundation for each of our <a href="http://flask.pocoo.org">Flask</a> projects. The goal is to reduce the work
-        necessary to get a new project off the ground, by providing boilerplate code (such as account management
-        facilities), as well as uncontroversial and extensible defaults. We have integrated an
-        <a href="http://sass-lang.com">SCSS</a>-based asset pipeline based around a (fantastic!) framework
-        called <a href="http://semantic-ui.com">Semantic UI</a>. Much of this code is appropriated from the examples
-        in Miguel Grinberg's book, <a href="http://flaskbook.com"><em>Flask Web Development</em></a>.</p>
-
-        <p>{{ lipsum(6) }}</p>
+      <br>
+      <h1>Bread and Roses</h1>
+      <br>
+        <p>
+          Bread & Roses Community Fund believes in change, not charity. We organize donors at all levels to support community-based groups in building movements for racial equity and economic opportunity. We support movements and their leaders through fundraising, grantmaking, capacity building, and convening.
+        </p>
+        <br>
+        <p>
+          We believe that a better world is possible. For 40 years Bread & Roses has inspired people to take collective action and create real change in their communities, the Philadelphia region, and beyond. We raise money through donations of all sizes and make grants using a democratic, community-led decision-making process. Our grants support local groups working for good schools, fewer prisons, better jobs, a safe environment, quality health care, and more.
+        </p>
+        <br>
+        <p>
+          We believe that the people in the best position to create real change are those who are most affected by injustice and inequality. And we provide training and capacity building to build leadership among people of color, poor and working-class people, people with disabilities, women, and LGBTQ people.
+        </p>
+        <br>
+        <p>
+          We believe that real change is created by people who have the courage to stand up, the determination to join together, and the resources they need to create solutions for justice.
+        </p>
+        <br>
+        <p>
+          A note about our name: “Bread and Roses” was the rallying cry for striking textile workers in 1912 in Lawrence, Massachusetts who won overtime pay and better working conditions. The strike is now called the Bread and Roses strike, but the phrase itself comes from a poem by James Oppenheim published in 1911:
+        </p>
+        <br>
+        <p align="center">
+          <i>
+          Our lives shall not be sweated from birth until life closes.
+          Hearts starve as well as bodies; give us bread, but give us roses!
+          </i>
+        </p>
+        <br>
+        <br>
+        <br>
     </div>
 {% endblock %}

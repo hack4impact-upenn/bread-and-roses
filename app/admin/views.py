@@ -3,12 +3,12 @@ from flask_login import current_user, login_required
 from flask_rq import get_queue
 
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
-                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm)
+                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm, NewTermForm)
 from . import admin
 from .. import db
 from ..decorators import admin_required
 from ..email import send_email
-from ..models import Role, User, Candidate, Demographic, EditableHTML, Status
+from ..models import Role, User, Candidate, Demographic, Donor, EditableHTML, Status, DonorStatus, Term
 
 
 @admin.route('/')
@@ -38,6 +38,36 @@ def new_user():
               'form-success')
     return render_template('admin/new_user.html', form=form)
 
+@admin.route('/term-management', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def term_management():
+    """Manage terms"""
+    form = NewCandidateForm()
+    terms = Term.query.all()
+    return render_template('admin/term_management.html', Status=Status, terms=terms, form=form)
+
+
+@admin.route('/new-term', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def new_term():
+    """Create a new term."""
+    form = NewTermForm()
+    if form.validate_on_submit():
+        term = Term(
+            name=form.name.data,
+            in_progress=True,
+            start_date=form.start_date.data,
+            end_date=form.end_date.data,
+            candidates= [],
+            )
+        db.session.add(term)
+        db.session.commit()
+        flash('Term {} successfully created'.format(term.name),
+              'form-success')
+    return render_template('admin/new_term.html', form=form)
+
 
 @admin.route('/participants')
 @login_required
@@ -45,7 +75,8 @@ def new_user():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
-    return render_template('admin/participant_management.html', Status=Status, participants=participants)
+    return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict(),
+    terms=Term.query.order_by(Term.start_date.desc()).all())
 
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])
@@ -67,11 +98,14 @@ def new_candidate():
             last_name=form.last_name.data,
             email=form.email.data,
             phone_number=form.phone_number.data,
+            term=form.term.data,
             source=form.source.data,
             staff_contact=form.staff_contact.data,
             notes=form.notes.data,
             demographic=demographic,
-            demographic_id=demographic.id
+            demographic_id=demographic.id,
+            status=0,
+            amount_donated=0
             )
         db.session.add(demographic)
         db.session.add(candidate)
@@ -101,7 +135,7 @@ def edit_participant(part_id):
         form.staff_contact.data = part.staff_contact
         form.notes.data = part.notes
         form.status.data = part.status
-        form.assigned_term.data = part.assigned_term
+        form.assigned_term.data = part.term
         form.amount_donated.data = part.amount_donated
         form.applied.data = part.applied
 
@@ -120,7 +154,7 @@ def edit_participant(part_id):
         part.staff_contact = form.staff_contact.data
         part.notes = form.notes.data
         part.status = form.status.data
-        part.assigned_term = form.assigned_term.data
+        part.term = form.assigned_term.data
         part.amount_donated = form.amount_donated.data
         part.applied = form.applied
 
@@ -130,13 +164,30 @@ def edit_participant(part_id):
         demographic.age = form.demographic.age.data
         demographic.sexual_orientation = form.demographic.sexual_orientation.data
         demographic.soc_class = form.demographic.soc_class.data
-        
+
         db.session.add(demographic)
         db.session.add(part)
         db.session.commit()
         flash('Participant {} successfully saved'.format(part.first_name),
               'form-success')
     return render_template('admin/edit_participant.html', form=form)
+
+@admin.route('/all-donors')
+@login_required
+@admin_required
+def all_donors():
+    """View and manage all donors"""
+    donors = Donor.query.all()
+    return render_template('admin/all_donors.html', DonorStatus=DonorStatus, donors=donors, demographics=Demographic.demographics_dict())
+
+@admin.route('/received-donation/<int:donor_id>')
+@login_required
+@admin_required
+def received_donation(donor_id):
+    """ Mark a donation as received for this donor. """
+    donor = Donor.query.filter_by(id=donor_id).first()
+    # TODO: receive a donation
+    return redirect(url_for('admin.all_donors'))
 
 
 @admin.route('/invite-user', methods=['GET', 'POST'])

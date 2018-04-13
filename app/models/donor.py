@@ -3,9 +3,10 @@ from .. import db
 
 
 class DonorStatus(enum.Enum):
-    ASKING = 0
-    PLEDGED = 1
-    RECEIVED = 2
+    TODO = 0
+    ASKING = 1
+    PLEDGED = 2
+    COMPLETED = 3
 
 
 class Donor(db.Model):
@@ -37,8 +38,13 @@ class Donor(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship("User", back_populates="donors")
 
+    notes = db.Column(db.String(3000))
+
     def __repr__(self):
-        return '<Donor \'%s\'>' % self.first_name % self.last_name
+        return '<Donor \'{} {}\'>'.format(self.first_name, self.last_name)
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
+
+    def status_name(self):
+        return str(self.status).split('.')[1].title()

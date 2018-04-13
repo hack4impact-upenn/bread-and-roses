@@ -1,12 +1,12 @@
 from flask_wtf import Form
 from wtforms import ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField
-from wtforms.fields.html5 import EmailField
+from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField, SelectMultipleField
+from wtforms.fields.html5 import EmailField, DateField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 
 from .. import db
-from ..models import Role, User, Race, Class, Gender, SexualOrientation
+from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation, Term
 
 
 class ChangeUserEmailForm(Form):
@@ -58,38 +58,37 @@ class NewUserForm(InviteUserForm):
     submit = SubmitField('Create')
 
 
+class NewTermForm(Form):
+    name = StringField(
+        'Name', validators=[InputRequired()])
+    start_date = DateField(
+        'Start Date', validators=[InputRequired()])
+    end_date = DateField(
+        'End Date', validators=[InputRequired()])
+    submit = SubmitField('Create')
+# TODO check if end date is larger than start date
+
+
 class DemographicForm(Form):
     race = SelectField(
         'Race',
-        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Race],
-        # default=0,
-        # coerce=int,
-        # validators=[InputRequired()]
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Race]
     )
 
     soc_class = SelectField(
         'Class',
-        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Class],
-        # default=0,
-        # coerce=int,
-        # validators=[InputRequired()]
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Class]
     )
     gender = SelectField(
         'Gender',
-        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Gender],
-        # coerce=int,
-        # validators=[InputRequired()]
-        # default=0
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Gender]
     )
     sexual_orientation = SelectField(
         'Sexual Orientation',
         choices=[(choice.name, choice.name.replace('_', ' ').title()
-                  if choice.name != 'LGBTQ' else 'LGBTQ') for choice in SexualOrientation],
-        # coerce=int,
-        # validators=[InputRequired()]
+                  if choice.name != 'LGBTQ' else 'LGBTQ') for choice in SexualOrientation]
     )
-    age = IntegerField(
-        'Age', validators=[InputRequired()])
+    age = IntegerField('Age', default=0)
 
 
 class NewCandidateForm(Form):
@@ -100,13 +99,17 @@ class NewCandidateForm(Form):
     email = EmailField(
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
-        'Phone Number', validators=[InputRequired(), Length(1, 64)])
+        'Phone Number', default="Not Specified")
+    term = QuerySelectField(
+        'Term',
+        get_label='name',
+        query_factory=lambda: db.session.query(Term).order_by('start_date'))
     source = StringField(
-        'Source', validators=[InputRequired(), Length(1, 256)])
+        'Source', default="Not Specified")
     staff_contact = StringField(
-        'Staff Contact', validators=[InputRequired(), Length(1, 64)])
+        'Staff Contact', default="Not Specified")
     notes = TextAreaField(
-        'Notes', validators=[Length(0, 1024)])
+        'Notes', default="None")
     demographic = FormField(DemographicForm)
     submit = SubmitField('Create')
 
@@ -119,20 +122,24 @@ class EditParticipantForm(Form):
     email = EmailField(
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
-        'Phone Number', validators=[InputRequired(), Length(1, 64)])
+        'Phone Number', default="")
     source = StringField(
-        'Source', validators=[InputRequired(), Length(1, 256)])
+        'Source', validators=[Length(1, 256)])
     staff_contact = StringField(
-        'Staff Contact', validators=[InputRequired(), Length(1, 64)])
+        'Staff Contact', validators=[Length(1, 64)])
     notes = TextAreaField(
         'Notes', validators=[Length(0, 1024)])
     status = IntegerField(
         'Status', validators=[InputRequired()])
-    assigned_term = StringField(
-        'Assigned Term', validators=[InputRequired(), Length(1, 64)])
+    assigned_term = QuerySelectField(
+        'Assigned Term',
+        get_label='name',
+        query_factory=lambda: db.session.query(Term).order_by('start_date'))
     amount_donated = IntegerField(
-        'Amount Donated', validators=[InputRequired()])
+        'Amount Donated', validators=[])
     applied = BooleanField(
-        'Applied', validators=[InputRequired()])
+        'Applied', default=False)
     demographic = FormField(DemographicForm)
     submit = SubmitField('Save')
+
+#class SelectStatus(SelectMultipleField):
