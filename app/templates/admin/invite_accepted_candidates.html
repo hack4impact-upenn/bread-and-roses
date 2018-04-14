@@ -37,18 +37,18 @@
             <br>
 
             <!-- <div class="ui menu"> -->
-                <div id="select-role" class="ui dropdown segment">
-                    <div class="text">
-                         All Terms
-                    </div>
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <div class="item" data-value="">All terms</div>
-                        {% for t in all_terms %}
-                            <div class="item" data-value="{{ t.name }}">{{ t.name }}</div>
-                        {% endfor %}
-                    </div>
-                </div>
+              <div id="select-term" class="ui dropdown segment">
+                  <div class="text">
+                       All Terms
+                  </div>
+                  <i class="dropdown icon"></i>
+                  <div class="menu">
+                      <div class="item" data-value="">All terms</div>
+                      {% for t in all_terms %}
+                          <div class="item" data-value="{{ t.name }}">{{ t.name }}</div>
+                      {% endfor %}
+                  </div>
+              </div>
                 <!-- <div class="ui right search item">
                     <div class="ui transparent icon input">
                         <input id="search-users" type="text" placeholder="Search candidates…">
@@ -56,7 +56,6 @@
                     </div>
                 </div> -->
             <!-- </div> -->
-
 
 
             {# Use overflow-x: scroll so that mobile views don't freak out
@@ -81,13 +80,14 @@
                         <tr>
                             <td>
                               <div class="ui child checkbox">
-                                <input type="checkbox" name="">
+                                <input class="candidate checkbox" type="checkbox" name="{{ u.id }}">
                                 <label></label>
                               </div>
                             </td>
                             <td>{{ u.first_name }}</td>
                             <td>{{ u.last_name }}</td>
                             <td>{{ u.email }}</td>
+                            <td class="term" hidden> {{ u.term.name }} </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -98,24 +98,35 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#search-users').keyup(function () {
-                var searchText = $(this).val();
-                if (searchText.length > 0) {
-                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
-                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
-                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
-                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
-                } else {
-                    $('td.positive').removeClass('positive');
-                    $('tr.hidden').removeClass('hidden').show();
+            // $('#search-users').keyup(function () {
+            //     var searchText = $(this).val();
+            //     if (searchText.length > 0) {
+            //         $('tbody td:icontains(' + searchText + ')').addClass('positive');
+            //         $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
+            //         $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
+            //         $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+            //     } else {
+            //         $('td.positive').removeClass('positive');
+            //         $('tr.hidden').removeClass('hidden').show();
+            //     }
+            // });
+
+            $('#select-term').dropdown({
+                onChange: function (value, text, $selectedItem) {
+                    $('td.term:contains(' + value + ')').closest('tr').removeClass('hidden').show();
+                    $('td.term').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
                 }
             });
 
-            $('#select-role').dropdown({
-                onChange: function (value, text, $selectedItem) {
-                    $('td.user.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
-                    $('td.user.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
-                }
+            var selected = []
+            $('.candidate.checkbox').change(function () {
+              var id = $(this).attr('name')
+              if(this.checked) {
+                selected.push(id);
+              } else {
+                selected.splice(selected.indexOf(id), 1)
+              }
+              $('input#selected_candidates').attr('value', selected.toString())
             });
         });
     </script>

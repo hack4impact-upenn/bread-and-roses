@@ -228,11 +228,11 @@ def invite_accepted_candidates():
     """Invites accepted candidates to create an account and set their own password."""
     form = InviteAcceptedCandidatesForm()
     if form.validate_on_submit():
-        selected = [ c in form.selected_candidates.data.split(',') ]
+        selected = [ Candidate.query.filter_by(id=c).first() for c in form.selected_candidates.data.split(',') ]
         user_role = Role.query.filter_by(name='User').first()
         # for each selected candidate create a new user account
-        for c in selected:
-            candidate = Candidate.query.filter_by(id=int(c))
+        for candidate in selected:
+            # candidate = Candidate.query.filter_by(id=c).first()
             user = User(
                 role=user_role,
                 first_name=candidate.first_name,
@@ -254,7 +254,7 @@ def invite_accepted_candidates():
                 template='account/email/invite',
                 user=user,
                 invite_link=invite_link, )
-        flash('Candidates successfully invited',
+        flash('Candidates {} successfully invited'.format(selected),
               'form-success')
     return render_template('admin/invite_accepted_candidates.html', form=form, all_terms=Term.query.order_by(Term.end_date.desc()).all(), accepted_candidates=Candidate.query.filter_by(status=Status.ASSIGNED).all())
 
