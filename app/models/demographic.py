@@ -17,6 +17,10 @@ class Race(enum.Enum):
     NATIVE_AMERICAN = 5
     MULTI_RACIAL = 6
 
+    def toString(value):
+        for data in Race:
+            if data.value == value:
+                return data.name.replace('_', ' ')
 
 
 class Class(enum.Enum):
@@ -25,6 +29,10 @@ class Class(enum.Enum):
     MIDDLE = 2
     UPPER = 3
 
+    def toString(value):
+        for data in Class:
+            if data.value == value:
+                return data.name.replace('_', ' ')
 
 class Gender(enum.Enum):
     NOT_SPECIFIED = 0
@@ -32,24 +40,39 @@ class Gender(enum.Enum):
     MAN = 2
     NON_BINARY = 3
 
+    def toString(value):
+        for data in Gender:
+            if data.value == value:
+                return data.name.replace('_', ' ')
 
 class SexualOrientation(enum.Enum):
     NOT_SPECIFIED = 0
     LGBTQ = 1
     STRAIGHT = 2
 
+    def toString(value):
+        for data in SexualOrientation:
+            if data.value == value:
+                return data.name.replace('_', ' ')
 
 class Demographic(db.Model):
     __tablename__ = 'demographics'
     id = db.Column(db.Integer, primary_key=True)
     race = db.Column(db.Enum(Race))
     gender = db.Column(db.Enum(Gender))
-    age = db.Column(db.Integer)
     sexual_orientation = db.Column(db.Enum(SexualOrientation))
     soc_class = db.Column(db.Enum(Class))
-
+    age = db.Column(db.Integer)
     candidate = db.relationship('Candidate', uselist=False, back_populates='demographic')
     donor = db.relationship('Donor', uselist=False, back_populates='demographic')
+
+    def demographic_strings(self):
+        demo_dict = {}
+        demo_dict['Race'] = Race.toString(self.race.value)
+        demo_dict['Class'] = Class.toString(self.soc_class.value)
+        demo_dict['Gender'] = Gender.toString(self.gender.value)
+        demo_dict['SexualOrientation'] = SexualOrientation.toString(self.sexual_orientation.value)
+        return demo_dict
 
     @staticmethod
     def demographics_dict():

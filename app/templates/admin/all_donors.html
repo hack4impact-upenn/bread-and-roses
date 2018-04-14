@@ -47,10 +47,14 @@
 
         <div class="donor-content" style="margin-right: 20px; margin-left: 320px">
             <div align="right">
-                <a class="ui button" style="color: #cf0a2c; font-family: Open Sans">
-                    Demographics
-                </a>
-            </div>
+            <a href="{{ url_for('admin.downloadDonors') }}">
+                <div class="ui button" style="color: #cf0a2c; font-family: Open Sans">
+                    Download
+                </div>
+            </a>
+            <a class="ui button" style="color: #cf0a2c; font-family: Open Sans">
+                Demographics
+            </a>
             {% for d in donors | sort(attribute='last_name') %}
                 <div class="ui small modal" id="modal-{{ d.id }}">
                     <i class="close icon"></i>

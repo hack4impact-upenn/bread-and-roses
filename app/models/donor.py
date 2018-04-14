@@ -8,6 +8,10 @@ class DonorStatus(enum.Enum):
     PLEDGED = 2
     COMPLETED = 3
 
+    def toString(value):
+        for data in DonorStatus:
+            if data.value == value:
+                return data.name.replace('_', ' ')
 
 class Donor(db.Model):
     __tablename__ = 'donors'
@@ -15,6 +19,7 @@ class Donor(db.Model):
 
     status = db.Column(db.Enum(DonorStatus))
     contact_date = db.Column(db.Date)
+
     first_name = db.Column(db.String(64))
     last_name = db.Column(db.String(64))
     street_address = db.Column(db.String(500))
@@ -42,6 +47,9 @@ class Donor(db.Model):
 
     def __repr__(self):
         return '<Donor \'{} {}\'>'.format(self.first_name, self.last_name)
+
+    def get_status(self):
+        return DonorStatus.toString(self.status.value)
 
     def full_name(self):
         return '%s %s' % (self.first_name, self.last_name)

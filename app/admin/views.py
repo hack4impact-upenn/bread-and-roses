@@ -1,4 +1,4 @@
-from flask import abort, flash, redirect, render_template, url_for, request
+from flask import abort, flash, redirect, render_template, url_for, request, make_response
 from flask_login import current_user, login_required
 from flask_rq import get_queue
 
@@ -345,3 +345,95 @@ def update_editor_contents():
     db.session.commit()
 
     return 'OK', 200
+
+
+@admin.route('/download/participants', methods=['GET'])
+@login_required
+def downloadParticipants():
+    # format string or list of strings to be csv-friendly
+    def csv_friendly(str):
+        if str == "":
+            return "NOT SPECIFIED"
+        return '\"{}\"'.format(str.replace('\"', '\"\"')) if str else ''
+
+    # write headers
+    # TODO put remaining headers
+    csv = 'First Name,Last Name,Term,Email,Phone,Source,Staff Contact,Notes,Status,Amount Donated,Applied,Age,Race,Class,Gender,Sexual Orientation\n'
+
+    # write each resource
+    candidates = Candidate.query.all()
+    for candidate in candidates:
+        demographics = candidate.demographic.demographic_strings()
+        csv += ','.join([
+            csv_friendly(candidate.first_name),
+            csv_friendly(candidate.last_name),
+            csv_friendly(candidate.term.name),
+            csv_friendly(candidate.email),
+            csv_friendly(candidate.phone_number),
+            csv_friendly(candidate.source),
+            csv_friendly(candidate.staff_contact),
+            csv_friendly(candidate.notes),
+            csv_friendly(candidate.status_name()),
+            csv_friendly(str(candidate.amount_donated)),
+            csv_friendly(str(candidate.applied)),
+            csv_friendly(str(candidate.demographic.age)),
+            csv_friendly(demographics['Race']),
+            csv_friendly(demographics['Class']),
+            csv_friendly(demographics['Gender']),
+            csv_friendly(demographics['SexualOrientation']),
+        ])
+        csv += '\n'
+
+    # send csv response
+    response = make_response(csv)
+    response.headers['Content-Disposition'] = 'attachment; filename=resources.csv'
+    response.mimetype = 'text/csv'
+    print(response)
+    return response
+
+
+@admin.route('/download/donors', methods=['GET'])
+@login_required
+def downloadDonors():
+    # format string or list of strings to be csv-friendly
+    def csv_friendly(str):
+        if str == "":
+            return "NOT SPECIFIED"
+        return '\"{}\"'.format(str.replace('\"', '\"\"')) if str else ''
+
+    # write headers
+    # TODO put remaining headers
+    csv = 'First Name,Last Name,Term,Email,Phone,Source,Staff Contact,Notes,Status,Amount Donated,Applied,Race,Class,Gender,Sexual Orientation\n'
+
+    # write each resource
+    donors = Donor.query.all()
+    for donor in donors:
+        demographics = candidate.demographic.demographic_strings()
+        csv += ','.join([
+            csv_friendly(donor.first_name),
+            csv_friendly(donor.last_name),
+            csv_friendly(donor.phone_number),
+            csv_friendly(donor.email),
+            csv_friendly(donor.street_address),
+            csv_friendly(donor.city),
+            csv_friendly(donor.state),
+            csv_friendly(donor.zipcode),
+            csv_friendly(donor.get_status()),
+            csv_friendly(str(donor.contact_date)),
+            csv_friendly(str(donor.amount_asking_for)),
+            csv_friendly(str(donor.amount_pledged)),
+            csv_friendly(str(donor.amount_received)),
+            csv_friendly(str(str(donor.date_received))),
+            csv_friendly(demographics['Race']),
+            csv_friendly(demographics['Class']),
+            csv_friendly(demographics['Gender']),
+            csv_friendly(demographics['SexualOrientation']),
+        ])
+        csv += '\n'
+
+    # send csv response
+    response = make_response(csv)
+    response.headers['Content-Disposition'] = 'attachment; filename=resources.csv'
+    response.mimetype = 'text/csv'
+    print(response)
+    return response

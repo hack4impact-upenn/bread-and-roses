@@ -99,17 +99,17 @@ class NewCandidateForm(Form):
     email = EmailField(
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
-        'Phone Number', default="Not Specified")
+        'Phone Number')
     term = QuerySelectField(
         'Term',
         get_label='name',
         query_factory=lambda: db.session.query(Term).order_by('start_date'))
     source = StringField(
-        'Source', default="Not Specified")
+        'Source')
     staff_contact = StringField(
-        'Staff Contact', default="Not Specified")
+        'Staff Contact')
     notes = TextAreaField(
-        'Notes', default="None")
+        'Notes')
     demographic = FormField(DemographicForm)
     submit = SubmitField('Create')
 
