@@ -31,11 +31,11 @@ def index():
                            datestring_alt=datestring_alt)
 
 
-@participant.route('/')
+@participant.route('/profile')
 @login_required
 def profile():
     """Participant Profile page."""
-    return render_template('participant/profile.html')
+    return render_template('participant/profile.html', user=current_user, form=None)
 
 
 @participant.route('/donor/<int:donor_id>/_delete')

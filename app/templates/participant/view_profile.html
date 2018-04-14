@@ -38,7 +38,13 @@
                 {% endif %}
             </div>
         </div>
-        
+        <div class="stretched divided very relaxed row">
+            <div class="eight wide column">
+                <a href="{{ url_for('participant.edit_profile') }}">
+                    edit
+                </a>
+            </div>
+        </div>
     </div>
     {{ check.password_check('new_password', 0) }}
 {% endblock %}
