@@ -2,6 +2,13 @@
 {% import 'macros/form_macros.html' as f %} 
 {% import 'macros/check_password.html' as check %}
 
+{% set endpoints = [
+    ('account.manage', 'Profile information'),
+    ('account.change_email_request', 'Change email address'),
+    ('account.change_password', 'Change password'),
+    ('account.logout', 'Log out')
+] %}
+
 {% macro navigation(items) %}
     <div class="ui vertical fluid secondary menu">
         {% for route, name in items %}
@@ -25,11 +32,14 @@
     <div class="ui stackable centered grid container">
         <div class="twelve wide column">
             <h2 class="ui header">
-                Account Settings
-                <div class="sub header">Manage your account settings and change your login information.</div>
+                My Profile
+                <div class="sub header">View and manage my profile information.</div>
             </h2>
         </div>
         <div class="stretched divided very relaxed row">
+            <div class="four wide column">
+                {{ navigation(endpoints) }}
+            </div>
             <div class="eight wide column">
                 {% if form %}
                     {{ f.render_form(form, extra_classes='fluid') }}
@@ -38,7 +48,6 @@
                 {% endif %}
             </div>
         </div>
-        
     </div>
     {{ check.password_check('new_password', 0) }}
 {% endblock %}
