@@ -8,7 +8,7 @@
 {% block content %}
     <div class="ui stackable centered grid container">
         <div class="twelve wide column">
-            <a class="ui basic compact button" href="{{ url_for('admin.index') }}">
+            <a class="ui basic compact button" href="{{ url_for('participant.index') }}">
                 <i class="caret left icon"></i>
                 Back to donor management
             </a>
@@ -46,10 +46,7 @@
 
                 <br/>
 
-                <div class="two fields">
-                    {{ f.render_form_field(form.contact_date) }}
-                    {{ f.render_form_field(form.amount_asking_for) }}
-                </div>
+                {{ f.render_form_field(form.contact_date) }}
 
                 <br/>
                 {% for field in form.demographic %}
@@ -61,6 +58,8 @@
                 {{ f.render_form_field(form.interested_in_future_gp) }}
                 {{ f.render_form_field(form.want_to_learn_about_brf_guarantees) }}
                 {{ f.render_form_field(form.interested_in_volunteering) }}
+
+                {{ f.render_form_field(form.notes) }}
 
 
                 {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
