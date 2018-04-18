@@ -76,7 +76,7 @@ def new_term():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
-    status_forms = { p.id: EditStatusForm(participant=p.id) for p in participants }
+    status_forms = { p.id: EditStatusForm(participant=p.id, status=p.status.name) for p in participants }
     for f in status_forms:
         form = status_forms[f]
         if form.validate_on_submit():
@@ -86,6 +86,7 @@ def participants():
             db.session.commit()
             flash('Status for user {} successfully changed to {}.'
                 .format(user.first_name, user.status), 'form-success')
+            return redirect(url_for('admin.participants'))
     return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict(),
                            terms=Term.query.order_by(Term.start_date.desc()).all(), status_forms=status_forms)
 

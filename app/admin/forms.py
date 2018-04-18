@@ -92,9 +92,9 @@ class DemographicForm(Form):
 
 
 class EditStatusForm(Form):
-    participant = HiddenField('participant')
+    participant = HiddenField(label='')
     status = SelectField(
-        'Status',
+        label='',
         choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Status]
     )
     submit = SubmitField('Update Status')
