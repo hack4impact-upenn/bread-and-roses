@@ -2,7 +2,8 @@ import datetime
 from flask import abort, flash, redirect, render_template, url_for, request
 from flask_login import current_user, login_required
 
-from .forms import NewDonorForm
+from .forms import NewDonorForm, TodoToAsking, AskingToPledged, PledgedToCompleted
+from ..decorators import admin_required
 from . import participant
 from .. import db
 from ..models import Donor, Demographic, DonorStatus
@@ -24,11 +25,87 @@ def index():
     def datestring_alt(s):
         return s.strftime('%b %d, %Y')
 
+    forms_by_donor = {}
+    for d in Donor.query.filter_by(user_id=current_user.id).all():
+        f = None
+        if d.status == DonorStatus.TODO:
+            f = TodoToAsking(donor=d.id)
+        elif d.status == DonorStatus.ASKING:
+            f = AskingToPledged(donor=d.id)
+        else:
+            f = PledgedToCompleted(donor=d.id)
+
+        forms_by_donor[d.id] = f
+
     return render_template('participant/index.html',
                            donors_by_status=donors_by_status,
                            Status=DonorStatus,
                            datestring=datestring,
-                           datestring_alt=datestring_alt)
+                           datestring_alt=datestring_alt,
+                           forms_by_donor=forms_by_donor,
+                           current_user=current_user)
+
+
+@participant.route('/donor/ask/<int:donor_id>', methods=['POST'])
+@login_required
+def todo_to_asking(donor_id):
+    """Delete a participant."""
+    d = Donor.query.filter_by(id=donor_id).first()
+
+    if d.user != current_user and not current_user.is_admin():
+        return abort(403)
+
+    f = TodoToAsking()
+    if f.validate_on_submit():
+        d.status = DonorStatus(int(f.status.data))
+        d.date_asking = f.date_asking.data
+        d.amount_asking_for = f.amount_asking_for.data
+        d.how_asking = f.how_asking.data
+        db.session.add(d)
+        db.session.commit()
+        flash('Successfully updated donor %s.' % d.first_name, 'success')
+
+    return redirect(url_for('participant.index'))
+
+
+@participant.route('/donor/pledge/<int:donor_id>', methods=['POST'])
+@login_required
+def asking_to_pledged(donor_id):
+    """Delete a participant."""
+    d = Donor.query.filter_by(id=donor_id).first()
+
+    if d.user != current_user and not current_user.is_admin():
+        return abort(403)
+
+    f = AskingToPledged()
+    if f.validate_on_submit():
+        d.status = DonorStatus(int(f.status.data))
+        d.pledged = f.pledged.data
+        d.amount_pledged = f.amount_pledged.data
+        db.session.add(d)
+        db.session.commit()
+        flash('Successfully updated donor %s.' % d.first_name, 'success')
+
+    return redirect(url_for('participant.index'))
+
+
+@participant.route('/donor/complete/<int:donor_id>', methods=['POST'])
+@login_required
+@admin_required
+def pledged_to_completed(donor_id):
+    """Delete a participant."""
+    d = Donor.query.filter_by(id=donor_id).first()
+
+    f = PledgedToCompleted()
+    if f.validate_on_submit():
+        d.status = DonorStatus(int(f.status.data))
+        d.amount_received = f.amount_received.data
+        d.date_received = f.date_received.data
+        db.session.add(d)
+        db.session.commit()
+        flash('Successfully updated donor %s.' % d.first_name, 'success')
+
+    return redirect(url_for('participant.index'))
 
 
 @participant.route('/donor/<int:donor_id>/_delete')
