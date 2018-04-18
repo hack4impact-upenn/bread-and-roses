@@ -76,12 +76,13 @@ def new_term():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
-    status_forms = { p.id: EditStatusForm(participant=p.id, status=p.status.name) for p in participants }
+    status_forms = { p.id: EditStatusForm(participant=p.id, status=p.status.name, term=p.term) for p in participants }
     for f in status_forms:
         form = status_forms[f]
         if form.validate_on_submit():
             user = Candidate.query.filter_by(id=form.participant.data).first()
             user.status = form.status.data
+            user.term = form.term.data
             db.session.add(user)
             db.session.commit()
             flash('Status for user {} successfully changed to {}.'

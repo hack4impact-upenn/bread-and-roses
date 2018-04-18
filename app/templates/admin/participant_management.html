@@ -118,6 +118,9 @@
 
                               {{ f.render_form_field(status_forms[p.id].participant) }}
                               {{ f.render_form_field(status_forms[p.id].status) }}
+                        <br />
+                        <span class="bold">Term:</span>
+                              {{ f.render_form_field(status_forms[p.id].term) }}
 
                               {% for field in status_forms[p.id] | selectattr('type', 'equalto', 'SubmitField') %}
                                   {{ f.render_form_field(field) }}

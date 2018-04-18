@@ -97,8 +97,11 @@ class EditStatusForm(Form):
         label='',
         choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Status]
     )
+    term = QuerySelectField(
+        label='',
+        get_label='name',
+        query_factory=lambda: db.session.query(Term).order_by('start_date'))
     submit = SubmitField('Update Status')
-
 
 class NewCandidateForm(Form):
     first_name = StringField(
