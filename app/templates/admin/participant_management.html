@@ -14,7 +14,7 @@
         <div class="ui search item" style="background-color: #FFFFFF;">
             <div class="ui left icon input">
                 <i class="search icon"></i>
-                <input id="search-participants" type="text" placeholder="Search participants">
+                <input id="search-participants" type="text" placeholder="Search candidates">
             </div>
         </div>
 
@@ -23,9 +23,9 @@
             <div class="ui selection dropdown select-filter" id="select-status" style="width: 250px;">
                 <input type="hidden" name="Participant Status">
                 <i class="dropdown icon"></i>
-                <div class="default text">Participant Status</div>
+                <div class="default text">Candidate Status</div>
                 <div class="menu">
-                <div class="item" data-value="">All participants</div>
+                <div class="item" data-value="">All candidates</div>
                 <div class="item" data-value="Pending">Pending</div>
                 <div class="item" data-value="Assigned">Assigned</div>
                 <div class="item" data-value="Rejected">Rejected</div>
@@ -37,7 +37,7 @@
             <div class="ui selection dropdown select-filter" id="select-term" style="width: 250px;">
                 <input type="hidden" name="Participant Term">
                 <i class="dropdown icon"></i>
-                <div class="default text">Participant Term</div>
+                <div class="default text">Candidate Term</div>
                 <div class="menu">
                 <div class="item" data-value="">All terms</div>
                 {% for t in terms %}
@@ -76,10 +76,10 @@
             </a>
             <a href="{{ url_for('admin.new_candidate') }}" class="ui button" style="background-color: #cf0a2c;">
                 <div style="text-align: center; font-weight: bold; color: #FFFFFF; font-family: Open Sans">
-                    New Participant +
+                    New Candidate +
                 </div>
             </a>
-            
+
             </div>
             {% for p in participants | sort(attribute='last_name') %}
                 <div class="ui mini modal" id="delete-{{ p.id }}">
@@ -143,7 +143,7 @@
                         <div><span class="bold">Age:</span>
                             {{ p.demographic.age }}
                         </div>
-                        <div><span class="bold">Sexual Orientation:</span> 
+                        <div><span class="bold">Sexual Orientation:</span>
                             {{ 'LGBTQ' if p.demographic.sexual_orientation.name == 'LGBTQ' else p.demographic.sexual_orientation.name.replace('_', ' ').title() }}
                         </div>
                         <div><span class="bold">Class (low, middle, upper, NA):</span>

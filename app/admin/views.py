@@ -146,7 +146,7 @@ def edit_participant(part_id):
         form.staff_contact.data = part.staff_contact
         form.notes.data = part.notes
         form.status.data = part.status
-        form.assigned_term.data = part.assigned_term
+        form.assigned_term.data = part.term
         form.amount_donated.data = part.amount_donated
         form.applied.data = part.applied
 
@@ -165,7 +165,7 @@ def edit_participant(part_id):
         part.staff_contact = form.staff_contact.data
         part.notes = form.notes.data
         part.status = form.status.data
-        part.assigned_term = form.assigned_term.data
+        part.term = form.assigned_term.data
         part.amount_donated = form.amount_donated.data
         part.applied = form.applied
 
