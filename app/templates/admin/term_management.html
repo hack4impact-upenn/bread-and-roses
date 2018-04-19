@@ -36,6 +36,7 @@
                     </thead>
                     <tbody>
                     {% for t in terms | sort(attribute='start_date') %}
+                        <!-- TODO: link to edit term name page -->
                         <tr onclick="window.location.href = ''">
                             <td>{{ t.name }}</td>
                             <td>{{ t.start_date }}</td>

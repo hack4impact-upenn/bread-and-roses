@@ -103,6 +103,7 @@ class NewCandidateForm(Form):
     term = QuerySelectField(
         'Term',
         get_label='name',
+        allow_blank=True,
         query_factory=lambda: db.session.query(Term).order_by('start_date'))
     source = StringField(
         'Source')

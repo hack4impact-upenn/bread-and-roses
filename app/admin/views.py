@@ -357,17 +357,16 @@ def downloadParticipants():
         return '\"{}\"'.format(str.replace('\"', '\"\"')) if str else ''
 
     # write headers
-    # TODO put remaining headers
     csv = 'First Name,Last Name,Term,Email,Phone,Source,Staff Contact,Notes,Status,Amount Donated,Applied,Age,Race,Class,Gender,Sexual Orientation\n'
 
-    # write each resource
+    # write each candidate
     candidates = Candidate.query.all()
     for candidate in candidates:
         demographics = candidate.demographic.demographic_strings()
         csv += ','.join([
             csv_friendly(candidate.first_name),
             csv_friendly(candidate.last_name),
-            csv_friendly(candidate.term.name),
+            csv_friendly(candidate.term.name if candidate.term else ""),
             csv_friendly(candidate.email),
             csv_friendly(candidate.phone_number),
             csv_friendly(candidate.source),
