@@ -6,10 +6,26 @@ from wtforms.fields import (PasswordField, StringField, SubmitField,
                             IntegerField, BooleanField, FormField, TextAreaField,
                             HiddenField)
 from wtforms.fields.html5 import EmailField, TelField, DateField
-from wtforms.validators import Email, EqualTo, InputRequired, Length, NumberRange
+from wtforms.validators import Email, EqualTo, InputRequired, Length, NumberRange, optional
 
 from ..admin.forms import DemographicForm
 from ..models import DonorStatus
+
+
+class RequiredIf(InputRequired):
+    # a validator which makes a field required if
+    # another field is set and has a truthy value
+
+    def __init__(self, other_field_name, *args, **kwargs):
+        self.other_field_name = other_field_name
+        super(RequiredIf, self).__init__(*args, **kwargs)
+
+    def __call__(self, form, field):
+        other_field = form._fields.get(self.other_field_name)
+        if other_field is None:
+            raise Exception('no field named "%s" in form' % self.other_field_name)
+        if bool(other_field.data):
+            super(RequiredIf, self).__call__(form, field)
 
 
 class NewDonorForm(Form):
@@ -87,7 +103,7 @@ class AskingToPledged(Form):
     pledged = BooleanField(
         'Did they pledge money?')
     amount_pledged = IntegerField(
-        'How much did they pledge?')
+        'How much did they pledge?', validators=[RequiredIf('pledged'), optional()])
 
 
     submit = SubmitField('Move to PLEDGED')

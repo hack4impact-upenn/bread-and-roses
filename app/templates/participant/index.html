@@ -170,7 +170,7 @@
                   <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
                   <div class="ui card" style="cursor: pointer;">
                     <div class="content" onclick="$('#modal-{{ d.id }}').modal('show')" >
-                      <i class="right floated info circle icon"></i>
+                      <i class="right floated user icon"></i>
                       <div class="header">{{d.first_name}} {{d.last_name}}</div>
                       <div class="description">
                         <p></p>
@@ -178,7 +178,7 @@
                     </div>
                     <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
                       <span class="right floated content">
-                        {{datestring(d.contact_date)}}
+                        Added on {{datestring(d.contact_date)}}
                       </span>
                       </div>
                       <div class="ui bottom attached red button" onclick="$('#move-{{ d.id }}').modal('show')">
@@ -219,9 +219,10 @@
                       </div>
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
-                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
-                          <div><span class="bold">How will you ask:</span> ${{ d.how_asking }}</div>
-                          <div><span class="bold">Date asking:</span> ${{ d.date_asking }}</div>
+                          <br/>
+                          <div><span class="bold">Amount asking for:</span> {{ d.amount_asking_for }}</div>
+                          <div><span class="bold">How will you ask:</span> {{ d.how_asking }}</div>
+                          <div><span class="bold">Date asking:</span> {{ d.date_asking }}</div>
 
                           <br/>
                           <div><span class="bold">Date of contact:</span> {{ datestring_alt(d.contact_date) }}</div>
@@ -283,7 +284,7 @@
                   <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
                   <div class="ui card" style="cursor: pointer;">
           <div class="content" onclick="$('#modal-{{ d.id }}').modal('show')" >
-            <i class="right floated info circle icon"></i>
+            <i class="right floated question icon" style="color: orange;"></i>
             <div class="header">{{d.first_name}} {{d.last_name}}</div>
             <div class="description">
               <p>Asking for {{d.amount_asking_for}}</p>
@@ -291,7 +292,7 @@
           </div>
           <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
             <span class="right floated content">
-              {{datestring(d.date_asking)}}
+              Ask by {{datestring(d.date_asking)}}
             </span>
           </div>
                       <div class="ui bottom attached red button" onclick="$('#move-{{ d.id }}').modal('show')">
@@ -403,7 +404,7 @@
                   <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
                   <div class="ui card" style="cursor: pointer;">
           <div class="content" onclick="$('#modal-{{ d.id }}').modal('show')" >
-            <i class="right floated {% if d.pledged %}green{% else %}blue{% endif %}info circle icon"></i>
+          <i class="right floated exclamation flag icon" style="color: {% if d.pledged %}green{% else %}red{% endif %}"></i>
             <div class="header">{{d.first_name}} {{d.last_name}}</div>
             <div class="description">
               {% if d.pledged %}
@@ -415,7 +416,7 @@
           </div>
           <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
             <span class="right floated content">
-              {{datestring(d.contact_date)}}
+              Asked on {{datestring(d.date_asking)}}
             </span>
           </div>
           {% if current_user.is_admin() %}
@@ -523,7 +524,7 @@
                   <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
                   <div class="ui card" style="cursor: pointer;">
           <div class="content" onclick="$('#modal-{{ d.id }}').modal('show')" >
-            <i class="right floated info circle icon"></i>
+            <i class="right floated money bill alternate icon" style="color: green;"></i>
             <div class="header">{{d.first_name}} {{d.last_name}}</div>
             <div class="description">
               <p>${{d.amount_received}} received by BNR</p>
@@ -531,7 +532,7 @@
           </div>
           <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
             <span class="right floated content">
-              {{datestring(d.contact_date)}}
+              Completed on {{datestring(d.date_received)}}
             </span>
           </div>
           {% if current_user.is_admin() %}

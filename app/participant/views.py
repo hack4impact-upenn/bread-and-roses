@@ -32,8 +32,10 @@ def index():
             f = TodoToAsking(donor=d.id)
         elif d.status == DonorStatus.ASKING:
             f = AskingToPledged(donor=d.id)
-        else:
+        elif d.status == DonorStatus.PLEDGED:
             f = PledgedToCompleted(donor=d.id)
+        else:
+            f = PledgedToCompleted(donor=d.id, amount_received=d.amount_received, date_received=d.date_received)
 
         forms_by_donor[d.id] = f
 
@@ -49,7 +51,6 @@ def index():
 @participant.route('/donor/ask/<int:donor_id>', methods=['POST'])
 @login_required
 def todo_to_asking(donor_id):
-    """Delete a participant."""
     d = Donor.query.filter_by(id=donor_id).first()
 
     if d.user != current_user and not current_user.is_admin():
@@ -64,6 +65,8 @@ def todo_to_asking(donor_id):
         db.session.add(d)
         db.session.commit()
         flash('Successfully updated donor %s.' % d.first_name, 'success')
+    else:
+        flash('Error filling out form. Did you miss a field?', 'error')
 
     return redirect(url_for('participant.index'))
 
@@ -71,7 +74,6 @@ def todo_to_asking(donor_id):
 @participant.route('/donor/pledge/<int:donor_id>', methods=['POST'])
 @login_required
 def asking_to_pledged(donor_id):
-    """Delete a participant."""
     d = Donor.query.filter_by(id=donor_id).first()
 
     if d.user != current_user and not current_user.is_admin():
@@ -85,6 +87,9 @@ def asking_to_pledged(donor_id):
         db.session.add(d)
         db.session.commit()
         flash('Successfully updated donor %s.' % d.first_name, 'success')
+    else:
+        for e in f.errors:
+            flash('Error filling out %s field. %s' % (e.replace('_', ' ').title(), f.errors[e][0]), 'error')
 
     return redirect(url_for('participant.index'))
 
@@ -93,7 +98,6 @@ def asking_to_pledged(donor_id):
 @login_required
 @admin_required
 def pledged_to_completed(donor_id):
-    """Delete a participant."""
     d = Donor.query.filter_by(id=donor_id).first()
 
     f = PledgedToCompleted()
@@ -103,7 +107,10 @@ def pledged_to_completed(donor_id):
         d.date_received = f.date_received.data
         db.session.add(d)
         db.session.commit()
-        flash('Successfully updated donor %s.' % d.first_name, 'success')
+        flash('Successfully moved donor %s to %s.' % (d.first_name, d.status.name.lower()), 'success')
+    else:
+        for e in f.errors:
+            flash('Error filling out %s field. %s' % (e.replace('_', ' ').title(), f.errors[e][0]), 'error')
 
     return redirect(url_for('participant.index'))
 
