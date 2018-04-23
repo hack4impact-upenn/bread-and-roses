@@ -27,7 +27,7 @@
 
             <br><br>
 
-            <div class="ui selection dropdown select-filter" id="select-term" style="width: 250px;">
+            <div name="Participant_Term" class="ui selection dropdown select-filter" id="select-term" style="width: 250px;">
                 <input type="hidden" name="Participant Term">
                 <i class="dropdown icon"></i>
                 <div class="default text">Participant Term</div>
@@ -59,12 +59,13 @@
             </div>
         </div>
     </div>
-
     <br>
-
         <div class="participant-content" style="margin-right: 20px; margin-left: 320px;">
             <div align="right">
-            <a href="{{ url_for('admin.downloadParticipants') }}">
+            <button id="download_button" class="ui button">
+             Test
+            </button>
+            <a href="{{ url_for('admin.downloadParticipants', filters=filter_results) }}">
                 <div class="ui button" style="color: #cf0a2c; font-family: Open Sans">
                     Download
                 </div>

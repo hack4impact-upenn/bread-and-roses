@@ -75,7 +75,8 @@ def new_term():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
-    return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict(),
+    filters = "none"
+    return render_template('admin/participant_management.html', Status=Status, participants=participants, filter_results=filters, demographics=Demographic.demographics_dict(),
     terms=Term.query.order_by(Term.start_date.desc()).all())
 
 
@@ -347,9 +348,12 @@ def update_editor_contents():
     return 'OK', 200
 
 
-@admin.route('/download/participants', methods=['GET'])
+@admin.route('/download/participants/filters/<string:filters>', methods=['GET'])
 @login_required
-def downloadParticipants():
+def downloadParticipants(filters):
+
+    select = request.form.get('Participant_Term')
+
     # format string or list of strings to be csv-friendly
     def csv_friendly(str):
         if str == "":
@@ -364,7 +368,7 @@ def downloadParticipants():
     for candidate in candidates:
         demographics = candidate.demographic.demographic_strings()
         csv += ','.join([
-            csv_friendly(candidate.first_name),
+            csv_friendly(request.args.get('filters')),
             csv_friendly(candidate.last_name),
             csv_friendly(candidate.term.name if candidate.term else ""),
             csv_friendly(candidate.email),
@@ -385,7 +389,7 @@ def downloadParticipants():
 
     # send csv response
     response = make_response(csv)
-    response.headers['Content-Disposition'] = 'attachment; filename=resources.csv'
+    response.headers['Content-Disposition'] = 'attachment; filename=participants.csv'
     response.mimetype = 'text/csv'
     print(response)
     return response
@@ -402,17 +406,17 @@ def downloadDonors():
 
     # write headers
     # TODO put remaining headers
-    csv = 'First Name,Last Name,Term,Email,Phone,Source,Staff Contact,Notes,Status,Amount Donated,Applied,Race,Class,Gender,Sexual Orientation\n'
+    csv = 'First Name,Last Name,Email,Phone,Street,City,State,Zip,Status,Contact Data,Amount Asking,Amount Pledged,Amount Received,Data Received,Race,Class,Gender,Sexual Orientation,Age,Interested in Future GP,Want to learn,Interested in Volunteering,Notes\n'
 
     # write each resource
     donors = Donor.query.all()
     for donor in donors:
-        demographics = candidate.demographic.demographic_strings()
+        demographics = donor.demographic.demographic_strings()
         csv += ','.join([
             csv_friendly(donor.first_name),
             csv_friendly(donor.last_name),
-            csv_friendly(donor.phone_number),
             csv_friendly(donor.email),
+            csv_friendly(donor.phone_number),
             csv_friendly(donor.street_address),
             csv_friendly(donor.city),
             csv_friendly(donor.state),
@@ -422,17 +426,22 @@ def downloadDonors():
             csv_friendly(str(donor.amount_asking_for)),
             csv_friendly(str(donor.amount_pledged)),
             csv_friendly(str(donor.amount_received)),
-            csv_friendly(str(str(donor.date_received))),
+            csv_friendly(str(donor.date_received)),
             csv_friendly(demographics['Race']),
             csv_friendly(demographics['Class']),
             csv_friendly(demographics['Gender']),
             csv_friendly(demographics['SexualOrientation']),
+            csv_friendly(str(donor.demographic.age)),
+            csv_friendly(str(donor.interested_in_future_gp)),
+            csv_friendly(str(donor.want_to_learn_about_brf_guarantees)),
+            csv_friendly(str(donor.interested_in_volunteering)),
+            csv_friendly(str(donor.notes)),
         ])
         csv += '\n'
 
     # send csv response
     response = make_response(csv)
-    response.headers['Content-Disposition'] = 'attachment; filename=resources.csv'
+    response.headers['Content-Disposition'] = 'attachment; filename=donors.csv'
     response.mimetype = 'text/csv'
     print(response)
     return response
