@@ -160,10 +160,18 @@ def delete_donor(part_id, donor_id):
 def edit_donor(donor_id):
     """Edits a donor."""
     d = Donor.query.filter_by(id=donor_id).first()
+
     if d is None:
-        abort(404)
+        return abort(404)
     form = EditDonorForm(obj=donor_id)
     demographic = d.demographic
+
+    part_id = None
+    if current_user.is_admin() and d.user.id!=current_user.id:
+        part_id = d.user.id
+
+    if d.user.id!=current_user.id and not current_user.is_admin():
+        return abort(403)
 
     if request.method == 'GET':
         form.first_name.data = d.first_name
@@ -212,7 +220,7 @@ def edit_donor(donor_id):
         db.session.commit()
         flash('Donor {} successfully saved'.format(d.full_name()),
               'form-success')
-    return render_template('participant/edit_donor.html', form=form)
+    return render_template('participant/edit_donor.html', form=form, part_id=part_id)
 
 
 @participant.route('/new-donor', defaults={'part_id': None}, methods=['GET', 'POST'])
