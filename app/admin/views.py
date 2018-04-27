@@ -368,7 +368,7 @@ def downloadParticipants(filters):
     for candidate in candidates:
         demographics = candidate.demographic.demographic_strings()
         csv += ','.join([
-            csv_friendly(request.args.get('filters')),
+            csv_friendly(candidate.first_name),
             csv_friendly(candidate.last_name),
             csv_friendly(candidate.term.name if candidate.term else ""),
             csv_friendly(candidate.email),
