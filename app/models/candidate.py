@@ -10,7 +10,7 @@ from datetime import date
 from .. import db, login_manager
 
 
-class Status:
+class Status(enum.Enum):
     PENDING = 0
     ASSIGNED = 1
     REJECTED = 2
@@ -26,7 +26,11 @@ class Candidate(db.Model):
     source = db.Column(db.String(256))
     staff_contact = db.Column(db.String(64))
     notes = db.Column(db.String(5024))
+<<<<<<< HEAD
     status = db.Column(db.Integer)
+=======
+    status = db.Column(db.Enum(Status))
+>>>>>>> e273ad58b45a64b0394452893f72ea63e770e237
     term_id = db.Column(db.Integer, db.ForeignKey('terms.id'))
     term = db.relationship('Term', back_populates='candidates')
     amount_donated = db.Column(db.Integer)
@@ -36,7 +40,11 @@ class Candidate(db.Model):
     user_account = db.relationship('User', uselist = False, back_populates='candidate')
 
     def __repr__(self):
+<<<<<<< HEAD
         return '<Candidate \'%s\'>' % self.first_name % self.last_name
+=======
+        return '<Candidate \'{} {}\'>'.format(self.first_name, self.last_name)
+>>>>>>> e273ad58b45a64b0394452893f72ea63e770e237
 
     def filter(**kwargs):
         return Candidate.query.filter_by(**kwargs)

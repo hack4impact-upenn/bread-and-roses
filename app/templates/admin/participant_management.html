@@ -1,6 +1,13 @@
 
+            {% set flashes = {
+                'error':   get_flashed_messages(category_filter=['form-error']),
+                'warning': get_flashed_messages(category_filter=['form-check-email']),
+                'info':    get_flashed_messages(category_filter=['form-info']),
+                'success': get_flashed_messages(category_filter=['form-success'])
+            } %}
 {% extends 'layouts/base.html' %}
 
+{% import 'macros/form_macros.html' as f %}
 {% block content %}
     <div class="pushable">
     <div class="ui visible sidebar vertical menu participant-menu">
@@ -24,6 +31,7 @@
                 <div class="item" data-value="Rejected">Rejected</div>
                 </div>
             </div>
+<<<<<<< HEAD
 
             <br><br>
 
@@ -41,6 +49,25 @@
 
             <br><br><br>
 
+=======
+
+            <br><br>
+
+            <div class="ui selection dropdown select-filter" id="select-term" style="width: 250px;">
+                <input type="hidden" name="Participant Term">
+                <i class="dropdown icon"></i>
+                <div class="default text">Candidate Term</div>
+                <div class="menu">
+                <div class="item" data-value="">All terms</div>
+                {% for t in terms %}
+                    <div class="item" data-value="{{ t.name }}">{{ t.name }}</div>
+                {% endfor %}
+                </div>
+            </div>
+
+            <br><br><br>
+
+>>>>>>> e273ad58b45a64b0394452893f72ea63e770e237
             <div align="left" style="margin-left: 8px; font-family: Open Sans"><strong>Demographics:</strong></div> <br>
             {% for name, list in demographics.items() %}
                 <div class="ui selection dropdown select-filter" id="select-{{name}}" style="width: 250px;">
@@ -106,6 +133,24 @@
 
                         <br />
 
+                        <div><span class="bold">Status:</span>
+                          {{ f.begin_form(status_forms[p.id], flashes) }}
+
+                              {{ f.render_form_field(status_forms[p.id].participant) }}
+                              {{ f.render_form_field(status_forms[p.id].status) }}
+                        <br />
+                        <span class="bold">Term:</span>
+                              {{ f.render_form_field(status_forms[p.id].term) }}
+
+                              {% for field in status_forms[p.id] | selectattr('type', 'equalto', 'SubmitField') %}
+                                  {{ f.render_form_field(field) }}
+                              {% endfor %}
+
+                          {{ f.end_form() }}
+                        </div>
+
+                        <br />
+
                         <div><span class="bold">Source:</span> {{ p.source }}</div>
                         <div><span class="bold">Staff contact:</span> {{ p.staff_contact }}</div>
                         <div><span class="bold">Application:</span> {{ 'Y' if p.applied else 'N' }}</div>
@@ -139,6 +184,14 @@
                         </div>
                     </div>
                     <div class="actions">
+                        {% if p.user_account %}
+                        <a href="{{ url_for('participant.index', part_id=p.user_account.id) }}">
+                            <div class="ui blue button">
+                                <i class="address book icon"></i>
+                                See Donors
+                            </div>
+                        </a>
+                        {% endif %}
                         <a href="{{ url_for('admin.edit_participant', part_id=p.id) }}">
                             <div class="ui blue edit button">
                                 <i class="edit icon"></i>
@@ -155,7 +208,11 @@
                 <script>$('#delete-{{ p.id }}').modal({ allowMultiple: true })</script>
                 <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
                     <div class="participant">
+<<<<<<< HEAD
                         <div class="status" hidden>{{p.status_name()}}</div>
+=======
+                        <div class="status" hidden>{{p.status.name}}</div>
+>>>>>>> e273ad58b45a64b0394452893f72ea63e770e237
                         <div class="partseg1">
                             {% if not p.status or p.status == Status.PENDING %}
                                 <i class="dot circle outline icon" style="color: #FAC334;"></i>
@@ -212,6 +269,7 @@
               }
             })
           };
+<<<<<<< HEAD
 
           // Search bar filtering (searches all info)
           $('#search-participants').keyup(function () {
@@ -225,6 +283,21 @@
               refilter();
           });
 
+=======
+
+          // Search bar filtering (searches all info)
+          $('#search-participants').keyup(function () {
+              var searchText = $(this).val();
+              if (searchText.length > 0) {
+                $('.participant:icontains(' + searchText + ')').closest('.segments').removeClass('hidden-search')
+                $('.participant').not(':icontains(' + searchText + ')').closest('.segments').addClass('hidden-search')
+              } else {
+                $('.participant').closest('.segments').removeClass('hidden-search')
+              }
+              refilter();
+          });
+
+>>>>>>> e273ad58b45a64b0394452893f72ea63e770e237
           // Dropdown filtering
           const filters ={'status':'#select-status', 'term':'#select-term', 'race':'#select-Race', 'gender':'#select-Gender', 'class':'#select-Class', 'sexual-orientation':'[id="select-Sexual Orientation"]'}
           $.each(filters,function(name, filter) {

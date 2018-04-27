@@ -23,11 +23,21 @@ class Donor(db.Model):
     zipcode = db.Column(db.String(500))
     phone_number = db.Column(db.String(64))
     email = db.Column(db.String(128))
-    amount_asking_for = db.Column(db.Integer)
+
+    # todo to ASKING
+    date_asking = db.Column(db.Date)
+    amount_asking_for = db.Column(db.String(500))
+    how_asking = db.Column(db.String(1024))
+
+    # asking to PLEDGE
+    pledged = db.Column(db.Boolean)
     amount_pledged = db.Column(db.Integer)
+
+    # pledge to GIVEN
     amount_received = db.Column(db.Integer)
     date_received = db.Column(db.Date)
 
+    # end of transition fields
     interested_in_future_gp = db.Column(db.Boolean)
     want_to_learn_about_brf_guarantees = db.Column(db.Boolean)
     interested_in_volunteering = db.Column(db.Boolean)
