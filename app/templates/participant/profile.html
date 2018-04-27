@@ -48,101 +48,97 @@
                 {% endif %}
             </div>
         </div>
-        <div class="ui centered grid container">
-            <div class="four wide column">
-                <div class="ui red card">
-                    <div class="content">
-                        <div class="header">
-                            <center>
-                            <div class="ui red statistic">
-                                <div class="value">
-                                    {% if is_candidate %}
-                                        ${{ind_pledged}}
-                                    {% else %}
-                                        N/A 
-                                    {% endif %}
+
+        {% if is_candidate %}
+            <div class="ui centered grid container">
+                <div class="four wide column">
+                    <div class="ui red card">
+                        <div class="content">
+                            <div class="header">
+                                <center>
+                                <div class="ui red statistic">
+                                    <div class="value"> ${{ ind_pledged }} </div>
+                                    <div class="label"> Pledged Individually </div>
                                 </div>
-                                <div class="label"> Pledged Individually </div>
+                                </center>
                             </div>
-                            </center>
                         </div>
-                    </div>
-                </div>  
-            </div> 
-            <div class="four wide column">
-                <div class="ui red card">
-                    <div class="content">
-                        <div class="header">
-                            <center>
-                            <div class="ui red statistic">
-                                <div class="value"> {{num_asks}} </div>
-                                <div class="label"> Asks </div>
+                    </div>  
+                </div> 
+                <div class="four wide column">
+                    <div class="ui red card">
+                        <div class="content">
+                            <div class="header">
+                                <center>
+                                <div class="ui red statistic">
+                                    <div class="value"> {{ num_asks }} </div>
+                                    <div class="label"> Asks </div>
+                                </div>
+                                </center>
                             </div>
-                            </center>
                         </div>
-                    </div>
-                </div>  
-            </div> 
-            <div class="four wide column">
-                <div class="ui red card">
-                    <div class="content">
-                        <div class="header">
-                            <center>
-                            <div class="ui red statistic">
-                                <div class="value"> {{num_donors}} </div>
-                                <div class="label"> Donors</div>
+                    </div>  
+                </div> 
+                <div class="four wide column">
+                    <div class="ui red card">
+                        <div class="content">
+                            <div class="header">
+                                <center>
+                                <div class="ui red statistic">
+                                    <div class="value"> ${{ num_donors }} </div>
+                                    <div class="label"> Donors</div>
+                                </div>
+                                </center>
                             </div>
-                            </center>
                         </div>
-                    </div>
-                </div>  
-            </div> 
-        </div>
-        <div class="ui centered grid container">
-            <div class="four wide column">
-                <div class="ui red card">
-                    <div class="content">
-                        <div class="header">
-                            <center>
-                            <div class="ui red statistic">
-                                <div class="value"> ${{ total_pledged }} </div>
-                                <div class="label"> Pledged As A Cohort </div>
+                    </div>  
+                </div> 
+            </div>
+            <div class="ui centered grid container">
+                <div class="four wide column">
+                    <div class="ui red card">
+                        <div class="content">
+                            <div class="header">
+                                <center>
+                                <div class="ui red statistic">
+                                    <div class="value"> ${{ total_pledged }} </div>
+                                    <div class="label"> Pledged As A Cohort </div>
+                                </div>
+                                </center>
                             </div>
-                            </center>
                         </div>
-                    </div>
-                </div>  
-            </div> 
-            <div class="four wide column">
-                <div class="ui red card">
-                    <div class="content">
-                        <div class="header">
-                            <center>
-                            <div class="ui red statistic">
-                                <div class="value"> ${{ total_raised }} </div>
-                                <div class="label"> Raised As A Cohort </div>
+                    </div>  
+                </div> 
+                <div class="four wide column">
+                    <div class="ui red card">
+                        <div class="content">
+                            <div class="header">
+                                <center>
+                                <div class="ui red statistic">
+                                    <div class="value"> ${{ total_raised }} </div>
+                                    <div class="label"> Raised As A Cohort </div>
+                                </div>
+                                </center>
                             </div>
-                            </center>
                         </div>
-                    </div>
-                </div>  
-            </div> 
-            <div class="four wide column">
-                <div class="ui red card">
-                    <div class="content">
-                        <div class="header">
-                            <center>
-                            <div class="ui red statistic">
-                                <div class="value"> {{ total_num_donors }} </div>
-                                <div class="label"> Donors For Cohort </div>
+                    </div>  
+                </div> 
+                <div class="four wide column">
+                    <div class="ui red card">
+                        <div class="content">
+                            <div class="header">
+                                <center>
+                                <div class="ui red statistic">
+                                    <div class="value"> ${{ total_num_donors }} </div>
+                                    <div class="label"> Donors For Cohort </div>
+                                </div>
+                                </center>
                             </div>
-                            </center>
                         </div>
-                    </div>
-                </div>  
-            </div> 
-        </div>
-        
+                    </div>  
+                </div> 
+            </div>
+        {% endif %}
        
     </div>
     {{ check.password_check('new_password', 0) }}
