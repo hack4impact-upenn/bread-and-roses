@@ -8,6 +8,8 @@ import datetime
 from datetime import date
 
 from .. import db, login_manager
+from app.models.demographic import Race, Class, Gender, SexualOrientation
+from app.models import Demographic
 
 
 class Status:
@@ -50,3 +52,41 @@ class Candidate(db.Model):
             return 'Rejected'
         else:
             return 'None'
+
+    @staticmethod
+    def race_stats():
+        results = {}
+        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.race == Race.NOT_SPECIFIED).count()
+        results["BLACK"] = Candidate.query.filter(Demographic.race == Race.BLACK).count()
+        results["WHITE"] = Candidate.query.filter(Demographic.race == Race.WHITE).count()
+        results["ASIAN"] = Candidate.query.filter(Demographic.race == Race.ASIAN).count()
+        results["LATINX"] = Candidate.query.filter(Demographic.race == Race.LATINX).count()
+        results["NATIVE_AMERICAN"] = Candidate.query.filter(Demographic.race == Race.NATIVE_AMERICAN).count()
+        results["MULTI_RACIAL"] = Candidate.query.filter(Demographic.race == Race.MULTI_RACIAL).count()
+        return results
+
+    @staticmethod
+    def class_stats():
+        results = {}
+        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.class == Class.NOT_SPECIFIED).count()
+        results["LOW"] = Candidate.query.filter(Demographic.class == Class.LOW).count()
+        results["MIDDLE"] = Candidate.query.filter(Demographic.class == Class.MIDDLE).count()
+        results["UPPER"] = Candidate.query.filter(Demographic.class == Class.UPPER).count()
+        return results
+
+    @staticmethod
+    def gender_stats():
+        results = {}
+        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.gender == Class.NOT_SPECIFIED).count()
+        results["WOMAN"] = Candidate.query.filter(Demographic.gender == Class.WOMAN).count()
+        results["MAN"] = Candidate.query.filter(Demographic.gender == Class.MAN).count()
+        results["NON_BINARY"] = Candidate.query.filter(Demographic.gender == Class.NON_BINARY).count()
+        return results
+
+    @staticmethod
+    def gender_stats():
+        results = {}
+        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.race == Class.NOT_SPECIFIED).count()
+        results["LGBTQ"] = Candidate.query.filter(Demographic.race == Class.LGBTQ).count()
+        results["STRAIGHT"] = Candidate.query.filter(Demographic.race == Class.STRAIGHT).count()
+        return results

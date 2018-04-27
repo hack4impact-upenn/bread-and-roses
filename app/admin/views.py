@@ -76,7 +76,8 @@ def participants():
     """Manage participants"""
     participants = Candidate.query.all()
     filters = "none"
-    return render_template('admin/participant_management.html', Status=Status, participants=participants, filter_results=filters, demographics=Demographic.demographics_dict(),
+    test_count = Candidate.race_stats()
+    return render_template('admin/participant_management.html', Status=Status, participants=participants, filter_results=filters, count=test_count["BLACK"], demographics=Demographic.demographics_dict(),
     terms=Term.query.order_by(Term.start_date.desc()).all())
 
 
@@ -368,7 +369,7 @@ def downloadParticipants(filters):
     for candidate in candidates:
         demographics = candidate.demographic.demographic_strings()
         csv += ','.join([
-            csv_friendly(request.args.get('filters')),
+            csv_friendly(candidate.first_name),
             csv_friendly(candidate.last_name),
             csv_friendly(candidate.term.name if candidate.term else ""),
             csv_friendly(candidate.email),
