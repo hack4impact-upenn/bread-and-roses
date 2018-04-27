@@ -1,6 +1,13 @@
 
+            {% set flashes = {
+                'error':   get_flashed_messages(category_filter=['form-error']),
+                'warning': get_flashed_messages(category_filter=['form-check-email']),
+                'info':    get_flashed_messages(category_filter=['form-info']),
+                'success': get_flashed_messages(category_filter=['form-success'])
+            } %}
 {% extends 'layouts/base.html' %}
 
+{% import 'macros/form_macros.html' as f %}
 {% block content %}
     <div class="pushable">
     <div class="ui visible sidebar vertical menu participant-menu">
@@ -106,6 +113,24 @@
 
                         <br />
 
+                        <div><span class="bold">Status:</span>
+                          {{ f.begin_form(status_forms[p.id], flashes) }}
+
+                              {{ f.render_form_field(status_forms[p.id].participant) }}
+                              {{ f.render_form_field(status_forms[p.id].status) }}
+                        <br />
+                        <span class="bold">Term:</span>
+                              {{ f.render_form_field(status_forms[p.id].term) }}
+
+                              {% for field in status_forms[p.id] | selectattr('type', 'equalto', 'SubmitField') %}
+                                  {{ f.render_form_field(field) }}
+                              {% endfor %}
+
+                          {{ f.end_form() }}
+                        </div>
+
+                        <br />
+
                         <div><span class="bold">Source:</span> {{ p.source }}</div>
                         <div><span class="bold">Staff contact:</span> {{ p.staff_contact }}</div>
                         <div><span class="bold">Application:</span> {{ 'Y' if p.applied else 'N' }}</div>
@@ -155,7 +180,7 @@
                 <script>$('#delete-{{ p.id }}').modal({ allowMultiple: true })</script>
                 <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
                     <div class="participant">
-                        <div class="status" hidden>{{p.status_name()}}</div>
+                        <div class="status" hidden>{{p.status.name}}</div>
                         <div class="partseg1">
                             {% if not p.status or p.status == Status.PENDING %}
                                 <i class="dot circle outline icon" style="color: #FAC334;"></i>
