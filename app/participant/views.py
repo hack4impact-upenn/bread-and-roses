@@ -64,7 +64,7 @@ def todo_to_asking(donor_id):
         d.how_asking = f.how_asking.data
         db.session.add(d)
         db.session.commit()
-        flash('Successfully updated donor %s.' % d.first_name, 'success')
+        flash('Successfully moved donor %s to %s.' % (d.first_name, d.status.name.lower()), 'success')
     else:
         flash('Error filling out form. Did you miss a field?', 'error')
 
@@ -86,7 +86,7 @@ def asking_to_pledged(donor_id):
         d.amount_pledged = f.amount_pledged.data
         db.session.add(d)
         db.session.commit()
-        flash('Successfully updated donor %s.' % d.first_name, 'success')
+        flash('Successfully moved donor %s to %s.' % (d.first_name, d.status.name.lower()), 'success')
     else:
         for e in f.errors:
             flash('Error filling out %s field. %s' % (e.replace('_', ' ').title(), f.errors[e][0]), 'error')
