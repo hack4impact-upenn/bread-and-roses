@@ -1,7 +1,7 @@
 {% macro render_flashes(class) %}
     {% with msgs = get_flashed_messages(category_filter=[class]) %}
         {% for msg in msgs %}
-            <div class="ui {{ class }} message">
+            <div class="ui {{ class }} message" style="width: 100%;">
                 <i class="close icon"></i>
                 {{ msg }}
             </div>
@@ -9,8 +9,8 @@
     {% endwith %}
 {% endmacro %}
 
-<div class="ui text container" style="position: fixed; z-index: 100; top: 70px; width: 60%; left: 40%;">
-    <div class="flashes">
+<div class="ui text container" style="position: fixed; z-index: 100; top: 70px; right: 0; left: 0;">
+    <div class="flashes" style="width: 100%">
         {{ render_flashes('error') }}
         {{ render_flashes('warning') }}
         {{ render_flashes('info') }}
