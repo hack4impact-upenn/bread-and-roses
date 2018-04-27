@@ -232,15 +232,16 @@ def invite_accepted_candidates():
         user_role = Role.query.filter_by(name='User').first()
         # for each selected candidate create a new user account
         for candidate in selected:
-            # candidate = Candidate.query.filter_by(id=c).first()
-            user = User(
-                role=user_role,
-                first_name=candidate.first_name,
-                last_name=candidate.last_name,
-                email=candidate.email,
-                candidate=candidate)
-            db.session.add(user)
-            db.session.commit()
+            user = User.query.filter_by(email=candidate.email).first()
+            if user is None:
+                user = User(
+                    role=user_role,
+                    first_name=candidate.first_name,
+                    last_name=candidate.last_name,
+                    email=candidate.email,
+                    candidate=candidate)
+                db.session.add(user)
+                db.session.commit()
             token = user.generate_confirmation_token()
             invite_link = url_for(
                 'account.join_from_invite',
@@ -254,7 +255,13 @@ def invite_accepted_candidates():
                 template='account/email/invite',
                 user=user,
                 invite_link=invite_link, )
-        flash('Candidates {} successfully invited'.format(selected),
+        print(selected)
+        str = ''
+        for c in selected:
+            str += c.first_name + ' ' + c.last_name + ', '
+        str = str[:-2]
+
+        flash('Candidates {} successfully invited'.format(str),
               'form-success')
     return render_template('admin/invite_accepted_candidates.html', form=form, all_terms=Term.query.order_by(Term.end_date.desc()).all(), accepted_candidates=Candidate.query.filter_by(status=Status.ASSIGNED).all())
 
