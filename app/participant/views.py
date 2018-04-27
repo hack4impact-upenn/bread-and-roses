@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from .forms import NewDonorForm
 from . import participant
 from .. import db
-from ..models import Donor, Demographic, DonorStatus
+from ..models import Donor, Demographic, DonorStatus, Candidate
 
 
 @participant.route('/')
@@ -35,13 +35,32 @@ def index():
 @login_required
 def profile():
     """Participant Profile page."""
-    return render_template('participant/profile.html', user=current_user, form=None)
+    asking_donors = Donor.query.filter_by(
+        user_id=current_user.id, status=1).all()
+    pledged_donors = Donor.query.filter_by(
+        user_id=current_user.id, status=2).all()
+    completed_donors = Donor.query.filter_by(
+        user_id=current_user.id, status=3).all()
+    todo_donors = Donor.query.filter_by(
+        user_id=current_user.id, status=0).all()
+    
+    num_donors = len(completed_donors)
+    num_asks = len(asking_donors) + len(pledged_donors) + len(completed_donors)
+
+    ind_pledged = 0
+    
+    return render_template('participant/profile.html', 
+                            user=current_user, 
+                            num_donors=num_donors, 
+                            num_asks=num_asks,
+                            ind_pledged=ind_pledged,
+                            form=None)
 
 
 @participant.route('/donor/<int:donor_id>/_delete')
 @login_required
 def delete_donor(donor_id):
-    """Delete a participant."""
+    """Delete a donor."""
     d = Donor.query.filter_by(id=donor_id).first()
     db.session.delete(d)
     db.session.commit()
