@@ -11,9 +11,11 @@
 {% block content %}
     <div class="ui container donor-header">
       <div class="ui grid">
+        {% if current_user.id != user.id %}
         <div class="eight wide centered row">
-          <h3>{{ user.id }} -- {{ current_user.id }}</h3>
+          <h3>viewing as {{ user.first_name }} {{ user.last_name }}</h3>
         </div>
+        {% endif %}
         <div class="eight wide centered column donor-header-search">
           <a href="{{ url_for('participant.new_donor', part_id=part_id) }}" class="ui left labeled icon button">
             New Donor
@@ -336,7 +338,7 @@
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
                           <div><span class="bold">Amount asked:</span> ${{ d.amount_asking_for }}</div>
-                          <div><span class="bold">Date asked:</span> ${{ d.date_asking }}</div>
+                          <div><span class="bold">Date asked:</span> {{ d.date_asking }}</div>
 
                           {% if d.pledged %}
                           <div><span class="bold">Pledged?</span> Yes</div>
@@ -462,7 +464,7 @@
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
                           <div><span class="bold">Amount asked:</span> ${{ d.amount_asking_for }}</div>
-                          <div><span class="bold">Date asked:</span> ${{ d.date_asking }}</div>
+                          <div><span class="bold">Date asked:</span> {{ d.date_asking }}</div>
 
                           <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
                           <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>

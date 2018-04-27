@@ -164,8 +164,8 @@
                         </div>
                     </div>
                     <div class="actions">
-                        {% if p.user %}
-                        <a href="{{ url_for('participant.index', part_id=p.user.id) }}">
+                        {% if p.user_account %}
+                        <a href="{{ url_for('participant.index', part_id=p.user_account.id) }}">
                             <div class="ui blue button">
                                 <i class="address book icon"></i>
                                 See Donors

@@ -58,15 +58,15 @@ def index(part_id):
                            part_id=part_id)
 
 
-@participant.route('/<int:part_id>/donor/ask/<int:donor_id>', methods=['POST'])
-@participant.route('/donor/ask/<int:donor_id>', methods=['POST'], defaults={'part_id': None})
+@participant.route('/donor/ask/<int:donor_id>', methods=['POST'])
 @login_required
-def todo_to_asking(part_id, donor_id):
+def todo_to_asking(donor_id):
     d = Donor.query.filter_by(id=donor_id).first()
 
-    if part_id is not None:
-        if not current_user.is_admin() or not d.user.id==part_id:
-            return abort(403)
+    part_id = None
+    if current_user.is_admin() and d.user.id!=current_user.id:
+        part_id = d.user.id
+
     if d.user != current_user and not current_user.is_admin():
         return abort(403)
 
@@ -85,15 +85,15 @@ def todo_to_asking(part_id, donor_id):
     return redirect(url_for('participant.index', part_id=part_id))
 
 
-@participant.route('/<int:part_id>/donor/pledge/<int:donor_id>', methods=['POST'])
-@participant.route('/donor/pledge/<int:donor_id>', methods=['POST'], defaults={'part_id': None})
+@participant.route('/donor/pledge/<int:donor_id>', methods=['POST'])
 @login_required
-def asking_to_pledged(part_id, donor_id):
+def asking_to_pledged(donor_id):
     d = Donor.query.filter_by(id=donor_id).first()
 
-    if part_id is not None:
-        if not current_user.is_admin() or not d.user.id==part_id:
-            return abort(403)
+    part_id = None
+    if current_user.is_admin() and d.user.id!=current_user.id:
+        part_id = d.user.id
+
     if d.user != current_user and not current_user.is_admin():
         return abort(403)
 
@@ -112,18 +112,15 @@ def asking_to_pledged(part_id, donor_id):
     return redirect(url_for('participant.index', part_id=part_id))
 
 
-@participant.route('/<int:part_id>/donor/complete/<int:donor_id>', methods=['POST'])
-@participant.route('/donor/complete/<int:donor_id>', methods=['POST'], defaults={'part_id': None})
+@participant.route('/donor/complete/<int:donor_id>', methods=['POST'])
 @login_required
 @admin_required
-def pledged_to_completed(part_id, donor_id):
+def pledged_to_completed(donor_id):
     d = Donor.query.filter_by(id=donor_id).first()
 
-    if part_id is not None:
-        if not current_user.is_admin() or not d.user.id==part_id:
-            return abort(403)
-    elif d.user.id!=current_user.id:
-        return abort(403)
+    part_id = None
+    if current_user.is_admin() and d.user.id!=current_user.id:
+        part_id = d.user.id
 
     f = PledgedToCompleted()
     if f.validate_on_submit():
