@@ -55,7 +55,13 @@
                         <div class="header">
                             <center>
                             <div class="ui red statistic">
-                                <div class="value">${{ind_pledged}} </div>
+                                <div class="value">
+                                    {% if is_candidate %}
+                                        ${{ind_pledged}}
+                                    {% else %}
+                                        N/A 
+                                    {% endif %}
+                                </div>
                                 <div class="label"> Pledged Individually </div>
                             </div>
                             </center>

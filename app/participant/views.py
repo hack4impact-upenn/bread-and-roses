@@ -48,11 +48,19 @@ def profile():
     num_asks = len(asking_donors) + len(pledged_donors) + len(completed_donors)
 
     ind_pledged = 0
+    is_candidate = False
+
+    if current_user.candidate is not None :
+        ind_pledged = current_user.candidate.amount_donated
+        is_candidate = True
+
+
     
     return render_template('participant/profile.html', 
                             user=current_user, 
                             num_donors=num_donors, 
                             num_asks=num_asks,
+                            is_candidate=is_candidate,
                             ind_pledged=ind_pledged,
                             form=None)
 
