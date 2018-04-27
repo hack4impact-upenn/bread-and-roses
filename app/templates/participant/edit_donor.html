@@ -1,0 +1,63 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+    <div class="ui stackable centered grid container">
+        <div class="twelve wide column">
+            <a class="ui basic compact button" href="{{ url_for('participant.index') }}">
+                <i class="caret left icon"></i>
+                Back to donors
+            </a>
+            <h2 class="ui header">
+                Edit a Donor
+                <div class="sub header">Edit a participant's information</div>
+            </h2>
+
+            {% set flashes = {
+                'error':   get_flashed_messages(category_filter=['form-error']),
+                'warning': get_flashed_messages(category_filter=['form-check-email']),
+                'info':    get_flashed_messages(category_filter=['form-info']),
+                'success': get_flashed_messages(category_filter=['form-success'])
+            } %}
+
+            {{ f.begin_form(form, flashes) }}
+
+                <div class="two fields">
+                    {{ f.render_form_field(form.first_name) }}
+                    {{ f.render_form_field(form.last_name) }} 
+                </div>
+
+                {{ f.render_form_field(form.email) }}
+                {{ f.render_form_field(form.phone_number) }}
+                {{ f.render_form_field(form.contact_date) }}
+                {{ f.render_form_field(form.street_address) }}
+                {{ f.render_form_field(form.city) }}
+                {{ f.render_form_field(form.state) }}
+                {{ f.render_form_field(form.zipcode) }}
+                {{ f.render_form_field(form.notes) }}
+                {{ f.render_form_field(form.interested_in_future_gp) }}
+                {{ f.render_form_field(form.want_to_learn_about_brf_guarantees) }}
+                {{ f.render_form_field(form.interested_in_volunteering) }}
+
+                {% for field in form.demographic %}
+                    {% if field.type == 'SelectField' or field.type == 'IntegerField' %}
+                        {{ f.render_form_field(field) }}
+                    {% endif %}
+                {% endfor %}
+
+                {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
+                {{ f.form_message(flashes['warning'], header='Check your email.', class='warning') }}
+                {{ f.form_message(flashes['info'], header='Information', class='info') }}
+                {{ f.form_message(flashes['success'], header='Success!', class='success') }}
+                
+                {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
+                    {{ f.render_form_field(field) }}
+                {% endfor %}
+
+            {{ f.end_form() }}
+        </div>
+    </div>
+{% endblock %}

@@ -51,3 +51,35 @@ class NewDonorForm(Form):
         'Notes', validators=[Length(0, 3000)])
 
     submit = SubmitField('Create')
+
+
+class EditDonorForm(Form):
+    first_name = StringField(
+        'First name', validators=[InputRequired(), Length(1, 64)])
+    last_name = StringField(
+        'Last name', validators=[InputRequired(), Length(1, 64)])
+    email = EmailField(
+        'Email', validators=[InputRequired(), Length(1, 64), Email()])
+    phone_number = StringField(
+        'Phone Number', default="")
+    contact_date = DateField(
+        'Date of Contact', validators=[InputRequired()])
+    street_address = StringField(
+        'Street Address', validators=[InputRequired()])
+    city = StringField(
+        'City', validators=[InputRequired()])
+    state = StringField(
+        'State', validators=[InputRequired()])
+    zipcode = StringField(
+        'Zipcode', validators=[InputRequired()])
+    interested_in_future_gp = BooleanField(
+        'Interested in joining a future Giving Project?')
+    want_to_learn_about_brf_guarantees = BooleanField(
+        'Want to learn about BRF guarantees?')
+    interested_in_volunteering = BooleanField(
+        'Interested in volunteering with BRF')
+    demographic = FormField(DemographicForm)
+    notes = TextAreaField(
+        'Notes', validators=[Length(0, 3000)])
+    submit = SubmitField('Save')
+
