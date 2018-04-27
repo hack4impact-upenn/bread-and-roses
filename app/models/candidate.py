@@ -36,7 +36,7 @@ class Candidate(db.Model):
     user_account = db.relationship('User', uselist = False, back_populates='candidate')
 
     def __repr__(self):
-        return '<Candidate \'%s\'>' % self.first_name % self.last_name
+        return '<Candidate \'{} {}\'>'.format(self.first_name, self.last_name)
 
     def filter(**kwargs):
         return Candidate.query.filter_by(**kwargs)

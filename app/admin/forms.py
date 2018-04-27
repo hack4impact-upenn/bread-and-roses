@@ -46,6 +46,10 @@ class InviteUserForm(Form):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
 
+class InviteAcceptedCandidatesForm(Form):
+    selected_candidates = HiddenField()
+    submit = SubmitField('Invite Selected')
+
 
 class NewUserForm(InviteUserForm):
     password = PasswordField(
