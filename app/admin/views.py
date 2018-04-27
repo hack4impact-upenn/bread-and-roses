@@ -3,7 +3,9 @@ from flask_login import current_user, login_required
 from flask_rq import get_queue
 
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
-                    NewUserForm, NewCandidateForm, DemographicForm, EditParticipantForm, NewTermForm)
+                    NewUserForm, NewCandidateForm, DemographicForm,
+                    EditParticipantForm, NewTermForm, EditStatusForm,
+                    InviteAcceptedCandidatesForm)
 from . import admin
 from .. import db
 from ..decorators import admin_required
@@ -69,14 +71,26 @@ def new_term():
     return render_template('admin/new_term.html', form=form)
 
 
-@admin.route('/participants')
+@admin.route('/participants', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
+    status_forms = { p.id: EditStatusForm(participant=p.id, status=p.status.name, term=p.term) for p in participants }
+    for f in status_forms:
+        form = status_forms[f]
+        if form.validate_on_submit():
+            user = Candidate.query.filter_by(id=form.participant.data).first()
+            user.status = form.status.data
+            user.term = form.term.data
+            db.session.add(user)
+            db.session.commit()
+            flash('Status for user {} successfully changed to {}.'
+                .format(user.first_name, user.status), 'form-success')
+            return redirect(url_for('admin.participants'))
     return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict(),
-    terms=Term.query.order_by(Term.start_date.desc()).all())
+                           terms=Term.query.order_by(Term.start_date.desc()).all(), status_forms=status_forms)
 
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])
@@ -104,7 +118,7 @@ def new_candidate():
             notes=form.notes.data,
             demographic=demographic,
             demographic_id=demographic.id,
-            status=0,
+            status=Status.PENDING,
             amount_donated=0
             )
         db.session.add(demographic)
@@ -220,6 +234,50 @@ def invite_user():
         flash('User {} successfully invited'.format(user.full_name()),
               'form-success')
     return render_template('admin/new_user.html', form=form)
+
+@admin.route('/invite-accepted-candidates', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def invite_accepted_candidates():
+    """Invites accepted candidates to create an account and set their own password."""
+    form = InviteAcceptedCandidatesForm()
+    if form.validate_on_submit():
+        selected = [ Candidate.query.filter_by(id=c).first() for c in form.selected_candidates.data.split(',') ]
+        user_role = Role.query.filter_by(name='User').first()
+        # for each selected candidate create a new user account
+        for candidate in selected:
+            user = User.query.filter_by(email=candidate.email).first()
+            if user is None:
+                user = User(
+                    role=user_role,
+                    first_name=candidate.first_name,
+                    last_name=candidate.last_name,
+                    email=candidate.email,
+                    candidate=candidate)
+                db.session.add(user)
+                db.session.commit()
+            token = user.generate_confirmation_token()
+            invite_link = url_for(
+                'account.join_from_invite',
+                user_id=user.id,
+                token=token,
+                _external=True)
+            get_queue().enqueue(
+                send_email,
+                recipient=user.email,
+                subject='You Are Invited To Join',
+                template='account/email/invite',
+                user=user,
+                invite_link=invite_link, )
+        print(selected)
+        str = ''
+        for c in selected:
+            str += c.first_name + ' ' + c.last_name + ', '
+        str = str[:-2]
+
+        flash('Candidates {} successfully invited'.format(str),
+              'form-success')
+    return render_template('admin/invite_accepted_candidates.html', form=form, all_terms=Term.query.order_by(Term.end_date.desc()).all(), accepted_candidates=Candidate.query.filter_by(status=Status.ASSIGNED).all())
 
 
 @admin.route('/users')
