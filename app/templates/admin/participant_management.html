@@ -164,6 +164,14 @@
                         </div>
                     </div>
                     <div class="actions">
+                        {% if p.user_account %}
+                        <a href="{{ url_for('participant.index', part_id=p.user_account.id) }}">
+                            <div class="ui blue button">
+                                <i class="address book icon"></i>
+                                See Donors
+                            </div>
+                        </a>
+                        {% endif %}
                         <a href="{{ url_for('admin.edit_participant', part_id=p.id) }}">
                             <div class="ui blue edit button">
                                 <i class="edit icon"></i>

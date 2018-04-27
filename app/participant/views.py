@@ -6,16 +6,24 @@ from .forms import NewDonorForm, TodoToAsking, AskingToPledged, PledgedToComplet
 from ..decorators import admin_required
 from . import participant
 from .. import db
-from ..models import Donor, Demographic, DonorStatus
+from ..models import Donor, Demographic, DonorStatus, User
 
 
-@participant.route('/')
+@participant.route('/<int:part_id>/')
+@participant.route('/', defaults={'part_id': None})
 @login_required
-def index():
+def index(part_id):
+    user = current_user
+    if part_id is not None:
+        if not current_user.is_admin():
+            return abort(403)
+
+        user = User.query.filter_by(id=part_id).first()
+
     """Participant dashboard page."""
     donors_by_status = {
         status.name: Donor.query.filter_by(
-            user_id=current_user.id, status=status).all()
+            user_id=user.id, status=status).all()
         for status in DonorStatus
     }
 
@@ -26,7 +34,7 @@ def index():
         return s.strftime('%b %d, %Y')
 
     forms_by_donor = {}
-    for d in Donor.query.filter_by(user_id=current_user.id).all():
+    for d in Donor.query.filter_by(user_id=user.id).all():
         f = None
         if d.status == DonorStatus.TODO:
             f = TodoToAsking(donor=d.id)
@@ -45,13 +53,19 @@ def index():
                            datestring=datestring,
                            datestring_alt=datestring_alt,
                            forms_by_donor=forms_by_donor,
-                           current_user=current_user)
+                           current_user=current_user,
+                           user=user,
+                           part_id=part_id)
 
 
 @participant.route('/donor/ask/<int:donor_id>', methods=['POST'])
 @login_required
 def todo_to_asking(donor_id):
     d = Donor.query.filter_by(id=donor_id).first()
+
+    part_id = None
+    if current_user.is_admin() and d.user.id!=current_user.id:
+        part_id = d.user.id
 
     if d.user != current_user and not current_user.is_admin():
         return abort(403)
@@ -68,13 +82,17 @@ def todo_to_asking(donor_id):
     else:
         flash('Error filling out form. Did you miss a field?', 'error')
 
-    return redirect(url_for('participant.index'))
+    return redirect(url_for('participant.index', part_id=part_id))
 
 
 @participant.route('/donor/pledge/<int:donor_id>', methods=['POST'])
 @login_required
 def asking_to_pledged(donor_id):
     d = Donor.query.filter_by(id=donor_id).first()
+
+    part_id = None
+    if current_user.is_admin() and d.user.id!=current_user.id:
+        part_id = d.user.id
 
     if d.user != current_user and not current_user.is_admin():
         return abort(403)
@@ -91,7 +109,7 @@ def asking_to_pledged(donor_id):
         for e in f.errors:
             flash('Error filling out %s field. %s' % (e.replace('_', ' ').title(), f.errors[e][0]), 'error')
 
-    return redirect(url_for('participant.index'))
+    return redirect(url_for('participant.index', part_id=part_id))
 
 
 @participant.route('/donor/complete/<int:donor_id>', methods=['POST'])
@@ -99,6 +117,10 @@ def asking_to_pledged(donor_id):
 @admin_required
 def pledged_to_completed(donor_id):
     d = Donor.query.filter_by(id=donor_id).first()
+
+    part_id = None
+    if current_user.is_admin() and d.user.id!=current_user.id:
+        part_id = d.user.id
 
     f = PledgedToCompleted()
     if f.validate_on_submit():
@@ -112,18 +134,24 @@ def pledged_to_completed(donor_id):
         for e in f.errors:
             flash('Error filling out %s field. %s' % (e.replace('_', ' ').title(), f.errors[e][0]), 'error')
 
-    return redirect(url_for('participant.index'))
+    return redirect(url_for('participant.index', part_id=part_id))
 
 
-@participant.route('/donor/<int:donor_id>/_delete')
+@participant.route('/<int:part_id>/donor/<int:donor_id>/_delete')
+@participant.route('/donor/<int:donor_id>/_delete', defaults={'part_id': None})
 @login_required
-def delete_donor(donor_id):
+def delete_donor(part_id, donor_id):
     """Delete a participant."""
     d = Donor.query.filter_by(id=donor_id).first()
+    if d.user != current_user and not (
+        current_user.is_admin() and d.user.id==part_id
+    ):
+        return abort(403)
+
     db.session.delete(d)
     db.session.commit()
     flash('Successfully deleted donor %s.' % d.first_name, 'success')
-    return redirect(url_for('participant.index'))
+    return redirect(url_for('participant.index', part_id=part_id))
 
 
 @participant.route('/donor/<int:donor_id>/edit')
@@ -134,9 +162,18 @@ def edit_donor(donor_id):
     return redirect(url_for('participant.index'))
 
 
-@participant.route('/new-donor', methods=['GET', 'POST'])
+@participant.route('/new-donor', defaults={'part_id': None}, methods=['GET', 'POST'])
+@participant.route('/<int:part_id>/new-donor', methods=['GET', 'POST'])
 @login_required
-def new_donor():
+def new_donor(part_id):
+    user = current_user
+    if part_id is not None:
+        if not current_user.is_admin():
+            return abort(403)
+
+        user = User.query.filter_by(id=part_id).first()
+
+
     """Create a new donor."""
     form = NewDonorForm()
     if form.validate_on_submit():
@@ -149,7 +186,7 @@ def new_donor():
         )
 
         donor = Donor(
-            user=current_user,
+            user=user,
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             contact_date=form.contact_date.data,
@@ -175,4 +212,4 @@ def new_donor():
         db.session.commit()
         flash('Donor {} successfully created'.format(donor.full_name()),
               'form-success')
-    return render_template('participant/new_donor.html', form=form)
+    return render_template('participant/new_donor.html', form=form, part_id=part_id)

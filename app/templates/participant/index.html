@@ -11,8 +11,13 @@
 {% block content %}
     <div class="ui container donor-header">
       <div class="ui grid">
+        {% if current_user.id != user.id %}
+        <div class="eight wide centered row">
+          <h3>viewing as {{ user.first_name }} {{ user.last_name }}</h3>
+        </div>
+        {% endif %}
         <div class="eight wide centered column donor-header-search">
-          <a href="{{ url_for('participant.new_donor') }}" class="ui left labeled icon button">
+          <a href="{{ url_for('participant.new_donor', part_id=part_id) }}" class="ui left labeled icon button">
             New Donor
             <i class="plus icon"></i>
           </a>
@@ -94,7 +99,7 @@
                               <i class="arrow alternate circle left outline icon"></i>
                               No, cancel!
                           </div>
-                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id, part_id=part_id) }}">
                               <div class="ui red ok button">
                                   <i class="trash alternate icon"></i>
                                   Yes, delete {{ d.first_name }}
@@ -156,7 +161,7 @@
                           </div>
                       </div>
                       <div class="actions">
-                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id, part_id=part_id) }}" class="ui blue edit button">
                               <i class="edit icon"></i>
                               Edit
                           </a>
@@ -204,7 +209,7 @@
                               <i class="arrow alternate circle left outline icon"></i>
                               No, cancel!
                           </div>
-                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id, part_id=part_id) }}">
                               <div class="ui red ok button">
                                   <i class="trash alternate icon"></i>
                                   Yes, delete {{ d.first_name }}
@@ -270,7 +275,7 @@
                           </div>
                       </div>
                       <div class="actions">
-                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id, part_id=part_id) }}" class="ui blue edit button">
                               <i class="edit icon"></i>
                               Edit
                           </a>
@@ -317,7 +322,7 @@
                               <i class="arrow alternate circle left outline icon"></i>
                               No, cancel!
                           </div>
-                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id, part_id=part_id) }}">
                               <div class="ui red ok button">
                                   <i class="trash alternate icon"></i>
                                   Yes, delete {{ d.first_name }}
@@ -333,7 +338,7 @@
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
                           <div><span class="bold">Amount asked:</span> ${{ d.amount_asking_for }}</div>
-                          <div><span class="bold">Date asked:</span> ${{ d.date_asking }}</div>
+                          <div><span class="bold">Date asked:</span> {{ d.date_asking }}</div>
 
                           {% if d.pledged %}
                           <div><span class="bold">Pledged?</span> Yes</div>
@@ -390,7 +395,7 @@
                           </div>
                       </div>
                       <div class="actions">
-                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id, part_id=part_id) }}" class="ui blue edit button">
                               <i class="edit icon"></i>
                               Edit
                           </a>
@@ -443,7 +448,7 @@
                               <i class="arrow alternate circle left outline icon"></i>
                               No, cancel!
                           </div>
-                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id, part_id=part_id) }}">
                               <div class="ui red ok button">
                                   <i class="trash alternate icon"></i>
                                   Yes, delete {{ d.first_name }}
@@ -459,7 +464,7 @@
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
                           <div><span class="bold">Amount asked:</span> ${{ d.amount_asking_for }}</div>
-                          <div><span class="bold">Date asked:</span> ${{ d.date_asking }}</div>
+                          <div><span class="bold">Date asked:</span> {{ d.date_asking }}</div>
 
                           <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
                           <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
@@ -510,7 +515,7 @@
                           </div>
                       </div>
                       <div class="actions">
-                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id, part_id=part_id) }}" class="ui blue edit button">
                               <i class="edit icon"></i>
                               Edit
                           </a>
