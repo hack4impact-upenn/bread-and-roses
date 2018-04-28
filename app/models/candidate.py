@@ -77,16 +77,16 @@ class Candidate(db.Model):
     @staticmethod
     def gender_stats():
         results = {}
-        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.gender == Class.NOT_SPECIFIED).count()
-        results["WOMAN"] = Candidate.query.filter(Demographic.gender == Class.WOMAN).count()
-        results["MAN"] = Candidate.query.filter(Demographic.gender == Class.MAN).count()
-        results["NON_BINARY"] = Candidate.query.filter(Demographic.gender == Class.NON_BINARY).count()
+        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.gender == Gender.NOT_SPECIFIED).count()
+        results["WOMAN"] = Candidate.query.filter(Demographic.gender == Gender.WOMAN).count()
+        results["MAN"] = Candidate.query.filter(Demographic.gender == Gender.MAN).count()
+        results["NON_BINARY"] = Candidate.query.filter(Demographic.gender == Gender.NON_BINARY).count()
         return results
 
     @staticmethod
     def gender_stats():
         results = {}
-        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.race == Class.NOT_SPECIFIED).count()
-        results["LGBTQ"] = Candidate.query.filter(Demographic.race == Class.LGBTQ).count()
-        results["STRAIGHT"] = Candidate.query.filter(Demographic.race == Class.STRAIGHT).count()
+        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.NOT_SPECIFIED).count()
+        results["LGBTQ"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.LGBTQ).count()
+        results["STRAIGHT"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.STRAIGHT).count()
         return results
