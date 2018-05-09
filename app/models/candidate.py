@@ -68,10 +68,10 @@ class Candidate(db.Model):
     @staticmethod
     def class_stats():
         results = {}
-        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.class == Class.NOT_SPECIFIED).count()
-        results["LOW"] = Candidate.query.filter(Demographic.class == Class.LOW).count()
-        results["MIDDLE"] = Candidate.query.filter(Demographic.class == Class.MIDDLE).count()
-        results["UPPER"] = Candidate.query.filter(Demographic.class == Class.UPPER).count()
+        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.soc_class == Class.NOT_SPECIFIED).count()
+        results["LOW"] = Candidate.query.filter(Demographic.soc_class == Class.LOW).count()
+        results["MIDDLE"] = Candidate.query.filter(Demographic.soc_class == Class.MIDDLE).count()
+        results["UPPER"] = Candidate.query.filter(Demographic.soc_class == Class.UPPER).count()
         return results
 
     @staticmethod
