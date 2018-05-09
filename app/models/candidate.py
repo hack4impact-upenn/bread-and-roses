@@ -84,7 +84,7 @@ class Candidate(db.Model):
         return results
 
     @staticmethod
-    def gender_stats():
+    def sexual_orientation_stats():
         results = {}
         results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.NOT_SPECIFIED).count()
         results["LGBTQ"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.LGBTQ).count()
