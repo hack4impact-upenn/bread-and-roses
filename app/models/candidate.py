@@ -12,7 +12,7 @@ from app.models.demographic import Race, Class, Gender, SexualOrientation
 from app.models import Demographic
 
 
-class Status:
+class Status(enum.Enum):
     PENDING = 0
     ASSIGNED = 1
     REJECTED = 2
@@ -28,7 +28,7 @@ class Candidate(db.Model):
     source = db.Column(db.String(256))
     staff_contact = db.Column(db.String(64))
     notes = db.Column(db.String(5024))
-    status = db.Column(db.Integer)
+    status = db.Column(db.Enum(Status))
     term_id = db.Column(db.Integer, db.ForeignKey('terms.id'))
     term = db.relationship('Term', back_populates='candidates')
     amount_donated = db.Column(db.Integer)
@@ -38,7 +38,7 @@ class Candidate(db.Model):
     user_account = db.relationship('User', uselist = False, back_populates='candidate')
 
     def __repr__(self):
-        return '<Candidate \'%s\'>' % self.first_name % self.last_name
+        return '<Candidate \'{} {}\'>'.format(self.first_name, self.last_name)
 
     def filter(**kwargs):
         return Candidate.query.filter_by(**kwargs)

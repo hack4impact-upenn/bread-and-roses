@@ -1,0 +1,133 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
+            <a class="ui basic compact button" href="{{ url_for('admin.index') }}">
+                <i class="caret left icon"></i>
+                Back to dashboard
+            </a>
+            <h2 class="ui header">
+                Invite Accepted Candidates
+                <div class="sub header">
+                    Invite accepted candidates from any term to create a user account.
+                </div>
+            </h2>
+
+            {% set flashes = {
+                'error':   get_flashed_messages(category_filter=['form-error']),
+                'warning': get_flashed_messages(category_filter=['form-check-email']),
+                'info':    get_flashed_messages(category_filter=['form-info']),
+                'success': get_flashed_messages(category_filter=['form-success'])
+            } %}
+
+            {{ f.begin_form(form, flashes) }}
+
+                {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
+                    {{ f.render_form_field(field) }}
+                {% endfor %}
+
+                {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
+                {{ f.form_message(flashes['warning'], header='Check your email.', class='warning') }}
+                {{ f.form_message(flashes['info'], header='Information', class='info') }}
+                {{ f.form_message(flashes['success'], header='Success!', class='success') }}
+
+            {{ f.end_form() }}
+            <br>
+
+            <!-- <div class="ui menu"> -->
+              <div id="select-term" class="ui dropdown segment">
+                  <div class="text">
+                       All Terms
+                  </div>
+                  <i class="dropdown icon"></i>
+                  <div class="menu">
+                      <div class="item" data-value="">All terms</div>
+                      {% for t in all_terms %}
+                          <div class="item" data-value="{{ t.name }}">{{ t.name }}</div>
+                      {% endfor %}
+                  </div>
+              </div>
+                <!-- <div class="ui right search item">
+                    <div class="ui transparent icon input">
+                        <input id="search-users" type="text" placeholder="Search candidates…">
+                        <i class="search icon"></i>
+                    </div>
+                </div> -->
+            <!-- </div> -->
+
+
+            {# Use overflow-x: scroll so that mobile views don't freak out
+             # when the table is too wide #}
+            <div style="overflow-x: scroll;">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                        <tr>
+                            <th>
+                              <div class="ui master checkbox">
+                                <input type="checkbox" name="">
+                                <label></label>
+                              </div>
+                            </th>
+                            <th>First name</th>
+                            <th class="sorted ascending">Last name</th>
+                            <th>Email address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for u in accepted_candidates | sort(attribute='last_name') %}
+                        <tr>
+                            <td>
+                              <div class="ui child checkbox">
+                                <input class="candidate checkbox" type="checkbox" name="{{ u.id }}">
+                                <label></label>
+                              </div>
+                            </td>
+                            <td>{{ u.first_name }}</td>
+                            <td>{{ u.last_name }}</td>
+                            <td>{{ u.email }}</td>
+                            <td class="term" hidden> {{ u.term.name }} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // $('#search-users').keyup(function () {
+            //     var searchText = $(this).val();
+            //     if (searchText.length > 0) {
+            //         $('tbody td:icontains(' + searchText + ')').addClass('positive');
+            //         $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
+            //         $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
+            //         $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+            //     } else {
+            //         $('td.positive').removeClass('positive');
+            //         $('tr.hidden').removeClass('hidden').show();
+            //     }
+            // });
+
+            $('#select-term').dropdown({
+                onChange: function (value, text, $selectedItem) {
+                    $('td.term:contains(' + value + ')').closest('tr').removeClass('hidden').show();
+                    $('td.term').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
+                }
+            });
+
+            var selected = []
+            $('.candidate.checkbox').change(function () {
+              var id = $(this).attr('name')
+              if(this.checked) {
+                selected.push(id);
+              } else {
+                selected.splice(selected.indexOf(id), 1)
+              }
+              $('input#selected_candidates').attr('value', selected.toString())
+            });
+        });
+    </script>
+{% endblock %}

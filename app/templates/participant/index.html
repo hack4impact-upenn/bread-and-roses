@@ -1,10 +1,23 @@
+            {% set flashes = {
+                'error':   get_flashed_messages(category_filter=['form-error']),
+                'warning': get_flashed_messages(category_filter=['form-check-email']),
+                'info':    get_flashed_messages(category_filter=['form-info']),
+                'success': get_flashed_messages(category_filter=['form-success'])
+            } %}
 {% extends 'layouts/base.html' %}
+
+{% import 'macros/form_macros.html' as f %}
 
 {% block content %}
     <div class="ui container donor-header">
       <div class="ui grid">
+        {% if current_user.id != user.id %}
+        <div class="eight wide centered row">
+          <h3>viewing as {{ user.first_name }} {{ user.last_name }}</h3>
+        </div>
+        {% endif %}
         <div class="eight wide centered column donor-header-search">
-          <a href="{{ url_for('participant.new_donor') }}" class="ui left labeled icon button">
+          <a href="{{ url_for('participant.new_donor', part_id=part_id) }}" class="ui left labeled icon button">
             New Donor
             <i class="plus icon"></i>
           </a>
@@ -37,6 +50,42 @@
     <div class="ui four column grid container" style="padding-top: 20px">
       <div class="column">
 
+
+
+        {% for d_id in forms_by_donor %}
+            {% set form=forms_by_donor[d_id] %}
+            <div class="ui small modal" id="move-{{ d_id }}">
+                <i class="close icon"></i>
+                    <div class="ui header">
+                      {{ form.header }}
+                    </div>
+                  <div class="content">
+                {{ f.begin_form(form, flashes, 'POST', '', None, form.action) }}
+                    {{ f.render_form_field(form.donor) }}
+                    {{ f.render_form_field(form.status) }}
+
+                    {% for field in form.fields %}
+                      {{ f.render_form_field(field) }}
+                    {% endfor %}
+
+                        {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
+                            {{ f.render_form_field(field) }}
+                        {% endfor %}
+                {{ f.end_form() }}
+                  </div>
+                  <div class="actions">
+                      <div class="ui cancel button">
+                          <i class="arrow alternate circle left outline icon"></i>
+                          Cancel
+                      </div>
+                  </div>
+            </div>
+            <script>$('#move-{{ d_id }}').modal({ allowMultiple: true })</script>
+        {% endfor %}
+        
+
+
+
         {% for d in todo | sort(attribute='last_name') %}
                   <div class="ui mini modal" id="delete-{{ d.id }}">
                       <div class="ui header">
@@ -50,7 +99,7 @@
                               <i class="arrow alternate circle left outline icon"></i>
                               No, cancel!
                           </div>
-                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id, part_id=part_id) }}">
                               <div class="ui red ok button">
                                   <i class="trash alternate icon"></i>
                                   Yes, delete {{ d.first_name }}
@@ -65,9 +114,6 @@
                       </div>
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
-                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
-                          <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
-                          <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
 
                           <br/>
                           <div><span class="bold">Date of contact:</span> {{ datestring_alt(d.contact_date) }}</div>
@@ -115,7 +161,7 @@
                           </div>
                       </div>
                       <div class="actions">
-                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id, part_id=part_id) }}" class="ui blue edit button">
                               <i class="edit icon"></i>
                               Edit
                           </a>
@@ -127,20 +173,24 @@
                   </div>
                   <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
                   <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
-                  <div class="ui card" style="cursor: pointer;" onclick="$('#modal-{{ d.id }}').modal('show')" >
-          <div class="content">
-            <i class="right floated info circle icon"></i>
-            <div class="header">{{d.first_name}} {{d.last_name}}</div>
-            <div class="description">
-              <p></p>
-            </div>
-          </div>
-          <div class="extra content">
-            <span class="right floated content">
-              {{datestring(d.contact_date)}}
-            </span>
-          </div>
-        </div>   
+                  <div class="ui card" style="cursor: pointer;">
+                    <div class="content" onclick="$('#modal-{{ d.id }}').modal('show')" >
+                      <i class="right floated user icon"></i>
+                      <div class="header">{{d.first_name}} {{d.last_name}}</div>
+                      <div class="description">
+                        <p></p>
+                      </div>
+                    </div>
+                    <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
+                      <span class="right floated content">
+                        Added on {{datestring(d.contact_date)}}
+                      </span>
+                      </div>
+                      <div class="ui bottom attached red button" onclick="$('#move-{{ d.id }}').modal('show')">
+                        <i class="arrow right icon"></i>
+                        Move to asking
+                      </div>
+                  </div>   
         {% endfor %}
 
       </div>
@@ -159,7 +209,7 @@
                               <i class="arrow alternate circle left outline icon"></i>
                               No, cancel!
                           </div>
-                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id, part_id=part_id) }}">
                               <div class="ui red ok button">
                                   <i class="trash alternate icon"></i>
                                   Yes, delete {{ d.first_name }}
@@ -174,9 +224,10 @@
                       </div>
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
-                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
-                          <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
-                          <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
+                          <br/>
+                          <div><span class="bold">Amount asking for:</span> {{ d.amount_asking_for }}</div>
+                          <div><span class="bold">How will you ask:</span> {{ d.how_asking }}</div>
+                          <div><span class="bold">Date asking:</span> {{ d.date_asking }}</div>
 
                           <br/>
                           <div><span class="bold">Date of contact:</span> {{ datestring_alt(d.contact_date) }}</div>
@@ -224,7 +275,7 @@
                           </div>
                       </div>
                       <div class="actions">
-                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id, part_id=part_id) }}" class="ui blue edit button">
                               <i class="edit icon"></i>
                               Edit
                           </a>
@@ -236,19 +287,23 @@
                   </div>
                   <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
                   <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
-                  <div class="ui card" style="cursor: pointer;" onclick="$('#modal-{{ d.id }}').modal('show')" >
-          <div class="content">
-            <i class="right floated info circle icon"></i>
+                  <div class="ui card" style="cursor: pointer;">
+          <div class="content" onclick="$('#modal-{{ d.id }}').modal('show')" >
+            <i class="right floated question icon" style="color: orange;"></i>
             <div class="header">{{d.first_name}} {{d.last_name}}</div>
             <div class="description">
-              <p>Asking for ${{d.amount_asking_for}}</p>
+              <p>Asking for {{d.amount_asking_for}}</p>
             </div>
           </div>
-          <div class="extra content">
+          <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
             <span class="right floated content">
-              {{datestring(d.contact_date)}}
+              Ask by {{datestring(d.date_asking)}}
             </span>
           </div>
+                      <div class="ui bottom attached red button" onclick="$('#move-{{ d.id }}').modal('show')">
+                        <i class="arrow right icon"></i>
+                        Move to pledged
+                      </div>
         </div>   
         {% endfor %}
       </div>
@@ -267,7 +322,7 @@
                               <i class="arrow alternate circle left outline icon"></i>
                               No, cancel!
                           </div>
-                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id, part_id=part_id) }}">
                               <div class="ui red ok button">
                                   <i class="trash alternate icon"></i>
                                   Yes, delete {{ d.first_name }}
@@ -282,8 +337,16 @@
                       </div>
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
-                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
+                          <div><span class="bold">Amount asked:</span> ${{ d.amount_asking_for }}</div>
+                          <div><span class="bold">Date asked:</span> {{ d.date_asking }}</div>
+
+                          {% if d.pledged %}
+                          <div><span class="bold">Pledged?</span> Yes</div>
                           <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
+                          {% else %}
+                          <div><span class="bold">Pledged?</span> <span class="color: red;">No</span></div>
+                          {% endif %}
+
                           <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
 
                           <br/>
@@ -332,7 +395,7 @@
                           </div>
                       </div>
                       <div class="actions">
-                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id, part_id=part_id) }}" class="ui blue edit button">
                               <i class="edit icon"></i>
                               Edit
                           </a>
@@ -344,19 +407,29 @@
                   </div>
                   <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
                   <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
-                  <div class="ui card" style="cursor: pointer;" onclick="$('#modal-{{ d.id }}').modal('show')" >
-          <div class="content">
-            <i class="right floated info circle icon"></i>
+                  <div class="ui card" style="cursor: pointer;">
+          <div class="content" onclick="$('#modal-{{ d.id }}').modal('show')" >
+          <i class="right floated exclamation flag icon" style="color: {% if d.pledged %}green{% else %}red{% endif %}"></i>
             <div class="header">{{d.first_name}} {{d.last_name}}</div>
             <div class="description">
+              {% if d.pledged %}
               <p>Pledged ${{d.amount_pledged}}</p>
+              {% else %}
+              <p>Did not pledge</p>
+              {% endif %}
             </div>
           </div>
-          <div class="extra content">
+          <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
             <span class="right floated content">
-              {{datestring(d.contact_date)}}
+              Asked on {{datestring(d.date_asking)}}
             </span>
           </div>
+          {% if current_user.is_admin() %}
+                      <div class="ui bottom attached red button" onclick="$('#move-{{ d.id }}').modal('show')">
+                        <i class="arrow right icon"></i>
+                        Move to completed
+                      </div>
+          {% endif %}
         </div>   
         {% endfor %}
       </div>
@@ -375,7 +448,7 @@
                               <i class="arrow alternate circle left outline icon"></i>
                               No, cancel!
                           </div>
-                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id) }}">
+                          <a href="{{ url_for('participant.delete_donor', donor_id=d.id, part_id=part_id) }}">
                               <div class="ui red ok button">
                                   <i class="trash alternate icon"></i>
                                   Yes, delete {{ d.first_name }}
@@ -390,7 +463,9 @@
                       </div>
                       <div class="content">
                           <div><span class="bold">Status:</span> {{ d.status.name.title() }}</div>
-                          <div><span class="bold">Amount asking for:</span> ${{ d.amount_asking_for }}</div>
+                          <div><span class="bold">Amount asked:</span> ${{ d.amount_asking_for }}</div>
+                          <div><span class="bold">Date asked:</span> {{ d.date_asking }}</div>
+
                           <div><span class="bold">Amount pledged:</span> ${{ d.amount_pledged }}</div>
                           <div><span class="bold">Amount amount received by BRF:</span> ${{ d.amount_received }}</div>
 
@@ -440,7 +515,7 @@
                           </div>
                       </div>
                       <div class="actions">
-                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id) }}" class="ui blue edit button">
+                          <a href="{{ url_for('participant.edit_donor', donor_id=d.id, part_id=part_id) }}" class="ui blue edit button">
                               <i class="edit icon"></i>
                               Edit
                           </a>
@@ -452,19 +527,25 @@
                   </div>
                   <script>$('#modal-{{ d.id }}').modal({ allowMultiple: true })</script>
                   <script>$('#delete-{{ d.id }}').modal({ allowMultiple: true })</script>
-                  <div class="ui card" style="cursor: pointer;" onclick="$('#modal-{{ d.id }}').modal('show')" >
-          <div class="content">
-            <i class="right floated info circle icon"></i>
+                  <div class="ui card" style="cursor: pointer;">
+          <div class="content" onclick="$('#modal-{{ d.id }}').modal('show')" >
+            <i class="right floated money bill alternate icon" style="color: green;"></i>
             <div class="header">{{d.first_name}} {{d.last_name}}</div>
             <div class="description">
               <p>${{d.amount_received}} received by BNR</p>
             </div>
           </div>
-          <div class="extra content">
+          <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
             <span class="right floated content">
-              {{datestring(d.contact_date)}}
+              Completed on {{datestring(d.date_received)}}
             </span>
           </div>
+          {% if current_user.is_admin() %}
+                      <div class="ui bottom attached red button" onclick="$('#move-{{ d.id }}').modal('show')">
+                        <i class="edit icon"></i>
+                        Update amount
+                      </div>
+          {% endif %}
         </div>   
         {% endfor %}
       </div>
