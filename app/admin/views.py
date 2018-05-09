@@ -406,12 +406,9 @@ def update_editor_contents():
     return 'OK', 200
 
 
-@admin.route('/download/participants/filters/<string:filters>', methods=['GET'])
+@admin.route('/download/participants', methods=['GET'])
 @login_required
-def downloadParticipants(filters):
-
-    select = request.form.get('Participant_Term')
-
+def download_participants():
     # format string or list of strings to be csv-friendly
     def csv_friendly(str):
         if str == "":
@@ -455,7 +452,7 @@ def downloadParticipants(filters):
 
 @admin.route('/download/donors', methods=['GET'])
 @login_required
-def downloadDonors():
+def download_donors():
     # format string or list of strings to be csv-friendly
     def csv_friendly(str):
         if str == "":
