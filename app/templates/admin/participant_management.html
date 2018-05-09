@@ -1,13 +1,20 @@
 
+            {% set flashes = {
+                'error':   get_flashed_messages(category_filter=['form-error']),
+                'warning': get_flashed_messages(category_filter=['form-check-email']),
+                'info':    get_flashed_messages(category_filter=['form-info']),
+                'success': get_flashed_messages(category_filter=['form-success'])
+            } %}
 {% extends 'layouts/base.html' %}
 
+{% import 'macros/form_macros.html' as f %}
 {% block content %}
     <div class="pushable">
     <div class="ui visible sidebar vertical menu participant-menu">
         <div class="ui search item" style="background-color: #FFFFFF;">
             <div class="ui left icon input">
                 <i class="search icon"></i>
-                <input id="search-participants" type="text" placeholder="Search participants">
+                <input id="search-participants" type="text" placeholder="Search candidates">
             </div>
         </div>
 
@@ -16,9 +23,9 @@
             <div class="ui selection dropdown select-filter" id="select-status" style="width: 250px;">
                 <input type="hidden" name="Participant Status">
                 <i class="dropdown icon"></i>
-                <div class="default text">Participant Status</div>
+                <div class="default text">Candidate Status</div>
                 <div class="menu">
-                <div class="item" data-value="">All participants</div>
+                <div class="item" data-value="">All candidates</div>
                 <div class="item" data-value="Pending">Pending</div>
                 <div class="item" data-value="Assigned">Assigned</div>
                 <div class="item" data-value="Rejected">Rejected</div>
@@ -30,7 +37,7 @@
             <div name="Participant_Term" class="ui selection dropdown select-filter" id="select-term" style="width: 250px;">
                 <input type="hidden" name="Participant Term">
                 <i class="dropdown icon"></i>
-                <div class="default text">Participant Term</div>
+                <div class="default text">Candidate Term</div>
                 <div class="menu">
                 <div class="item" data-value="">All terms</div>
                 {% for t in terms %}
@@ -75,7 +82,7 @@
             </a>
             <a href="{{ url_for('admin.new_candidate') }}" class="ui button" style="background-color: #cf0a2c;">
                 <div style="text-align: center; font-weight: bold; color: #FFFFFF; font-family: Open Sans">
-                    New Participant + {{count}}
+                    New Candidate +
                 </div>
             </a>
             </div>
@@ -108,6 +115,24 @@
                     <div class="content">
                         <div><span class="bold">Email:</span> {{ p.email }}</div>
                         <div><span class="bold">Phone:</span> {{ p.phone_number }}</div>
+
+                        <br />
+
+                        <div><span class="bold">Status:</span>
+                          {{ f.begin_form(status_forms[p.id], flashes) }}
+
+                              {{ f.render_form_field(status_forms[p.id].participant) }}
+                              {{ f.render_form_field(status_forms[p.id].status) }}
+                        <br />
+                        <span class="bold">Term:</span>
+                              {{ f.render_form_field(status_forms[p.id].term) }}
+
+                              {% for field in status_forms[p.id] | selectattr('type', 'equalto', 'SubmitField') %}
+                                  {{ f.render_form_field(field) }}
+                              {% endfor %}
+
+                          {{ f.end_form() }}
+                        </div>
 
                         <br />
 
@@ -144,6 +169,14 @@
                         </div>
                     </div>
                     <div class="actions">
+                        {% if p.user_account %}
+                        <a href="{{ url_for('participant.index', part_id=p.user_account.id) }}">
+                            <div class="ui blue button">
+                                <i class="address book icon"></i>
+                                See Donors
+                            </div>
+                        </a>
+                        {% endif %}
                         <a href="{{ url_for('admin.edit_participant', part_id=p.id) }}">
                             <div class="ui blue edit button">
                                 <i class="edit icon"></i>
@@ -160,7 +193,7 @@
                 <script>$('#delete-{{ p.id }}').modal({ allowMultiple: true })</script>
                 <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
                     <div class="participant">
-                        <div class="status" hidden>{{p.status_name()}}</div>
+                        <div class="status" hidden>{{p.status.name}}</div>
                         <div class="partseg1">
                             {% if not p.status or p.status == Status.PENDING %}
                                 <i class="dot circle outline icon" style="color: #FAC334;"></i>

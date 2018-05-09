@@ -1,12 +1,12 @@
 from flask_wtf import Form
 from wtforms import ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
-from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField, SelectMultipleField
+from wtforms.fields import PasswordField, StringField, SubmitField, TextAreaField, FormField, SelectField, IntegerField, BooleanField, SelectMultipleField, HiddenField
 from wtforms.fields.html5 import EmailField, DateField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 
 from .. import db
-from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation, Term
+from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation, Term, Status
 
 
 class ChangeUserEmailForm(Form):
@@ -45,6 +45,10 @@ class InviteUserForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
+
+class InviteAcceptedCandidatesForm(Form):
+    selected_candidates = HiddenField()
+    submit = SubmitField('Invite Selected')
 
 
 class NewUserForm(InviteUserForm):
@@ -91,6 +95,18 @@ class DemographicForm(Form):
     age = IntegerField('Age', default=0)
 
 
+class EditStatusForm(Form):
+    participant = HiddenField(label='')
+    status = SelectField(
+        label='',
+        choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Status]
+    )
+    term = QuerySelectField(
+        label='',
+        get_label='name',
+        query_factory=lambda: db.session.query(Term).order_by('start_date'))
+    submit = SubmitField('Update Status')
+
 class NewCandidateForm(Form):
     first_name = StringField(
         'First name', validators=[InputRequired(), Length(1, 64)])
@@ -132,8 +148,10 @@ class EditParticipantForm(Form):
         'Notes', validators=[Length(0, 1024)])
     status = IntegerField(
         'Status', validators=[InputRequired()])
-    assigned_term = StringField(
-        'Assigned Term', validators=[Length(1, 64)])
+    assigned_term = QuerySelectField(
+        'Assigned Term',
+        get_label='name',
+        query_factory=lambda: db.session.query(Term).order_by('start_date'))
     amount_donated = IntegerField(
         'Amount Donated', validators=[])
     applied = BooleanField(
