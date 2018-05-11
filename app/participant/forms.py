@@ -3,12 +3,8 @@ from flask import url_for
 from wtforms import ValidationError
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.fields import (PasswordField, StringField, SubmitField,
-<<<<<<< HEAD
-                            IntegerField, BooleanField, FormField, TextAreaField)
-=======
                             IntegerField, BooleanField, FormField, TextAreaField,
                             HiddenField)
->>>>>>> e273ad58b45a64b0394452893f72ea63e770e237
 from wtforms.fields.html5 import EmailField, TelField, DateField
 from wtforms.validators import Email, EqualTo, InputRequired, Length, NumberRange, optional
 

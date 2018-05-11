@@ -102,30 +102,6 @@ def profile():
                             form=None)
 
 
-@participant.route('/donor/<int:donor_id>/_delete')
-@login_required
-def delete_donor(donor_id):
-    """Delete a donor."""
-    d = Donor.query.filter_by(id=donor_id).first()
-    db.session.delete(d)
-    db.session.commit()
-    flash('Successfully deleted donor %s.' % d.first_name, 'success')
-    return redirect(url_for('participant.index'))
-
-
-@participant.route('/donor/<int:donor_id>/edit')
-@login_required
-def edit_donor(donor_id):
-    """Edits a donor."""
-    d = Donor.query.filter_by(id=donor_id).first()
-    return redirect(url_for('participant.index'))
-                           datestring_alt=datestring_alt,
-                           forms_by_donor=forms_by_donor,
-                           current_user=current_user,
-                           user=user,
-                           part_id=part_id)
-
-
 @participant.route('/donor/ask/<int:donor_id>', methods=['POST'])
 @login_required
 def todo_to_asking(donor_id):
@@ -205,7 +181,6 @@ def pledged_to_completed(donor_id):
     return redirect(url_for('participant.index', part_id=part_id))
 
 
-@participant.route('/<int:part_id>/donor/<int:donor_id>/_delete')
 @participant.route('/donor/<int:donor_id>/_delete', defaults={'part_id': None})
 @login_required
 def delete_donor(part_id, donor_id):
@@ -231,7 +206,6 @@ def edit_donor(donor_id):
 
 
 @participant.route('/new-donor', defaults={'part_id': None}, methods=['GET', 'POST'])
-@participant.route('/<int:part_id>/new-donor', methods=['GET', 'POST'])
 @login_required
 def new_donor(part_id):
     user = current_user
@@ -240,7 +214,6 @@ def new_donor(part_id):
             return abort(403)
 
         user = User.query.filter_by(id=part_id).first()
-
 
     """Create a new donor."""
     form = NewDonorForm()
