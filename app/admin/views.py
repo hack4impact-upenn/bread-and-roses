@@ -77,6 +77,11 @@ def new_term():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
+    result = 0
+
+    if (len(participants) > 0):
+        temp = participants[0].participant_stats()
+        result = temp["asking_count"]
 
     status_forms = { p.id: EditStatusForm(participant=p.id, status=p.status.name, term=p.term) for p in participants }
     for f in status_forms:
@@ -90,7 +95,7 @@ def participants():
             flash('Status for user {} successfully changed to {}.'
                 .format(user.first_name, user.status), 'form-success')
             return redirect(url_for('admin.participants'))
-    return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict(),
+    return render_template('admin/participant_management.html', Status=Status, stats=result, participants=participants, demographics=Demographic.demographics_dict(),
                            terms=Term.query.order_by(Term.start_date.desc()).all(), status_forms=status_forms)
 
 
@@ -121,7 +126,7 @@ def new_candidate():
             demographic_id=demographic.id,
             status=Status.PENDING,
             amount_donated=0
-            )
+        )
         db.session.add(demographic)
         db.session.add(candidate)
         db.session.commit()
@@ -404,6 +409,12 @@ def update_editor_contents():
     db.session.commit()
 
     return 'OK', 200
+#
+# @admin.route('/statistics/<int:term_id>', methods=['GET'])
+# @login_required
+# def download_participants(term_id):
+#     results = Candidate.progress_statistics(term_id)
+#     return results["donors"]
 
 
 @admin.route('/download/participants', methods=['GET'])

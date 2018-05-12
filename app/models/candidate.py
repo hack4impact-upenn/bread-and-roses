@@ -9,7 +9,8 @@ from datetime import date
 
 from .. import db, login_manager
 from app.models.demographic import Race, Class, Gender, SexualOrientation
-from app.models import Demographic
+from app.models.donor import DonorStatus
+from app.models import Demographic, Donor
 
 
 class Status(enum.Enum):
@@ -39,9 +40,6 @@ class Candidate(db.Model):
 
     def __repr__(self):
         return '<Candidate \'{} {}\'>'.format(self.first_name, self.last_name)
-
-    def filter(**kwargs):
-        return Candidate.query.filter_by(**kwargs)
 
     def status_name(self):
         if Status.PENDING == self.status:
@@ -84,9 +82,53 @@ class Candidate(db.Model):
         return results
 
     @staticmethod
+    # TODO need to include term_id in the arguments
     def sexual_orientation_stats():
         results = {}
         results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.NOT_SPECIFIED).count()
         results["LGBTQ"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.LGBTQ).count()
         results["STRAIGHT"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.STRAIGHT).count()
         return results
+
+    @staticmethod
+    def cohort_stats(term_id):
+        results = {}
+        result["amount_donated"] = 0
+        result["total_donations"] = 0
+
+        candidates = Candidate.query.filter(Candidate.term_id == term_id)
+
+        # Gets the total amount donated by cohort participants
+        for candidate in candidates:
+            results["amount_donated"] += candidate.amount_donated
+
+        # Gets the donors associated with all participants in this term
+        donors = Donor.query.filter(Donor.user_id == Candidate.id && Candidate.term_id = term_id)
+        for donor in donors:
+            results["total_donations"] += donor.amount_received
+
+    # For individual participant's statistics
+    def participant_stats(self):
+        result = {}
+        result["donor_count"] = 0
+        result["todo_count"] = 0
+        result["asking_count"] = 0
+        result["pledged_count"] = 0
+        result["completed_count"] = 0
+        result["total_donations"] = 0
+
+        # Gets the donors associated with participant
+        donors = Donor.query.filter(Donor.user_id == self.id)
+        for donor in donors:
+            result["donor_count"] += 1
+            if (donor.status == DonorStatus.TODO):
+                result["todo_count"] += 1
+            elif (donor.status == DonorStatus.ASKING):
+                result["asking_count"] += 1
+            elif (donor.status == DonorStatus.PLEDGED):
+                result["pledged_count"] += 1
+            elif (donor.status == DonorStatus.COMPLETED):
+                result["completed_count"] += 1
+                result["total_donations"] += donor.amount_received
+
+        return result
