@@ -53,7 +53,9 @@ def index(part_id):
                            Status=DonorStatus,
                            datestring=datestring,
                            datestring_alt=datestring_alt,
-                           part_id=part_id)
+                           part_id=part_id,
+                           forms_by_donor=forms_by_donor,
+                           current_user=current_user)
 
 
 @participant.route('/profile')
@@ -182,7 +184,7 @@ def pledged_to_completed(donor_id):
 
     return redirect(url_for('participant.index', part_id=part_id))
 
-
+@participant.route('/<int:part_id>/donor/<int:donor_id>/_delete')
 @participant.route('/donor/<int:donor_id>/_delete', defaults={'part_id': None})
 @login_required
 def delete_donor(part_id, donor_id):
@@ -206,8 +208,8 @@ def edit_donor(donor_id):
     d = Donor.query.filter_by(id=donor_id).first()
     return redirect(url_for('participant.index'))
 
-
 @participant.route('/new-donor', defaults={'part_id': None}, methods=['GET', 'POST'])
+@participant.route('/<int:part_id>/new-donor', methods=['GET', 'POST'])
 @login_required
 def new_donor(part_id):
     user = current_user

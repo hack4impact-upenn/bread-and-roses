@@ -188,7 +188,7 @@
                 <script>$('#delete-{{ p.id }}').modal({ allowMultiple: true })</script>
                 <div style="cursor: pointer;" class="ui horizontal segments" onclick="$('#modal-{{ p.id }}').modal('show')">
                     <div class="participant">
-                        <div class="status" hidden>{{p.status.name}}</div>
+                        <div class="status" hidden>{{ p.status.name }}</div>
                         <div class="partseg1">
                             {% if not p.status or p.status == Status.PENDING %}
                                 <i class="dot circle outline icon" style="color: #FAC334;"></i>
