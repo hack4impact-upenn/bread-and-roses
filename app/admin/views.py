@@ -13,6 +13,9 @@ from ..email import send_email
 from ..models import Role, User, Candidate, Demographic, Donor, EditableHTML, Status, DonorStatus, Term
 
 
+
+
+
 @admin.route('/')
 @login_required
 @admin_required
@@ -118,6 +121,49 @@ def participants():
                         stat_term=stat_term,
                         stat_form=stat_form)
 
+@admin.route('/participants/demographic.png/<string:name>/<stats>')
+@login_required
+def make_graph(name, stats):
+    import numpy as np
+    import matplotlib
+    matplotlib.use('TkAgg')
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    import StringIO
+    import ast
+    import math
+    from textwrap import wrap
+
+    # Setup data
+    stats_obj=ast.literal_eval(stats)
+    objects = [ stat[0] for stat in stats_obj.items() ]
+    objects = [ o.title().replace('_', ' ') for o in objects]
+    objects = [ '\n'.join(wrap(o, 10)) for o in objects ]
+    amt = [ int(stat[1]) for stat in stats_obj.items() ]
+    y_ticks = np.arange(len(amt))
+
+    # Setup graph
+    fig=Figure()
+    ax=fig.add_subplot(111)
+    ax.bar(y_ticks, amt, align='center', alpha=0.5)
+    ax.set_yticks(y_ticks, amt)
+    ax.set_ylabel('Number of candidates')
+    ax.set_xticks(np.arange(len(objects)))
+    ax.set_xticklabels(objects, rotation = 0, ha='center')
+    ax.set_title('Graph for {}'.format(name))
+
+    # Add labels to inside of bars
+    for i, v in enumerate(amt):
+        ax.text(i, v-0.3, str(v), color='white')
+
+    # Convert to png
+    canvas=FigureCanvas(fig)
+    png_output = StringIO.StringIO()
+    canvas.print_png(png_output)
+    response=make_response(png_output.getvalue())
+    response.headers['Content-Type'] = 'image/png'
+    
+    return response
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])
 @login_required

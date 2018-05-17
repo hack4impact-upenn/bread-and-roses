@@ -96,14 +96,11 @@
                   </div>
                 {{ f.end_form() }}
                 {% for stat_name, stat in stats.items() %}
-                  <h3 class="ui header">
-                    {{ stat_name.title().replace("_", " ") }}
-                  </h3>
-                    {% for type, result in stat.items() %}
-                        {{ type.title().replace("_", " ") }}
-                        {{ result }}
-                      <br>
-                    {% endfor %}
+                <center>
+                  <div class="graph">
+                    <img src="{{ url_for('admin.make_graph', stats=stat, name=stat_name) }}"></img>
+                  </div>
+                </center>
                 {% endfor %}
               </div>
             </div>
