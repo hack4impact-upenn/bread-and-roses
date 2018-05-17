@@ -48,10 +48,12 @@ def index(part_id):
         forms_by_donor[d.id] = f
 
     return render_template('participant/index.html',
+                           user=user,
                            donors_by_status=donors_by_status,
                            Status=DonorStatus,
                            datestring=datestring,
-                           datestring_alt=datestring_alt)
+                           datestring_alt=datestring_alt,
+                           part_id=part_id)
 
 
 @participant.route('/profile')
@@ -66,7 +68,7 @@ def profile():
         user_id=current_user.id, status=3).all()
     todo_donors = Donor.query.filter_by(
         user_id=current_user.id, status=0).all()
-    
+
     num_donors = len(completed_donors)
     num_asks = len(asking_donors) + len(pledged_donors) + len(completed_donors)
 
@@ -89,10 +91,10 @@ def profile():
             for donor in part_donors:
                 total_raised = donor.amount_received + total_raised
                 total_num_donors += 1
-    
-    return render_template('participant/profile.html', 
-                            user=current_user, 
-                            num_donors=num_donors, 
+
+    return render_template('participant/profile.html',
+                            user=current_user,
+                            num_donors=num_donors,
                             num_asks=num_asks,
                             is_candidate=is_candidate,
                             ind_pledged=ind_pledged,
