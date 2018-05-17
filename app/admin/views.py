@@ -95,8 +95,26 @@ def participants():
             flash('Status for user {} successfully changed to {}.'
                 .format(user.first_name, user.status), 'form-success')
             return redirect(url_for('admin.participants'))
-    return render_template('admin/participant_management.html', Status=Status, participants=participants, demographics=Demographic.demographics_dict(),
-                           terms=Term.query.order_by(Term.start_date.desc()).all(), status_forms=status_forms)
+
+    # Populate statistics with latest term
+    stats = {}
+    stat_term = Term.query.order_by(Term.start_date.desc()).first()
+    stats['Race Statistics'] = Candidate.race_stats(stat_term.id)
+    stats['Class Statistics'] = Candidate.class_stats(stat_term.id)
+    stats['Gender Statistics'] = Candidate.gender_stats(stat_term.id)
+    stats['Sexual Orientation Statistics'] = Candidate.sexual_orientation_stats(stat_term.id)
+    stats['Cohort Statistics'] = Candidate.cohort_stats(stat_term.id)
+
+    # stat_term_form = StatTermForm()
+    # if stat_term_form.validate_on_submit():
+
+    return render_template('admin/participant_management.html',
+                        Status=Status,
+                        participants=participants, demographics=Demographic.demographics_dict(),
+                        terms=Term.query.order_by(Term.start_date.desc()).all(),
+                        status_forms=status_forms,
+                        stats=stats,
+                        stat_term=stat_term)
 
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])

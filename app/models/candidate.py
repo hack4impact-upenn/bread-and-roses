@@ -92,9 +92,9 @@ class Candidate(db.Model):
     @staticmethod
     def cohort_stats(term_id):
         results = {}
-        result["amount_donated"] = 0
-        result["total_donations"] = 0
-        result["donor_count"] = 0
+        results["amount_donated"] = 0
+        results["total_donations"] = 0
+        results["donor_count"] = 0
 
         candidates = Candidate.query.filter(Candidate.term_id == term_id)
 
@@ -105,8 +105,10 @@ class Candidate(db.Model):
         # Gets the donors associated with all participants in this term
         donors = Donor.query.filter(Donor.user_id == Candidate.id).filter(Candidate.term_id == term_id)
         for donor in donors:
-            result["donor_count"] += 1
+            results["donor_count"] += 1
             results["total_donations"] += donor.amount_received
+
+        return results
 
     # For individual participant's statistics
     def participant_stats(self):

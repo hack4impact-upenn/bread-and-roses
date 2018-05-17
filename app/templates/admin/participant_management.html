@@ -1,10 +1,10 @@
+{% set flashes = {
+    'error':   get_flashed_messages(category_filter=['form-error']),
+    'warning': get_flashed_messages(category_filter=['form-check-email']),
+    'info':    get_flashed_messages(category_filter=['form-info']),
+    'success': get_flashed_messages(category_filter=['form-success'])
+} %}
 
-            {% set flashes = {
-                'error':   get_flashed_messages(category_filter=['form-error']),
-                'warning': get_flashed_messages(category_filter=['form-check-email']),
-                'info':    get_flashed_messages(category_filter=['form-info']),
-                'success': get_flashed_messages(category_filter=['form-success'])
-            } %}
 {% extends 'layouts/base.html' %}
 
 {% import 'macros/form_macros.html' as f %}
@@ -74,7 +74,7 @@
                     Download
                 </div>
             </a>
-            <a class="ui button" style="color: #cf0a2c; font-family: Open Sans">
+            <a class="ui button" style="color: #cf0a2c; font-family: Open Sans" onclick="$('#stats-modal').modal('show')">
                 Demographics
             </a>
             <a href="{{ url_for('admin.new_candidate') }}" class="ui button" style="background-color: #cf0a2c;">
@@ -82,6 +82,23 @@
                     New Candidate +
                 </div>
             </a>
+            </div>
+            <div class="ui mini modal" id="stats-modal">
+              <div class="ui header">
+                Demographics for <i>{{ stat_term.name }}</i>
+              </div>
+              <div class="content">
+                {% for stat_name, stat in stats.items() %}
+                  <h3 class="ui header">
+                    {{ stat_name.title().replace("_", " ") }}
+                  </h3>
+                    {% for type, result in stat.items() %}
+                        {{ type.title().replace("_", " ") }}
+                        {{ result }}
+                      <br>
+                    {% endfor %}
+                {% endfor %}
+              </div>
             </div>
             {% for p in participants | sort(attribute='last_name') %}
                 <div class="ui mini modal" id="delete-{{ p.id }}">
