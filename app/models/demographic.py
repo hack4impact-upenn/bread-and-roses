@@ -17,6 +17,7 @@ class Race(enum.Enum):
     NATIVE_AMERICAN = 5
     MULTI_RACIAL = 6
 
+    @staticmethod
     def toString(value):
         for data in Race:
             if data.value == value:
@@ -29,6 +30,7 @@ class Class(enum.Enum):
     MIDDLE = 2
     UPPER = 3
 
+    @staticmethod
     def toString(value):
         for data in Class:
             if data.value == value:
@@ -40,6 +42,7 @@ class Gender(enum.Enum):
     MAN = 2
     NON_BINARY = 3
 
+    @staticmethod
     def toString(value):
         for data in Gender:
             if data.value == value:
@@ -50,6 +53,7 @@ class SexualOrientation(enum.Enum):
     LGBTQ = 1
     STRAIGHT = 2
 
+    @staticmethod
     def toString(value):
         for data in SexualOrientation:
             if data.value == value:
