@@ -6,7 +6,7 @@ from .forms import NewDonorForm, TodoToAsking, AskingToPledged, PledgedToComplet
 from ..decorators import admin_required
 from . import participant
 from .. import db
-from ..models import Donor, Demographic, DonorStatus, User
+from ..models import Donor, Demographic, DonorStatus, Candidate, User
 
 
 @participant.route('/<int:part_id>/')
@@ -48,14 +48,62 @@ def index(part_id):
         forms_by_donor[d.id] = f
 
     return render_template('participant/index.html',
+                           user=user,
                            donors_by_status=donors_by_status,
                            Status=DonorStatus,
                            datestring=datestring,
                            datestring_alt=datestring_alt,
+                           part_id=part_id,
                            forms_by_donor=forms_by_donor,
-                           current_user=current_user,
-                           user=user,
-                           part_id=part_id)
+                           current_user=current_user)
+
+
+@participant.route('/profile')
+@login_required
+def profile():
+    """Participant Profile page."""
+    asking_donors = Donor.query.filter_by(
+        user_id=current_user.id, status=1).all()
+    pledged_donors = Donor.query.filter_by(
+        user_id=current_user.id, status=2).all()
+    completed_donors = Donor.query.filter_by(
+        user_id=current_user.id, status=3).all()
+    todo_donors = Donor.query.filter_by(
+        user_id=current_user.id, status=0).all()
+
+    num_donors = len(completed_donors)
+    num_asks = len(asking_donors) + len(pledged_donors) + len(completed_donors)
+
+    ind_pledged = 0
+    is_candidate = False
+    term_participants = []
+    total_pledged = 0
+    total_raised = 0
+    total_num_donors = 0;
+
+    if current_user.candidate is not None :
+        ind_pledged = current_user.candidate.amount_donated
+        is_candidate = True
+        term_participants = Candidate.query.filter_by(
+            part_term=current_user.term).all()
+        for part in term_participants:
+            total_pledged = part.amount_donated + total_pledged
+            part_donors = Donor.query.filter_by(
+                part_id=part.id, status=3).all()
+            for donor in part_donors:
+                total_raised = donor.amount_received + total_raised
+                total_num_donors += 1
+
+    return render_template('participant/profile.html',
+                            user=current_user,
+                            num_donors=num_donors,
+                            num_asks=num_asks,
+                            is_candidate=is_candidate,
+                            ind_pledged=ind_pledged,
+                            total_pledged=total_pledged,
+                            total_raised=total_raised,
+                            total_num_donors=total_num_donors,
+                            form=None)
 
 
 @participant.route('/donor/ask/<int:donor_id>', methods=['POST'])
@@ -136,7 +184,6 @@ def pledged_to_completed(donor_id):
 
     return redirect(url_for('participant.index', part_id=part_id))
 
-
 @participant.route('/<int:part_id>/donor/<int:donor_id>/_delete')
 @participant.route('/donor/<int:donor_id>/_delete', defaults={'part_id': None})
 @login_required
@@ -161,7 +208,6 @@ def edit_donor(donor_id):
     d = Donor.query.filter_by(id=donor_id).first()
     return redirect(url_for('participant.index'))
 
-
 @participant.route('/new-donor', defaults={'part_id': None}, methods=['GET', 'POST'])
 @participant.route('/<int:part_id>/new-donor', methods=['GET', 'POST'])
 @login_required
@@ -172,7 +218,6 @@ def new_donor(part_id):
             return abort(403)
 
         user = User.query.filter_by(id=part_id).first()
-
 
     """Create a new donor."""
     form = NewDonorForm()

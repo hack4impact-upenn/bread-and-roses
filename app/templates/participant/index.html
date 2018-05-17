@@ -1,9 +1,10 @@
-            {% set flashes = {
-                'error':   get_flashed_messages(category_filter=['form-error']),
-                'warning': get_flashed_messages(category_filter=['form-check-email']),
-                'info':    get_flashed_messages(category_filter=['form-info']),
-                'success': get_flashed_messages(category_filter=['form-success'])
-            } %}
+{% set flashes = {
+    'error':   get_flashed_messages(category_filter=['form-error']),
+    'warning': get_flashed_messages(category_filter=['form-check-email']),
+    'info':    get_flashed_messages(category_filter=['form-info']),
+    'success': get_flashed_messages(category_filter=['form-success'])
+} %}
+
 {% extends 'layouts/base.html' %}
 
 {% import 'macros/form_macros.html' as f %}
@@ -82,7 +83,7 @@
             </div>
             <script>$('#move-{{ d_id }}').modal({ allowMultiple: true })</script>
         {% endfor %}
-        
+
 
 
 
@@ -120,20 +121,20 @@
                           <div><span class="bold">Date received:</span> N/A </div>
 
                           <div class="ui divider"></div>
-                          
+
                           <div><span class="bold">Email:</span> {{ d.email }}</div>
                           <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
                           <div><span class="bold">Street Address:</span> {{ d.street_address }}, {{ d.city }}, {{ d.state }} {{ d.zip_code}} </div>
 
                           <div class="ui divider"></div>
 
-                          <div><span class="bold">Race:</span> 
+                          <div><span class="bold">Race:</span>
                               {{ d.demographic.race.name.replace('_', ' ').title() }}
                           </div>
-                          <div><span class="bold">Gender:</span> 
+                          <div><span class="bold">Gender:</span>
                               {{ d.demographic.gender.name.replace('_', ' ').title() }}
                           </div>
-                          <div><span class="bold">Age:</span> 
+                          <div><span class="bold">Age:</span>
                               {{ d.demographic.age }}
                           </div>
                           <div><span class="bold">Class (low, middle, upper, NA):</span>
@@ -142,15 +143,15 @@
 
                           <div class="ui divider"></div>
 
-                          <div><span class="bold">Interested in joining a future Giving Project:</span> 
+                          <div><span class="bold">Interested in joining a future Giving Project:</span>
                               {{ 'Yes' if d.interested_in_future_gp else 'No' }}
                           </div>
 
-                          <div><span class="bold">Want to learn about BRF guarantees:</span> 
+                          <div><span class="bold">Want to learn about BRF guarantees:</span>
                               {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
                           </div>
 
-                          <div><span class="bold">Interested in volunteering with BRF:</span> 
+                          <div><span class="bold">Interested in volunteering with BRF:</span>
                               {{ 'Yes' if d.interested_in_volunteering else 'No' }}
                           </div>
 
@@ -190,7 +191,7 @@
                         <i class="arrow right icon"></i>
                         Move to asking
                       </div>
-                  </div>   
+                  </div>
         {% endfor %}
 
       </div>
@@ -234,20 +235,20 @@
                           <div><span class="bold">Date received:</span> N/A </div>
 
                           <div class="ui divider"></div>
-                          
+
                           <div><span class="bold">Email:</span> {{ d.email }}</div>
                           <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
                           <div><span class="bold">Street Address:</span> {{ d.street_address }}, {{ d.city }}, {{ d.state }} {{ d.zip_code}} </div>
 
                           <div class="ui divider"></div>
 
-                          <div><span class="bold">Race:</span> 
+                          <div><span class="bold">Race:</span>
                               {{ d.demographic.race.name.replace('_', ' ').title() }}
                           </div>
-                          <div><span class="bold">Gender:</span> 
+                          <div><span class="bold">Gender:</span>
                               {{ d.demographic.gender.name.replace('_', ' ').title() }}
                           </div>
-                          <div><span class="bold">Age:</span> 
+                          <div><span class="bold">Age:</span>
                               {{ d.demographic.age }}
                           </div>
                           <div><span class="bold">Class (low, middle, upper, NA):</span>
@@ -256,15 +257,15 @@
 
                           <div class="ui divider"></div>
 
-                          <div><span class="bold">Interested in joining a future Giving Project:</span> 
+                          <div><span class="bold">Interested in joining a future Giving Project:</span>
                               {{ 'Yes' if d.interested_in_future_gp else 'No' }}
                           </div>
 
-                          <div><span class="bold">Want to learn about BRF guarantees:</span> 
+                          <div><span class="bold">Want to learn about BRF guarantees:</span>
                               {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
                           </div>
 
-                          <div><span class="bold">Interested in volunteering with BRF:</span> 
+                          <div><span class="bold">Interested in volunteering with BRF:</span>
                               {{ 'Yes' if d.interested_in_volunteering else 'No' }}
                           </div>
 
@@ -304,7 +305,7 @@
                         <i class="arrow right icon"></i>
                         Move to pledged
                       </div>
-        </div>   
+        </div>
         {% endfor %}
       </div>
 
@@ -354,20 +355,20 @@
                           <div><span class="bold">Date received:</span> N/A </div>
 
                           <div class="ui divider"></div>
-                          
+
                           <div><span class="bold">Email:</span> {{ d.email }}</div>
                           <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
                           <div><span class="bold">Street Address:</span> {{ d.street_address }}, {{ d.city }}, {{ d.state }} {{ d.zip_code}} </div>
 
                           <div class="ui divider"></div>
 
-                          <div><span class="bold">Race:</span> 
+                          <div><span class="bold">Race:</span>
                               {{ d.demographic.race.name.replace('_', ' ').title() }}
                           </div>
-                          <div><span class="bold">Gender:</span> 
+                          <div><span class="bold">Gender:</span>
                               {{ d.demographic.gender.name.replace('_', ' ').title() }}
                           </div>
-                          <div><span class="bold">Age:</span> 
+                          <div><span class="bold">Age:</span>
                               {{ d.demographic.age }}
                           </div>
                           <div><span class="bold">Class (low, middle, upper, NA):</span>
@@ -376,15 +377,15 @@
 
                           <div class="ui divider"></div>
 
-                          <div><span class="bold">Interested in joining a future Giving Project:</span> 
+                          <div><span class="bold">Interested in joining a future Giving Project:</span>
                               {{ 'Yes' if d.interested_in_future_gp else 'No' }}
                           </div>
 
-                          <div><span class="bold">Want to learn about BRF guarantees:</span> 
+                          <div><span class="bold">Want to learn about BRF guarantees:</span>
                               {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
                           </div>
 
-                          <div><span class="bold">Interested in volunteering with BRF:</span> 
+                          <div><span class="bold">Interested in volunteering with BRF:</span>
                               {{ 'Yes' if d.interested_in_volunteering else 'No' }}
                           </div>
 
@@ -430,7 +431,7 @@
                         Move to completed
                       </div>
           {% endif %}
-        </div>   
+        </div>
         {% endfor %}
       </div>
 
@@ -474,20 +475,20 @@
                           <div><span class="bold">Date received:</span> N/A </div>
 
                           <div class="ui divider"></div>
-                          
+
                           <div><span class="bold">Email:</span> {{ d.email }}</div>
                           <div><span class="bold">Phone:</span> {{ d.phone_number }}</div>
                           <div><span class="bold">Street Address:</span> {{ d.street_address }}, {{ d.city }}, {{ d.state }} {{ d.zip_code}} </div>
 
                           <div class="ui divider"></div>
 
-                          <div><span class="bold">Race:</span> 
+                          <div><span class="bold">Race:</span>
                               {{ d.demographic.race.name.replace('_', ' ').title() }}
                           </div>
-                          <div><span class="bold">Gender:</span> 
+                          <div><span class="bold">Gender:</span>
                               {{ d.demographic.gender.name.replace('_', ' ').title() }}
                           </div>
-                          <div><span class="bold">Age:</span> 
+                          <div><span class="bold">Age:</span>
                               {{ d.demographic.age }}
                           </div>
                           <div><span class="bold">Class (low, middle, upper, NA):</span>
@@ -496,15 +497,15 @@
 
                           <div class="ui divider"></div>
 
-                          <div><span class="bold">Interested in joining a future Giving Project:</span> 
+                          <div><span class="bold">Interested in joining a future Giving Project:</span>
                               {{ 'Yes' if d.interested_in_future_gp else 'No' }}
                           </div>
 
-                          <div><span class="bold">Want to learn about BRF guarantees:</span> 
+                          <div><span class="bold">Want to learn about BRF guarantees:</span>
                               {{ 'Yes' if d.want_to_learn_about_brf_guarantees else 'No' }}
                           </div>
 
-                          <div><span class="bold">Interested in volunteering with BRF:</span> 
+                          <div><span class="bold">Interested in volunteering with BRF:</span>
                               {{ 'Yes' if d.interested_in_volunteering else 'No' }}
                           </div>
 
@@ -532,7 +533,7 @@
             <i class="right floated money bill alternate icon" style="color: green;"></i>
             <div class="header">{{d.first_name}} {{d.last_name}}</div>
             <div class="description">
-              <p>${{d.amount_received}} received by BNR</p>
+              <p>${{d.amount_received}} received by BRF</p>
             </div>
           </div>
           <div class="extra content" onclick="$('#modal-{{ d.id }}').modal('show')" >
@@ -546,7 +547,7 @@
                         Update amount
                       </div>
           {% endif %}
-        </div>   
+        </div>
         {% endfor %}
       </div>
     </div>

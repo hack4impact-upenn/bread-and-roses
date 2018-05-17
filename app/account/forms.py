@@ -1,7 +1,7 @@
 from flask import url_for
 from flask_wtf import Form
 from wtforms import ValidationError
-from wtforms.fields import (BooleanField, PasswordField, StringField,
+from wtforms.fields import (BooleanField, PasswordField, StringField, IntegerField,
                             SubmitField)
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
@@ -97,3 +97,10 @@ class ChangeEmailForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
+
+
+class ChangePhoneNumberForm(Form):
+    phone_number = IntegerField(
+        'New phone number', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    submit = SubmitField('Update phone number')
