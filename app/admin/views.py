@@ -110,6 +110,7 @@ def participants():
     stats['Class Statistics'] = Candidate.class_stats(stat_term.id)
     stats['Gender Statistics'] = Candidate.gender_stats(stat_term.id)
     stats['Sexual Orientation Statistics'] = Candidate.sexual_orientation_stats(stat_term.id)
+    # TODO - Probably move this to its own page
     stats['Cohort Statistics'] = Candidate.cohort_stats(stat_term.id)
 
     return render_template('admin/participant_management.html',
@@ -162,7 +163,7 @@ def make_graph(name, stats):
     canvas.print_png(png_output)
     response=make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
-    
+
     return response
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])
