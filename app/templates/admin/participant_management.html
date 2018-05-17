@@ -85,9 +85,16 @@
             </div>
             <div class="ui mini modal" id="stats-modal">
               <div class="ui header">
-                Demographics for <i>{{ stat_term.name }}</i>
+                Demographics for <i style="color:#cf0a2c;">{{ stat_term.name }}</i>
               </div>
               <div class="content">
+                <div><strong> Select a different cohort term (page will reload): </strong></div>
+                {{ f.begin_form(stat_form, flashes) }}
+                  <div class="two fields">
+                    {{ f.render_form_field(stat_form.term) }}
+                    {{ f.render_form_field(stat_form.submit_term) }}
+                  </div>
+                {{ f.end_form() }}
                 {% for stat_name, stat in stats.items() %}
                   <h3 class="ui header">
                     {{ stat_name.title().replace("_", " ") }}

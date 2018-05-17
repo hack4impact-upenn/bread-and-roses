@@ -105,7 +105,14 @@ class EditStatusForm(Form):
         label='',
         get_label='name',
         query_factory=lambda: db.session.query(Term).order_by('start_date'))
-    submit = SubmitField('Update Status')
+    submit_status = SubmitField('Update Status')
+
+class StatsSelectTermForm(Form):
+    term = QuerySelectField(
+        label='',
+        get_label='name',
+        query_factory=lambda:  db.session.query(Term).order_by(Term.start_date.desc()))
+    submit_term = SubmitField('Update')
 
 class NewCandidateForm(Form):
     first_name = StringField(

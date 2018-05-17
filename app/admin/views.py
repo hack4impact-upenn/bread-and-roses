@@ -5,7 +5,7 @@ from flask_rq import get_queue
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
                     NewUserForm, NewCandidateForm, DemographicForm,
                     EditParticipantForm, NewTermForm, EditStatusForm,
-                    InviteAcceptedCandidatesForm)
+                    InviteAcceptedCandidatesForm, StatsSelectTermForm)
 from . import admin
 from .. import db
 from ..decorators import admin_required
@@ -86,7 +86,7 @@ def participants():
     status_forms = { p.id: EditStatusForm(participant=p.id, status=p.status.name, term=p.term) for p in participants }
     for f in status_forms:
         form = status_forms[f]
-        if form.validate_on_submit():
+        if form.submit_status.data and form.validate():
             user = Candidate.query.filter_by(id=form.participant.data).first()
             user.status = form.status.data
             user.term = form.term.data
@@ -99,14 +99,15 @@ def participants():
     # Populate statistics with latest term
     stats = {}
     stat_term = Term.query.order_by(Term.start_date.desc()).first()
+    stat_form = StatsSelectTermForm()
+    if stat_form.submit_term.data and stat_form.validate():
+        stat_term = stat_form.term.data
+
     stats['Race Statistics'] = Candidate.race_stats(stat_term.id)
     stats['Class Statistics'] = Candidate.class_stats(stat_term.id)
     stats['Gender Statistics'] = Candidate.gender_stats(stat_term.id)
     stats['Sexual Orientation Statistics'] = Candidate.sexual_orientation_stats(stat_term.id)
     stats['Cohort Statistics'] = Candidate.cohort_stats(stat_term.id)
-
-    # stat_term_form = StatTermForm()
-    # if stat_term_form.validate_on_submit():
 
     return render_template('admin/participant_management.html',
                         Status=Status,
@@ -114,7 +115,8 @@ def participants():
                         terms=Term.query.order_by(Term.start_date.desc()).all(),
                         status_forms=status_forms,
                         stats=stats,
-                        stat_term=stat_term)
+                        stat_term=stat_term,
+                        stat_form=stat_form)
 
 
 @admin.route('/new-candidate', methods=['GET', 'POST'])
