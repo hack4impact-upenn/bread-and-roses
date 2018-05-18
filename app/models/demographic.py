@@ -41,6 +41,7 @@ class Gender(enum.Enum):
     WOMAN = 1
     MAN = 2
     NON_BINARY = 3
+    TRANSGENDER = 4
 
     @staticmethod
     def toString(value):

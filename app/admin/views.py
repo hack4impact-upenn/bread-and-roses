@@ -139,7 +139,7 @@ def make_graph(name, stats):
     stats_obj=ast.literal_eval(stats)
     objects = [ stat[0] for stat in stats_obj.items() ]
     objects = [ o.title().replace('_', ' ') for o in objects]
-    objects = [ '\n'.join(wrap(o, 10)) for o in objects ]
+    objects = [ '\n'.join(wrap(o, 11)) for o in objects ]
     amt = [ int(stat[1]) for stat in stats_obj.items() ]
     y_ticks = np.arange(len(amt))
 
@@ -155,7 +155,8 @@ def make_graph(name, stats):
 
     # Add labels to inside of bars
     for i, v in enumerate(amt):
-        ax.text(i, v-0.3, str(v), color='white')
+        if v != 0:
+            ax.text(i, v-0.3, str(v), color='white')
 
     # Convert to png
     canvas=FigureCanvas(fig)
