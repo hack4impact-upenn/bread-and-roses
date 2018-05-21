@@ -106,12 +106,13 @@ def participants():
     if stat_form.submit_term.data and stat_form.validate():
         stat_term = stat_form.term.data
 
-    stats['Race Statistics'] = Candidate.race_stats(stat_term.id)
-    stats['Class Statistics'] = Candidate.class_stats(stat_term.id)
-    stats['Gender Statistics'] = Candidate.gender_stats(stat_term.id)
-    stats['Sexual Orientation Statistics'] = Candidate.sexual_orientation_stats(stat_term.id)
-    # TODO - Probably move this to its own page
-    stats['Cohort Statistics'] = Candidate.cohort_stats(stat_term.id)
+    if stat_term is not None:
+        stats['Race Statistics'] = Candidate.race_stats(stat_term.id)
+        stats['Class Statistics'] = Candidate.class_stats(stat_term.id)
+        stats['Gender Statistics'] = Candidate.gender_stats(stat_term.id)
+        stats['Sexual Orientation Statistics'] = Candidate.sexual_orientation_stats(stat_term.id)
+        # TODO - Probably move this to its own page
+        stats['Cohort Statistics'] = Candidate.cohort_stats(stat_term.id)
 
     return render_template('admin/participant_management.html',
                         Status=Status,
