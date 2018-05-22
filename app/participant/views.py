@@ -81,28 +81,26 @@ def profile():
     total_raised = 0
     total_num_donors = 0;
 
-    if current_user.candidate is not None :
-        ind_pledged = current_user.candidate.amount_donated
-        is_candidate = True
-        term_participants = Candidate.query.filter_by(
-            part_term=current_user.term).all()
-        for part in term_participants:
-            total_pledged = part.amount_donated + total_pledged
-            part_donors = Donor.query.filter_by(
-                part_id=part.id, status=3).all()
-            for donor in part_donors:
-                total_raised = donor.amount_received + total_raised
-                total_num_donors += 1
+    cohort_stats = Candidate.cohort_stats(current_user.candidate.term_id)
+    participant_stats = current_user.candidate.participant_stats()
 
     return render_template('participant/profile.html',
                             user=current_user,
-                            num_donors=num_donors,
-                            num_asks=num_asks,
-                            is_candidate=is_candidate,
-                            ind_pledged=ind_pledged,
-                            total_pledged=total_pledged,
-                            total_raised=total_raised,
-                            total_num_donors=total_num_donors,
+                            is_candidate=current_user.candidate is not None,
+
+                            ind_pledged=current_user.candidate.amount_donated,
+                            num_asks=participant_stats["asking_count"],
+                            total_todo=participant_stats["todo_count"],
+                            total_pledged=participant_stats["pledged_count"],
+                            total_completed=participant_stats["completed_count"],
+                            total_num_donors=participant_stats["donor_count"],
+                            total_raised=participant_stats["total_donations"],
+
+                            cohort_raised=cohort_stats["amount_donated"],
+                            cohort_donations=cohort_stats["total_donations"],
+                            cohort_pledges=cohort_stats["total_pledges"],
+                            cohort_donors=cohort_stats["donor_count"],
+
                             form=None)
 
 
