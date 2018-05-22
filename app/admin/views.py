@@ -199,6 +199,9 @@ def new_candidate():
         db.session.add(demographic)
         db.session.add(candidate)
         db.session.commit()
+
+        # TODO: Notify admin by email
+        
         flash('Candidate {} successfully created'.format(candidate.first_name),
               'form-success')
     return render_template('admin/new_candidate.html', form=form)

@@ -1,7 +1,9 @@
 from flask import render_template
 from ..models import EditableHTML
-
+from .forms import IntakeForm
 from . import main
+
+from datetime import datetime
 
 
 @main.route('/')
@@ -14,3 +16,38 @@ def about():
     editable_html_obj = EditableHTML.get_editable_html('about')
     return render_template('main/about.html',
                            editable_html_obj=editable_html_obj)
+
+
+@main.route('/interested', methods=['GET', 'POST'])
+def interested():
+    """Creates a new candidate from the intake form"""
+    form = IntakeForm()
+    if form.validate_on_submit():
+        demographic = Demographic(
+            race=form.demographic.race.data,
+            gender=form.demographic.gender.data,
+            age=form.demographic.age.data,
+            sexual_orientation=form.demographic.sexual_orientation.data,
+            soc_class=form.demographic.soc_class.data
+        )
+        candidate = Candidate(
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data,
+            phone_number=form.phone_number.data,
+            term=Term.query.ordery_by(Term.end_date.desc()).first(),
+            source='Intake Form at {}'.format(datetime.now()),
+            staff_contact=form.staff_contact.data,
+            notes=form.notes.data,
+            demographic=demographic,
+            demographic_id=demographic.id,
+            status=Status.PENDING,
+            amount_donated=0
+        )
+        db.session.add(demographic)
+        db.session.add(candidate)
+        db.session.commit()
+
+        flash('Thanks {}! We will contact you shortly.'.format(candidate.first_name),
+              'form-success')
+    return render_template('main/intake_form.html', form=form)
