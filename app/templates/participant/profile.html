@@ -85,8 +85,8 @@
                             <div class="header">
                                 <center>
                                 <div class="ui red statistic">
-                                    <div class="value"> {{ total_num_donors }} </div>
-                                    <div class="label"> Donors </div>
+                                    <div class="value"> {{ total_completed }} </div>
+                                    <div class="label"> Completed Donors </div>
                                 </div>
                                 </center>
                             </div>
@@ -95,6 +95,20 @@
                 </div>
             </div>
             <div class="ui centered grid container">
+                <div class="four wide column">
+                    <div class="ui card">
+                        <div class="content">
+                            <div class="header">
+                                <center>
+                                <div class="ui red statistic">
+                                    <div class="value"> {{ total_num_donors }} </div>
+                                    <div class="label"> Total Donors </div>
+                                </div>
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="four wide column">
                     <div class="ui card">
                         <div class="content">
@@ -123,21 +137,21 @@
                         </div>
                     </div>
                 </div>
+              <div class="ui centered grid container">
                 <div class="four wide column">
                     <div class="ui card">
                         <div class="content">
                             <div class="header">
                                 <center>
                                 <div class="ui red statistic">
-                                    <div class="value"> ${{ cohort_raised }} </div>
-                                    <div class="label"> Cohort Raised </div>
+                                    <div class="value"> {{ cohort_pledges }} </div>
+                                    <div class="label"> Cohort Pledges </div>
                                 </div>
                                 </center>
                             </div>
                         </div>
                     </div>
                 </div>
-              <div class="ui centered grid container">
                 <div class="four wide column">
                     <div class="ui card">
                         <div class="content">
@@ -158,8 +172,8 @@
                             <div class="header">
                                 <center>
                                 <div class="ui red statistic">
-                                    <div class="value"> {{ cohort_pledges }} </div>
-                                    <div class="label"> Cohort Pledges </div>
+                                    <div class="value"> ${{ cohort_raised }} </div>
+                                    <div class="label"> Cohort Raised </div>
                                 </div>
                                 </center>
                             </div>
