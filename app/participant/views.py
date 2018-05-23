@@ -81,14 +81,32 @@ def profile():
     total_raised = 0
     total_num_donors = 0;
 
-    cohort_stats = Candidate.cohort_stats(current_user.candidate.term_id)
-    participant_stats = current_user.candidate.participant_stats()
+
+    if current_user.candidate is not None and current_user.candidate.term_id is not None:
+        cohort_stats = Candidate.cohort_stats(current_user.candidate.term_id)
+        participant_stats = current_user.candidate.participant_stats()
+        amt_donated = current_user.candidate.amount_donated
+    else:
+        cohort_stats = {}
+        cohort_stats["amount_donated"] = "N/A (no cohort assigned)"
+        cohort_stats["total_donations"] = "N/A (no cohort assigned)"
+        cohort_stats["total_pledges"] = "N/A (no cohort assigned)"
+        cohort_stats["donor_count"] = "N/A (no cohort assigned)"
+        participant_stats = {}
+        participant_stats["asking_count"] = "N/A (no participant linked)",
+        participant_stats["todo_count"] = "N/A (no participant linked)",
+        participant_stats["pledged_count"] = "N/A (no participant linked)",
+        participant_stats["completed_count"] = "N/A (no participant linked)",
+        participant_stats["donor_count"] = "N/A (no participant linked)",
+        participant_stats["total_donations"] = "N/A (no participant linked)", 
+        amt_donated = "N/A"
+
 
     return render_template('participant/profile.html',
                             user=current_user,
                             is_candidate=current_user.candidate is not None,
 
-                            ind_pledged=current_user.candidate.amount_donated,
+                            ind_pledged=amt_donated,
                             num_asks=participant_stats["asking_count"],
                             total_todo=participant_stats["todo_count"],
                             total_pledged=participant_stats["pledged_count"],
