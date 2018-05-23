@@ -10,7 +10,7 @@ from datetime import date
 from .. import db, login_manager
 from app.models.demographic import Race, Class, Gender, SexualOrientation
 from app.models.donor import DonorStatus
-from app.models import Demographic, Donor
+from app.models import Demographic, Donor, User
 
 
 class Status(enum.Enum):
@@ -96,6 +96,7 @@ class Candidate(db.Model):
         results["amount_donated"] = 0
         results["total_donations"] = 0
         results["donor_count"] = 0
+        results["total_pledges"] = 0
 
         candidates = Candidate.query.filter(Candidate.term_id == term_id)
 
@@ -104,35 +105,45 @@ class Candidate(db.Model):
             results["amount_donated"] += candidate.amount_donated
 
         # Gets the donors associated with all participants in this term
-        donors = Donor.query.filter(Donor.user_id == Candidate.id).filter(Candidate.term_id == term_id)
+        # TODO check if in candidates list donors
+
+        donors = Donor.query.all() #filter(Candidate.term_id == term_id)
+        resultDonors = []
         for donor in donors:
+            if (donor.user.candidate.term_id == term_id):
+                resultDonors.append(donor)
+
+        for donor in resultDonors:
             results["donor_count"] += 1
             results["total_donations"] += donor.amount_received
+            if donor.status == DonorStatus.PLEDGED:
+                results["total_pledges"] += 1
 
         return results
 
     # For individual participant's statistics
     def participant_stats(self):
-        result = {}
-        result["donor_count"] = 0
-        result["todo_count"] = 0
-        result["asking_count"] = 0
-        result["pledged_count"] = 0
-        result["completed_count"] = 0
-        result["total_donations"] = 0
+        results = {}
+        results["donor_count"] = 0
+        results["todo_count"] = 0
+        results["asking_count"] = 0
+        results["pledged_count"] = 0
+        results["completed_count"] = 0
+        results["total_donations"] = 0
 
         # Gets the donors associated with participant
-        donors = Donor.query.filter(Donor.user_id == self.id)
-        for donor in donors:
-            result["donor_count"] += 1
-            if (donor.status == DonorStatus.TODO):
-                result["todo_count"] += 1
-            elif (donor.status == DonorStatus.ASKING):
-                result["asking_count"] += 1
-            elif (donor.status == DonorStatus.PLEDGED):
-                result["pledged_count"] += 1
-            elif (donor.status == DonorStatus.COMPLETED):
-                result["completed_count"] += 1
-                result["total_donations"] += donor.amount_received
+        donors = Donor.query.filter(Donor.user_id == self.user_account.id)
 
-        return result
+        for donor in donors:
+            results["donor_count"] += 1
+            if (donor.status == DonorStatus.TODO):
+                results["todo_count"] += 1
+            elif (donor.status == DonorStatus.ASKING):
+                results["asking_count"] += 1
+            elif (donor.status == DonorStatus.PLEDGED):
+                results["pledged_count"] += 1
+            elif (donor.status == DonorStatus.COMPLETED):
+                results["completed_count"] += 1
+                results["total_donations"] += donor.amount_received
+
+        return results
