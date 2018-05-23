@@ -1,11 +1,73 @@
 {% import 'macros/page_macros.html' as page %}
 {% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
 
 {% block content %}
     <div class="ui text container">
-        <h1>Interested in the Giving Project?</h1>
-  
+
     </div>
+    <div class="ui stackable centered grid container">
+      <div class="twelve wide column">
+        <br>
+        <h1>Interested in the Giving Project?</h1>
+        <p>
+          Hello and welcome! We are excited about your interest in Bread & Roses Community Fund's Giving Projects. The Giving Project is designed to be a cross-race, cross-class, inter-generational process, therefore we must make sure that the composition of the group reflects this priority. We value you and your desire to be a part of this unique experience.
+        </p>
+        <p>
+          After you have submitted your interest form, you will be contacted by a Bread & Roses staff member.
+        </p>
+        <p>
+          If you have any questions regarding this form or the Giving Project, please contact Aarati Kasturirangan, 215.731.1107 ext. 206, <a href='mailto:aarati@breadrosesfund.org'>aarati@breadrosesfund.org</a>.
+        </p>
+        {% set flashes = {
+            'error':   get_flashed_messages(category_filter=['form-error']),
+            'warning': get_flashed_messages(category_filter=['form-check-email']),
+            'info':    get_flashed_messages(category_filter=['form-info']),
+            'success': get_flashed_messages(category_filter=['form-success'])
+        } %}
+
+        {{ f.begin_form(form, flashes) }}
+        <h2> Contact Information </h2>
+        <div class="two fields">
+            {{ f.render_form_field(form.first_name) }}
+            {{ f.render_form_field(form.last_name) }}
+        </div>
+
+        <div class="two fields">
+            {{ f.render_form_field(form.email) }}
+            {{ f.render_form_field(form.phone_number) }}
+        </div>
+
+        {{ f.render_form_field(form.address) }}
+
+        <h2> Demographic Information </h2>
+        <p>
+          The Giving Project is meant to be a cross-race, cross-class, inter-generational, multi-identity group working collectively to build community, raise money, and make grants. These questions will allow us to acknowledge the diversity of the group. Please answer based on how you identify and in whatever way makes you feel comfortable.
+        </p>
+        {% for field in form.demographic %}
+            {% if field.type == 'SelectField' or field.type=='IntegerField' %}
+                {{ f.render_form_field(field) }}
+            {% endif %}
+        {% endfor %}
+
+        {{ f.render_form_field(form.pronouns) }}
+        {{ f.render_form_field(form.ability) }}
+        {{ f.render_form_field(form.how_long_philly) }}
+        {{ f.render_form_field(form.what_neighborhood) }}
+        {{ f.render_form_field(form.how_did_you_hear) }}
+        {{ f.render_form_field(form.notes) }}
+
+        {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
+        {{ f.form_message(flashes['warning'], header='Check the email.', class='warning') }}
+        {{ f.form_message(flashes['info'], header='Information', class='info') }}
+        {{ f.form_message(flashes['success'], header='Success!', class='success') }}
+        
+        {{ f.render_form_field(form.submit) }}
 
 
+
+
+        {{ f.end_form() }}
+      </div>
+    </div>
 {% endblock %}

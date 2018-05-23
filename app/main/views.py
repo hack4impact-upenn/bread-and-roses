@@ -1,7 +1,8 @@
-from flask import render_template
-from ..models import EditableHTML
+from flask import render_template, flash, render_template
+from ..models import EditableHTML, Demographic, Candidate, Term, Status
 from .forms import IntakeForm
 from . import main
+from .. import db
 
 from datetime import datetime
 
@@ -30,15 +31,16 @@ def interested():
             sexual_orientation=form.demographic.sexual_orientation.data,
             soc_class=form.demographic.soc_class.data
         )
+        notes = 'Address: {}\nPronouns: {}\nAbility Status: {}\nHow long in Philadelphia: {}\nWhat neighborhood: {}\nHow they heard about GP: {}\nAnything else: {}'.format(form.address.data, form.pronouns.data, form.ability.data, form.how_long_philly.data, form.what_neighborhood.data, form.how_did_you_hear.data, form.notes.data)
         candidate = Candidate(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
             phone_number=form.phone_number.data,
-            term=Term.query.ordery_by(Term.end_date.desc()).first(),
+            term=Term.query.order_by(Term.end_date.desc()).first(),
             source='Intake Form at {}'.format(datetime.now()),
-            staff_contact=form.staff_contact.data,
-            notes=form.notes.data,
+            staff_contact='',
+            notes=notes,
             demographic=demographic,
             demographic_id=demographic.id,
             status=Status.PENDING,
@@ -48,6 +50,6 @@ def interested():
         db.session.add(candidate)
         db.session.commit()
 
-        flash('Thanks {}! We will contact you shortly.'.format(candidate.first_name),
+        flash('Thank you {}! We will contact you shortly.'.format(candidate.first_name),
               'form-success')
     return render_template('main/intake_form.html', form=form)

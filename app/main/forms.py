@@ -6,17 +6,17 @@ from wtforms.fields.html5 import EmailField, DateField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 
 from .. import db
-from ..models import Role, User, Candidate, Race, Class, Gender, SexualOrientation, Term, Status
+from ..models import Candidate, Race, Class, Gender, SexualOrientation
 
 
 class DemographicForm(Form):
     race = SelectField(
-        'Race',
+        'Race/Ethnicity',
         choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Race]
     )
 
     soc_class = SelectField(
-        'Class',
+        'Class status (make your best estimation)',
         choices=[(choice.name, choice.name.replace('_', ' ').title()) for choice in Class]
     )
     gender = SelectField(
@@ -40,16 +40,13 @@ class IntakeForm(Form):
         'Email', validators=[InputRequired(), Length(1, 64), Email()])
     phone_number = StringField(
         'Phone Number')
-    term = QuerySelectField(
-        'Term',
-        get_label='name',
-        allow_blank=True,
-        query_factory=lambda: db.session.query(Term).order_by('start_date'))
-    source = StringField(
-        'Source')
-    staff_contact = StringField(
-        'Staff Contact')
-    notes = TextAreaField(
-        'Notes')
+    address = StringField('Full address', validators=[InputRequired(), Length(1, 300)])
     demographic = FormField(DemographicForm)
+    pronouns = StringField('Pronouns you use', validators=[InputRequired(), Length(1, 64)])
+    ability = StringField('Ability/disability status', validators=[InputRequired(), Length(1, 64)])
+    how_long_philly = StringField('How long have you been in the Philadelphia region?', validators=[InputRequired(), Length(1, 64)])
+    what_neighborhood = StringField('What neighborhood/area do you live in now?', validators=[InputRequired(), Length(1, 128)])
+    how_did_you_hear = StringField('How did you hear about Bread & Roses Community Fund\'s Giving Projects?', validators=[InputRequired(), Length(1, 128)])
+    notes = TextAreaField(
+        'Anything else? (Projects you are interested in, access needs, etc.)')
     submit = SubmitField('Create')
