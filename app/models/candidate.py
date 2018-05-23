@@ -105,8 +105,15 @@ class Candidate(db.Model):
             results["amount_donated"] += candidate.amount_donated
 
         # Gets the donors associated with all participants in this term
-        donors = Donor.query.filter(Donor.user_id == Candidate.id).filter(Candidate.term_id == term_id)
+        # TODO check if in candidates list donors
+
+        donors = Donor.query.all() #filter(Candidate.term_id == term_id)
+        resultDonors = []
         for donor in donors:
+            if (donor.user.candidate.term_id == term_id):
+                resultDonors.append(donor)
+
+        for donor in resultDonors:
             results["donor_count"] += 1
             results["total_donations"] += donor.amount_received
             if donor.status == DonorStatus.PLEDGED:
@@ -125,7 +132,8 @@ class Candidate(db.Model):
         results["total_donations"] = 0
 
         # Gets the donors associated with participant
-        donors = Donor.query.filter(User.id == self.id)
+        donors = Donor.query.filter(Donor.user_id == self.user_account.id)
+
         for donor in donors:
             results["donor_count"] += 1
             if (donor.status == DonorStatus.TODO):
