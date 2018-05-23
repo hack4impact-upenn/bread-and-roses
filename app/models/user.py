@@ -5,6 +5,7 @@ from itsdangerous import BadSignature, SignatureExpired
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .. import db, login_manager
+from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 
 
 class Permission:

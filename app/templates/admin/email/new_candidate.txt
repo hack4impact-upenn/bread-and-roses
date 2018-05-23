@@ -1,0 +1,27 @@
+Hello {{ user.full_name() }},
+
+This email is to notify you that a new Giving Project candidate has been added:
+
+
+Name:
+{{ candidate.first_name }} {{ candidate.last_name }}
+
+Email:
+{{ candidate.email}}
+
+Phone number:
+{{ candidate.phone_number }}
+
+Source:
+{{ candidate.source }}
+
+Notes:
+{{ candidate.notes }}
+
+
+
+Sincerely,
+
+The {{ config.APP_NAME }} Team
+
+Note: replies to this email address are not monitored.

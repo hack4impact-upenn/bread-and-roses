@@ -1,0 +1,20 @@
+<p>Hello {{ user.full_name() }},</p>
+
+<p>This email is to notify you that a new Giving Project candidate has been added:</p>
+
+<p><strong>Name: </strong> {{ candidate.first_name }} {{ candidate.last_name }}</p>
+
+<p><strong>Email: </strong> {{ candidate.email }} </p>
+
+<p><strong>Phone number: </strong> {{ candidate.phone_number }} </p>
+
+<p><strong>Source: </strong> {{ candidate.source }} </p>
+
+<p><strong>Notes: </strong><br> {{ candidate.notes }} </p>
+
+<br>
+
+<p>Sincerely, <br>
+<p>The {{ config.APP_NAME }} Team</p>
+
+<p><small>Note: replies to this email address are not monitored.</small></p>

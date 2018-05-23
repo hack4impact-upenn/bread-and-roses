@@ -200,8 +200,22 @@ def new_candidate():
         db.session.add(candidate)
         db.session.commit()
 
-        # TODO: Notify admin by email
-        
+        admins = []
+        for u in User.query.all():
+            if u.is_admin():
+                admins.append(u)
+
+        # Notify admins via email
+        for a in admins:
+            get_queue().enqueue(
+                send_email,
+                recipient=a.email,
+                subject='New Giving Project Candidate',
+                template='admin/email/new_candidate',
+                user=a,
+                candidate=candidate,
+                add_method='Added by {}'.format(current_user.full_name()))
+
         flash('Candidate {} successfully created'.format(candidate.first_name),
               'form-success')
     return render_template('admin/new_candidate.html', form=form)

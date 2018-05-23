@@ -1,10 +1,11 @@
 from flask import render_template, flash, render_template
-from ..models import EditableHTML, Demographic, Candidate, Term, Status
+from ..models import EditableHTML, Demographic, Candidate, Term, Status, User
 from .forms import IntakeForm
 from . import main
 from .. import db
-
-from datetime import datetime
+from flask_rq import get_queue
+from ..email import send_email
+import time
 
 
 @main.route('/')
@@ -31,14 +32,14 @@ def interested():
             sexual_orientation=form.demographic.sexual_orientation.data,
             soc_class=form.demographic.soc_class.data
         )
-        notes = 'Address: {}\nPronouns: {}\nAbility Status: {}\nHow long in Philadelphia: {}\nWhat neighborhood: {}\nHow they heard about GP: {}\nAnything else: {}'.format(form.address.data, form.pronouns.data, form.ability.data, form.how_long_philly.data, form.what_neighborhood.data, form.how_did_you_hear.data, form.notes.data)
+        notes = 'Interest form submitted at {}\n\nAddress: {}\nPronouns: {}\nAbility Status: {}\nHow long in Philadelphia: {}\nWhat neighborhood: {}\nAnything else: {}'.format(time.strftime("%Y-%m-%d %H:%M"), form.address.data, form.pronouns.data, form.ability.data, form.how_long_philly.data, form.what_neighborhood.data, form.notes.data)
         candidate = Candidate(
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             email=form.email.data,
             phone_number=form.phone_number.data,
             term=Term.query.order_by(Term.end_date.desc()).first(),
-            source='Intake Form at {}'.format(datetime.now()),
+            source=form.how_did_you_hear.data,
             staff_contact='',
             notes=notes,
             demographic=demographic,
@@ -49,6 +50,22 @@ def interested():
         db.session.add(demographic)
         db.session.add(candidate)
         db.session.commit()
+
+        admins = []
+        for u in User.query.all():
+            if u.is_admin():
+                admins.append(u)
+
+        # Notify admins via email
+        for a in admins:
+            get_queue().enqueue(
+                send_email,
+                recipient=a.email,
+                subject='New Giving Project Candidate',
+                template='admin/email/new_candidate',
+                user=a,
+                candidate=candidate,
+                add_method='Interest form')
 
         flash('Thank you {}! We will contact you shortly.'.format(candidate.first_name),
               'form-success')
