@@ -131,10 +131,13 @@ def make_graph(name, stats):
     matplotlib.use('TkAgg')
     from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
     from matplotlib.figure import Figure
-    import StringIO
     import ast
     import math
     from textwrap import wrap
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import StringIO
 
     # Setup data
     stats_obj=ast.literal_eval(stats)
@@ -157,11 +160,11 @@ def make_graph(name, stats):
     # Add labels to inside of bars
     for i, v in enumerate(amt):
         if v != 0:
-            ax.text(i, v-0.3, str(v), color='white')
+            ax.text(i, v * 0.8, str(v), color='gray')
 
     # Convert to png
     canvas=FigureCanvas(fig)
-    png_output = StringIO.StringIO()
+    png_output=StringIO()
     canvas.print_png(png_output)
     response=make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
