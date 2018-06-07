@@ -134,10 +134,7 @@ def make_graph(name, stats):
     import ast
     import math
     from textwrap import wrap
-    try:
-        from StringIO import StringIO
-    except ImportError:
-        from io import StringIO
+    from io import StringIO, BytesIO
 
     # Setup data
     stats_obj=ast.literal_eval(stats)
@@ -164,7 +161,7 @@ def make_graph(name, stats):
 
     # Convert to png
     canvas=FigureCanvas(fig)
-    png_output=StringIO()
+    png_output=BytesIO()
     canvas.print_png(png_output)
     response=make_response(png_output.getvalue())
     response.headers['Content-Type'] = 'image/png'
