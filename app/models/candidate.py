@@ -54,40 +54,42 @@ class Candidate(db.Model):
     @staticmethod
     def race_stats(term_id):
         results = {}
-        results["BLACK"] = Candidate.query.filter(Demographic.race == Race.BLACK).filter(Candidate.term_id == term_id).count()
-        results["WHITE"] = Candidate.query.filter(Demographic.race == Race.WHITE).filter(Candidate.term_id == term_id).count()
-        results["ASIAN"] = Candidate.query.filter(Demographic.race == Race.ASIAN).filter(Candidate.term_id == term_id).count()
-        results["LATINX"] = Candidate.query.filter(Demographic.race == Race.LATINX).filter(Candidate.term_id == term_id).count()
-        results["NATIVE_AMERICAN"] = Candidate.query.filter(Demographic.race == Race.NATIVE_AMERICAN).filter(Candidate.term_id == term_id).count()
-        results["MULTI_RACIAL"] = Candidate.query.filter(Demographic.race == Race.MULTI_RACIAL).filter(Candidate.term_id == term_id).count()
-        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.race == Race.NOT_SPECIFIED).filter(Candidate.term_id == term_id).count()
+        # results["BLACK"] = Candidate.query.filter(race == Race.BLACK).filter(Candidate.term_id == term_id).count()
+        # results["BLACK"] = db.session.query(Candidate).filter(Candidate.race == Race.BLACK).count()
+        results["BLACK"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.BLACK).count()
+        results["WHITE"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.WHITE).filter(Candidate.term_id == term_id).count()
+        results["ASIAN"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.ASIAN).filter(Candidate.term_id == term_id).count()
+        results["LATINX"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.LATINX).filter(Candidate.term_id == term_id).count()
+        results["NATIVE_AMERICAN"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.NATIVE_AMERICAN).filter(Candidate.term_id == term_id).count()
+        results["MULTI_RACIAL"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.MULTI_RACIAL).filter(Candidate.term_id == term_id).count()
+        results["NOT_SPECIFIED"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.NOT_SPECIFIED).filter(Candidate.term_id == term_id).count()
         return results
 
     @staticmethod
     def class_stats(term_id):
         results = {}
-        results["LOW"] = Candidate.query.filter(Demographic.soc_class == Class.LOW).filter(Candidate.term_id == term_id).count()
-        results["MIDDLE"] = Candidate.query.filter(Demographic.soc_class == Class.MIDDLE).filter(Candidate.term_id == term_id).count()
-        results["UPPER"] = Candidate.query.filter(Demographic.soc_class == Class.UPPER).filter(Candidate.term_id == term_id).count()
-        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.soc_class == Class.NOT_SPECIFIED).filter(Candidate.term_id == term_id).count()
+        results["LOW"] = Candidate.query.join(Candidate.demographic).filter(Demographic.soc_class == Class.LOW).filter(Candidate.term_id == term_id).count()
+        results["MIDDLE"] = Candidate.query.join(Candidate.demographic).filter(Demographic.soc_class == Class.MIDDLE).filter(Candidate.term_id == term_id).count()
+        results["UPPER"] = Candidate.query.join(Candidate.demographic).filter(Demographic.soc_class == Class.UPPER).filter(Candidate.term_id == term_id).count()
+        results["NOT_SPECIFIED"] = Candidate.query.join(Candidate.demographic).filter(Demographic.soc_class == Class.NOT_SPECIFIED).filter(Candidate.term_id == term_id).count()
         return results
 
     @staticmethod
     def gender_stats(term_id):
         results = {}
-        results["WOMAN"] = Candidate.query.filter(Demographic.gender == Gender.WOMAN).filter(Candidate.term_id == term_id).count()
-        results["MAN"] = Candidate.query.filter(Demographic.gender == Gender.MAN).filter(Candidate.term_id == term_id).count()
-        results["NON_BINARY"] = Candidate.query.filter(Demographic.gender == Gender.NON_BINARY).filter(Candidate.term_id == term_id).count()
-        results["TRANSGENDER"] = Candidate.query.filter(Demographic.gender == Gender.TRANSGENDER).filter(Candidate.term_id == term_id).count()
-        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.gender == Gender.NOT_SPECIFIED).filter(Candidate.term_id == term_id).count()
+        results["WOMAN"] = Candidate.query.join(Candidate.demographic).filter(Demographic.gender == Gender.WOMAN).filter(Candidate.term_id == term_id).count()
+        results["MAN"] = Candidate.query.join(Candidate.demographic).filter(Demographic.gender == Gender.MAN).filter(Candidate.term_id == term_id).count()
+        results["NON_BINARY"] = Candidate.query.join(Candidate.demographic).filter(Demographic.gender == Gender.NON_BINARY).filter(Candidate.term_id == term_id).count()
+        results["TRANSGENDER"] = Candidate.query.join(Candidate.demographic).filter(Demographic.gender == Gender.TRANSGENDER).filter(Candidate.term_id == term_id).count()
+        results["NOT_SPECIFIED"] = Candidate.query.join(Candidate.demographic).filter(Demographic.gender == Gender.NOT_SPECIFIED).filter(Candidate.term_id == term_id).count()
         return results
 
     @staticmethod
     def sexual_orientation_stats(term_id):
         results = {}
-        results["LGBTQ"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.LGBTQ).filter(Candidate.term_id == term_id).count()
-        results["STRAIGHT"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.STRAIGHT).filter(Candidate.term_id == term_id).count()
-        results["NOT_SPECIFIED"] = Candidate.query.filter(Demographic.sexual_orientation == SexualOrientation.NOT_SPECIFIED).filter(Candidate.term_id == term_id).count()
+        results["LGBTQ"] = Candidate.query.join(Candidate.demographic).filter(Demographic.sexual_orientation == SexualOrientation.LGBTQ).filter(Candidate.term_id == term_id).count()
+        results["STRAIGHT"] = Candidate.query.join(Candidate.demographic).filter(Demographic.sexual_orientation == SexualOrientation.STRAIGHT).filter(Candidate.term_id == term_id).count()
+        results["NOT_SPECIFIED"] = Candidate.query.join(Candidate.demographic).filter(Demographic.sexual_orientation == SexualOrientation.NOT_SPECIFIED).filter(Candidate.term_id == term_id).count()
         return results
 
     @staticmethod

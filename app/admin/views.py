@@ -14,8 +14,6 @@ from ..models import Role, User, Candidate, Demographic, Donor, EditableHTML, St
 
 
 
-
-
 @admin.route('/')
 @login_required
 @admin_required
@@ -80,11 +78,6 @@ def new_term():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
-    # result = 0
-    #
-    # if (len(participants) > 0):
-    #     temp = Candidate.participant_stats()
-    #     result = temp["asking_count"]
 
     status_forms = { p.id: EditStatusForm(participant=p.id, status=p.status.name, term=p.term) for p in participants }
     for f in status_forms:
@@ -123,7 +116,7 @@ def participants():
                         stat_term=stat_term,
                         stat_form=stat_form)
 
-@admin.route('/participants/demographic.png/<string:name>/<stats>')
+@admin.route('/participants/demographic_graphs/<string:name>/<stats>')
 @login_required
 def make_graph(name, stats):
     import numpy as np
@@ -360,8 +353,7 @@ def invite_accepted_candidates():
                 subject='You Are Invited To Join',
                 template='account/email/invite',
                 user=user,
-                invite_link=invite_link, )
-        print(selected)
+                invite_link=invite_link)
         str = ''
         for c in selected:
             str += c.first_name + ' ' + c.last_name + ', '
@@ -495,13 +487,6 @@ def update_editor_contents():
     db.session.commit()
 
     return 'OK', 200
-
-# @admin.route('/statistics/<int:term_id>', methods=['GET'])
-# @login_required
-# def get_stats(term_id):
-#     results = Candidate.cohort_stats(term_id)
-#     return results["donor_count"]
-
 
 @admin.route('/download/participants', methods=['GET'])
 @login_required

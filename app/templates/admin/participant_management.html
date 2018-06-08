@@ -96,11 +96,11 @@
                   </div>
                 {{ f.end_form() }}
                 {% for stat_name, stat in stats.items() %}
-                <center>
-                  <div class="graph">
-                    <img src="{{ url_for('admin.make_graph', stats=stat, name=stat_name) }}"></img>
-                  </div>
-                </center>
+                  <center>
+                    <div class="graph">
+                      <img src="{{ url_for('admin.make_graph', stats=stat, name=stat_name) }}"></img>
+                    </div>
+                  </center>
                 {% endfor %}
               </div>
             </div>
