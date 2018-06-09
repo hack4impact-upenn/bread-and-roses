@@ -4,7 +4,7 @@ from flask_rq import get_queue
 
 from .forms import (ChangeAccountTypeForm, ChangeUserEmailForm, InviteUserForm,
                     NewUserForm, NewCandidateForm, DemographicForm,
-                    EditParticipantForm, NewTermForm, EditStatusForm,
+                    EditParticipantForm, NewTermForm, EditTermForm, EditStatusForm,
                     InviteAcceptedCandidatesForm, StatsSelectTermForm)
 from . import admin
 from .. import db
@@ -73,6 +73,50 @@ def new_term():
               'form-success')
     return render_template('admin/new_term.html', form=form)
 
+@admin.route('/edit-term/<int:term_id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_term(term_id):
+    """Edit a term."""
+    term = Term.query.filter_by(id=term_id).first();
+    if term is None:
+        abort(404)
+    form = EditTermForm(obj=term_id)
+
+    if request.method == 'GET':
+        form.name.data = term.name
+        form.start_date.data = term.start_date
+        form.end_date.data = term.end_date
+
+    if form.validate_on_submit():
+        term.name = form.name.data
+        term.start_date = form.start_date.data
+        term.end_date = form.end_date.data
+
+        db.session.add(term)
+        db.session.commit()
+        flash('Term {} successfully updated'.format(term.name),
+              'form-success')
+    return render_template('admin/edit_term.html', form=form, term=term)
+
+@admin.route('/terms/<int:term_id>/_delete')
+@login_required
+@admin_required
+def delete_term(term_id):
+    """Delete a term."""
+    term = Term.query.filter_by(id=term_id).first()
+    db.session.delete(term)
+    db.session.commit()
+
+    candidates = Candidate.query.filter_by(term_id=term_id)
+    for candidate in candidates:
+        candidate.term_id = null
+        candidate.term = null
+        db.session.add(candidate)
+        db.session.commit()
+
+    flash('Successfully deleted term %s.' % term.name, 'success')
+    return redirect(url_for('admin.term_management'))
 
 @admin.route('/participants', methods=['GET', 'POST'])
 @login_required
@@ -80,11 +124,6 @@ def new_term():
 def participants():
     """Manage participants"""
     participants = Candidate.query.all()
-    # result = 0
-    #
-    # if (len(participants) > 0):
-    #     temp = Candidate.participant_stats()
-    #     result = temp["asking_count"]
 
     status_forms = { p.id: EditStatusForm(participant=p.id, status=p.status.name, term=p.term) for p in participants }
     for f in status_forms:
