@@ -54,9 +54,7 @@ class Candidate(db.Model):
     @staticmethod
     def race_stats(term_id):
         results = {}
-        # results["BLACK"] = Candidate.query.filter(race == Race.BLACK).filter(Candidate.term_id == term_id).count()
-        # results["BLACK"] = db.session.query(Candidate).filter(Candidate.race == Race.BLACK).count()
-        results["BLACK"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.BLACK).count()
+        results["BLACK"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.BLACK).filter(Candidate.term_id == term_id).count()
         results["WHITE"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.WHITE).filter(Candidate.term_id == term_id).count()
         results["ASIAN"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.ASIAN).filter(Candidate.term_id == term_id).count()
         results["LATINX"] = Candidate.query.join(Candidate.demographic).filter(Demographic.race == Race.LATINX).filter(Candidate.term_id == term_id).count()
