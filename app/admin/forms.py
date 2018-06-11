@@ -72,6 +72,14 @@ class NewTermForm(Form):
     submit = SubmitField('Create')
 # TODO check if end date is larger than start date
 
+class EditTermForm(Form):
+    name = StringField(
+        'Name', validators=[InputRequired()])
+    start_date = DateField(
+        'Start Date', validators=[InputRequired()])
+    end_date = DateField(
+        'End Date', validators=[InputRequired()])
+    submit = SubmitField('Update')
 
 class DemographicForm(Form):
     race = SelectField(
@@ -104,6 +112,7 @@ class EditStatusForm(Form):
     term = QuerySelectField(
         label='',
         get_label='name',
+        allow_blank=True,
         query_factory=lambda: db.session.query(Term).order_by('start_date'))
     submit_status = SubmitField('Update Status')
 
@@ -165,5 +174,3 @@ class EditParticipantForm(Form):
         'Applied', default=False)
     demographic = FormField(DemographicForm)
     submit = SubmitField('Save')
-
-#class SelectStatus(SelectMultipleField):

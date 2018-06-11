@@ -1,0 +1,75 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+{% import 'macros/check_password.html' as check %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+    <div class="ui stackable centered grid container">
+        <div class="twelve wide column">
+            <a class="ui basic compact button" href="{{ url_for('admin.term_management') }}">
+                <i class="caret left icon"></i>
+                Back to term management
+            </a>
+            <br>
+            <div class="edit-term-header">
+              <h2 class="ui header">
+                  Edit Term
+              </h2>
+              <div class="ui button" onclick="$('#delete-term').modal('show')">
+                  <i class="remove icon"></i>
+                  Delete
+              </div>
+            </div>
+
+            <div class="ui mini modal" id="delete-term">
+                <div class="ui header">
+                    Warning!
+                </div>
+                <div class="content">
+                    <p>This action is irreversible! Are you sure you want to delete {{ term.name }}?</p>
+                </div>
+                <div class="actions">
+                    <div class="ui blue cancel button">
+                        <i class="arrow alternate circle left outline icon"></i>
+                        No, cancel!
+                    </div>
+                    <a href="{{ url_for('admin.delete_term', term_id=term.id) }}">
+                        <div class="ui red ok button">
+                            <i class="trash alternate icon"></i>
+                            Yes, delete {{ term.name }}
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            {% set flashes = {
+                'error':   get_flashed_messages(category_filter=['form-error']),
+                'warning': get_flashed_messages(category_filter=['form-check-email']),
+                'info':    get_flashed_messages(category_filter=['form-info']),
+                'success': get_flashed_messages(category_filter=['form-success'])
+            } %}
+
+            {{ f.begin_form(form, flashes) }}
+
+                <div class="two fields">
+                    {{ f.render_form_field(form.name) }}
+                    {{ f.render_form_field(form.start_date) }}
+                    {{ f.render_form_field(form.end_date) }}
+                </div>
+
+                {% for field in form | selectattr('type', 'equalto', 'SubmitField') %}
+                    {{ f.render_form_field(field) }}
+                {% endfor %}
+
+                {{ f.form_message(flashes['error'], header='Something went wrong.', class='error') }}
+                {{ f.form_message(flashes['warning'], header='Check your email.', class='warning') }}
+                {{ f.form_message(flashes['info'], header='Information', class='info') }}
+                {{ f.form_message(flashes['success'], header='Success!', class='success') }}
+
+
+            {{ f.end_form() }}
+        </div>
+    </div>
+{% endblock %}

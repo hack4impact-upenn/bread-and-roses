@@ -120,6 +120,12 @@ body {
   font-weight: 900
 }
 
+.edit-term-header {
+  margin: 20px 0 0 0;
+  display: flex;
+  justify-content: space-between;
+}
+
 .donor-header {
   padding-top: 30px;
   background-color: rgba(255, 255, 255, 0.95);
